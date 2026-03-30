@@ -86,17 +86,17 @@ class SelectSchoolPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              DigitButton(
-                                label: 'Refresh',
-                                type: DigitButtonType.tertiary,
-                                size: DigitButtonSize.medium,
-                                onPressed: () {
-                                  if (state.loading) return;
-                                  context.read<BednetDistributionBloc>().add(
-                                        const BednetDistributionEvent.reload(),
-                                      );
-                                },
-                              ),
+                              // DigitButton(
+                              //   label: 'Refresh',
+                              //   type: DigitButtonType.tertiary,
+                              //   size: DigitButtonSize.medium,
+                              //   onPressed: () {
+                              //     if (state.loading) return;
+                              //     context.read<BednetDistributionBloc>().add(
+                              //           const BednetDistributionEvent.reload(),
+                              //         );
+                              //   },
+                              // ),
                             ],
                           ),
                           const SizedBox(height: spacer2),
@@ -104,7 +104,7 @@ class SelectSchoolPage extends StatelessWidget {
                             formControlName: _schoolControl,
                             validationMessages: {
                               'required': (_) =>
-                                  'Select the school is required',
+                                  'Please select a school to proceed',
                             },
                             builder: (field) => LabeledField(
                               label: 'Select the school',

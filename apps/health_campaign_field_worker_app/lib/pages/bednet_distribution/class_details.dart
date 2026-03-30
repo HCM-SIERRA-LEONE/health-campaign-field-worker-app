@@ -4,6 +4,7 @@ import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
 import 'package:digit_ui_components/widgets/molecules/digit_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -308,6 +309,9 @@ class ClassDetailsPage extends StatelessWidget {
                             child: DigitTextFormInput(
                               initialValue: form.control(_present).value,
                               keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                               errorMessage: field.errorText,
                               onChange: (value) {
                                 form.control(_present).value = value;
@@ -332,6 +336,9 @@ class ClassDetailsPage extends StatelessWidget {
                             child: DigitTextFormInput(
                               initialValue: form.control(_boysPresent).value,
                               keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                               errorMessage: field.errorText,
                               onChange: (value) {
                                 form.control(_boysPresent).value = value;
@@ -355,6 +362,9 @@ class ClassDetailsPage extends StatelessWidget {
                             child: DigitTextFormInput(
                               initialValue: form.control(_girlsPresent).value,
                               keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                               errorMessage: field.errorText,
                               onChange: (value) {
                                 form.control(_girlsPresent).value = value;
