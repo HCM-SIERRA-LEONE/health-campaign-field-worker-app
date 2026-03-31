@@ -220,27 +220,57 @@ class BednetDistributionBloc
     if (state.selectedSchool == null) return;
 
     final updated = [...state.teacherInfoByClass];
+    String? taskError;
+
     if (event.classIndex >= 0 && event.classIndex < updated.length) {
       updated[event.classIndex] = event.info;
       final classIndividual = state.classIndividuals.elementAtOrNull(
         event.classIndex,
       );
+      final classDetails = state.classDetailsByClass.elementAtOrNull(
+        event.classIndex,
+      );
       var nextIndividuals = state.classIndividuals;
       if (classIndividual != null) {
+        final mobile = event.info.mobileNumber.trim();
         final merged = await _updateClassIndividual(
           classIndividual,
           {
             'teacherName': event.info.name,
             'teacherGender': event.info.gender,
-            'teacherMobileNumber': event.info.mobileNumber,
+            if (mobile.isNotEmpty) 'teacherMobileNumber': mobile,
           },
         );
         nextIndividuals = [...state.classIndividuals];
         nextIndividuals[event.classIndex] = merged;
+
+        if (classDetails != null) {
+          final userUuid = RegistrationDeliverySingleton().loggedInUserUuid;
+          if (userUuid == null || userUuid.isEmpty) {
+            taskError = 'Cannot save distribution task: user is not logged in.';
+          } else {
+            try {
+              await bednetDistributionRepository
+                  .createOrUpdateBednetTaskForClassDetails(
+                school: state.selectedSchool!,
+                classIndividual: merged,
+                details: classDetails,
+                userUuid: userUuid,
+                boundaryCode: state.boundaryCode ?? '',
+                boundaryName: RegistrationDeliverySingleton().boundary?.name,
+              );
+            } catch (error, stackTrace) {
+              debugPrint('Bednet task create/update failed: $error');
+              debugPrintStack(stackTrace: stackTrace);
+              taskError = 'Could not save distribution task: $error';
+            }
+          }
+        }
       }
       emit(state.copyWith(
         teacherInfoByClass: updated,
         classIndividuals: nextIndividuals,
+        error: taskError,
       ));
     }
   }
@@ -255,7 +285,6 @@ class BednetDistributionBloc
     final summaries = [...state.summariesByClass];
 
     var nextIndividuals = state.classIndividuals;
-    String? taskError;
 
     if (event.classIndex >= 0 && event.classIndex < details.length) {
       details[event.classIndex] = event.details;
@@ -286,26 +315,6 @@ class BednetDistributionBloc
         );
         nextIndividuals = [...state.classIndividuals];
         nextIndividuals[event.classIndex] = merged;
-
-        final userUuid = RegistrationDeliverySingleton().loggedInUserUuid;
-        if (userUuid == null || userUuid.isEmpty) {
-          taskError = 'Cannot save distribution task: user is not logged in.';
-        } else {
-          try {
-            await bednetDistributionRepository.createOrUpdateBednetTaskForClassDetails(
-              school: state.selectedSchool!,
-              classIndividual: merged,
-              details: event.details,
-              userUuid: userUuid,
-              boundaryCode: state.boundaryCode ?? '',
-              boundaryName: RegistrationDeliverySingleton().boundary?.name,
-            );
-          } catch (error, stackTrace) {
-            debugPrint('Bednet task create/update failed: $error');
-            debugPrintStack(stackTrace: stackTrace);
-            taskError = 'Could not save distribution task: $error';
-          }
-        }
       }
     }
 
@@ -314,7 +323,7 @@ class BednetDistributionBloc
         classDetailsByClass: details,
         summariesByClass: summaries,
         classIndividuals: nextIndividuals,
-        error: taskError,
+        error: null,
       ),
     );
   }
@@ -409,7 +418,22 @@ class BednetDistributionBloc
     if (expected <= 0) return false;
     final linked = _allClassIndividualsForSchool(school, allIndividuals);
     if (linked.length < expected) return false;
-    return linked.every((i) => i.bednetClassAdministered);
+    return linked.every((i) => i.bednetClassAdministered || _isZeroPupilClass(i));
+  }
+
+  bool _isZeroPupilClass(IndividualModel individual) {
+    final fields =
+        individual.additionalFields?.fields ?? const <AdditionalField>[];
+    final map = <String, Object?>{
+      for (final field in fields) field.key.toLowerCase(): field.value,
+    };
+    final raw = map['pupilcount'] ??
+        map['pupil_count'] ??
+        map['totalpupil'] ??
+        map['total_pupil'];
+    if (raw == null) return false;
+    final n = int.tryParse(raw.toString());
+    return n != null && n == 0;
   }
 
   bool _individualMatchesSchool(
@@ -470,7 +494,7 @@ class BednetDistributionBloc
     List<IndividualModel> allIndividuals,
   ) {
     return _allClassIndividualsForSchool(school, allIndividuals)
-        .where((i) => !i.bednetClassAdministered)
+        .where((i) => !i.bednetClassAdministered && !_isZeroPupilClass(i))
         .toList();
   }
 
