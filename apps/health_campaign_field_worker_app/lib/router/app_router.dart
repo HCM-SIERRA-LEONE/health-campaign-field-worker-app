@@ -30,6 +30,7 @@ import '../pages/bednet_distribution/school_details.dart';
 import '../pages/bednet_distribution/select_school.dart';
 import '../pages/beneficiary_type_selection.dart';
 import '../pages/home.dart';
+import '../pages/household_head_teacher_details.dart';
 import '../pages/language_selection.dart';
 import '../pages/login.dart';
 import '../pages/non_mobile_user/non_mobile_user_list.dart';
@@ -135,6 +136,11 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: BeneficiaryTypeSelectionRoute.page,
           path: 'beneficiary-type-selection',
+        ),
+
+        AutoRoute(
+          page: HouseholdHeadTeacherDetailsRoute.page,
+          path: 'household-head-teacher-details',
         ),
 
         AutoRoute(

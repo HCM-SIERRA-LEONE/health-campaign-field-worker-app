@@ -59,7 +59,7 @@ class _BeneficiaryTypeSelectionPageState
                           icon: Icons.store,
                           label: 'School',
                           onPressed: () {
-                            context.router.push(
+                            context.router.root.push(
                               const BednetDistributionWrapperRoute(),
                             );
                           },
@@ -69,7 +69,11 @@ class _BeneficiaryTypeSelectionPageState
                         child: _BeneficiaryTypeCard(
                           icon: Icons.home,
                           label: 'Household',
-                          onPressed: () {},
+                          onPressed: () {
+                            context.router.root.push(
+                              const HouseholdHeadTeacherDetailsRoute(),
+                            );
+                          },
                         ),
                       ),
                     ],

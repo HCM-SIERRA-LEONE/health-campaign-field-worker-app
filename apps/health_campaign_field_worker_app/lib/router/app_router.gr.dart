@@ -198,6 +198,12 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    HouseholdHeadTeacherDetailsRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const HouseholdHeadTeacherDetailsPage(),
+      );
+    },
     LanguageSelectionRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -938,6 +944,20 @@ class HomeRouteArgs {
   String toString() {
     return 'HomeRouteArgs{key: $key, appLocalizations: $appLocalizations}';
   }
+}
+
+/// generated route for
+/// [HouseholdHeadTeacherDetailsPage]
+class HouseholdHeadTeacherDetailsRoute extends PageRouteInfo<void> {
+  const HouseholdHeadTeacherDetailsRoute({List<PageRouteInfo>? children})
+      : super(
+          HouseholdHeadTeacherDetailsRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'HouseholdHeadTeacherDetailsRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
