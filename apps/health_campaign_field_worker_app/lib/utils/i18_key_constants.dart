@@ -673,6 +673,18 @@ class Home {
   String get summaryLabel => 'HOME_SUMMARY_LABEL';
 }
 
+const beneficiaryType = BeneficiaryType();
+
+class BeneficiaryType {
+  const BeneficiaryType();
+
+  String get chooseBeneficiaryTypeLabel => 'CHOOSE_BENEFICIARY_TYPE_LABEL';
+
+  String get schoolLabel => 'BENEFICIARY_TYPE_SCHOOL_LABEL';
+
+  String get householdLabel => 'BENEFICIARY_TYPE_HOUSEHOLD_LABEL';
+}
+
 class DataShare {
   const DataShare();
 

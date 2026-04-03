@@ -28,6 +28,7 @@ import '../pages/bednet_distribution/class_teacher_info.dart';
 import '../pages/bednet_distribution/distribution_summary.dart';
 import '../pages/bednet_distribution/school_details.dart';
 import '../pages/bednet_distribution/select_school.dart';
+import '../pages/beneficiary_type_selection.dart';
 import '../pages/home.dart';
 import '../pages/language_selection.dart';
 import '../pages/login.dart';
@@ -129,6 +130,11 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: ProjectFacilitySelectionRoute.page,
           path: 'select-project-facilities',
+        ),
+
+        AutoRoute(
+          page: BeneficiaryTypeSelectionRoute.page,
+          path: 'beneficiary-type-selection',
         ),
 
         AutoRoute(

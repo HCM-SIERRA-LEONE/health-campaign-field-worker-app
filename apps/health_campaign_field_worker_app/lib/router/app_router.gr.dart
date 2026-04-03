@@ -72,6 +72,17 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    BeneficiaryTypeSelectionRoute.name: (routeData) {
+      final args = routeData.argsAs<BeneficiaryTypeSelectionRouteArgs>(
+          orElse: () => const BeneficiaryTypeSelectionRouteArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: BeneficiaryTypeSelectionPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+        ),
+      );
+    },
     BoundarySelectionRoute.name: (routeData) {
       final args = routeData.argsAs<BoundarySelectionRouteArgs>(
           orElse: () => const BoundarySelectionRouteArgs());
@@ -462,6 +473,45 @@ class BeneficiaryAcknowledgementRouteArgs {
   @override
   String toString() {
     return 'BeneficiaryAcknowledgementRouteArgs{key: $key, appLocalizations: $appLocalizations, enableViewHousehold: $enableViewHousehold}';
+  }
+}
+
+/// generated route for
+/// [BeneficiaryTypeSelectionPage]
+class BeneficiaryTypeSelectionRoute
+    extends PageRouteInfo<BeneficiaryTypeSelectionRouteArgs> {
+  BeneficiaryTypeSelectionRoute({
+    Key? key,
+    AppLocalizations? appLocalizations,
+    List<PageRouteInfo>? children,
+  }) : super(
+          BeneficiaryTypeSelectionRoute.name,
+          args: BeneficiaryTypeSelectionRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'BeneficiaryTypeSelectionRoute';
+
+  static const PageInfo<BeneficiaryTypeSelectionRouteArgs> page =
+      PageInfo<BeneficiaryTypeSelectionRouteArgs>(name);
+}
+
+class BeneficiaryTypeSelectionRouteArgs {
+  const BeneficiaryTypeSelectionRouteArgs({
+    this.key,
+    this.appLocalizations,
+  });
+
+  final Key? key;
+
+  final AppLocalizations? appLocalizations;
+
+  @override
+  String toString() {
+    return 'BeneficiaryTypeSelectionRouteArgs{key: $key, appLocalizations: $appLocalizations}';
   }
 }
 

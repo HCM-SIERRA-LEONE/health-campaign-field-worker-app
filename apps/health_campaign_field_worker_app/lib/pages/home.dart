@@ -877,7 +877,7 @@ class _HomePageState extends LocalizedState<HomePage> {
           icon: Icons.family_restroom_rounded,
           label: i18.home.beneficiaryLabel,
           onPressed: () async {
-            context.router.push(const BednetDistributionWrapperRoute());
+            context.router.push(BeneficiaryTypeSelectionRoute());
           },
         ),
       ),
