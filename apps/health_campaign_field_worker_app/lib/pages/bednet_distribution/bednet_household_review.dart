@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
 
 import '../../widgets/header/back_navigation_help_header.dart';
-import 'bednet_inform_household.dart';
+import 'bednet_eolin_assessment.dart';
 
 class BednetHouseholdReviewPage extends StatelessWidget {
   final String headName;
@@ -54,7 +54,7 @@ class BednetHouseholdReviewPage extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => BlocProvider.value(
                       value: registrationBloc,
-                      child: BednetInformHouseholdPage(
+                      child: BednetEolinAssessmentPage(
                         eToken: _token,
                         itnForDelivery: _itnForDelivery,
                       ),

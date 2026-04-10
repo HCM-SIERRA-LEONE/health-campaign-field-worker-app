@@ -29,6 +29,9 @@ class BeneficiaryRegistrationBloc
 
   final BeneficiaryType beneficiaryType;
 
+  bool? _pendingEolinHasOldNets;
+  int? _pendingEolinReturnedNetsCount;
+
   BeneficiaryRegistrationBloc(
     super.initialState, {
     required this.individualRepository,
@@ -47,6 +50,35 @@ class BeneficiaryRegistrationBloc
     on(_handleUpdateIndividual);
     on(_handleAddMember);
     on(_handleSummary);
+  }
+
+  void setPendingItnEolinAssessment({
+    required bool hasOldNets,
+    int? returnedNetsCount,
+  }) {
+    _pendingEolinHasOldNets = hasOldNets;
+    _pendingEolinReturnedNetsCount = hasOldNets ? returnedNetsCount : null;
+  }
+
+  void clearPendingItnEolinAssessment() {
+    _pendingEolinHasOldNets = null;
+    _pendingEolinReturnedNetsCount = null;
+  }
+
+  ProjectBeneficiaryAdditionalFields? _pendingEolinProjectBeneficiaryFields() {
+    final has = _pendingEolinHasOldNets;
+    if (has == null) return null;
+    return ProjectBeneficiaryAdditionalFields(
+      version: 1,
+      fields: [
+        AdditionalField('eolinHasOldNets', has),
+        if (has && _pendingEolinReturnedNetsCount != null)
+          AdditionalField(
+            'eolinReturnedNetsCount',
+            _pendingEolinReturnedNetsCount,
+          ),
+      ],
+    );
   }
 
   //_handleSaveAddress event can be used for saving address details to the form
@@ -173,6 +205,7 @@ class BeneficiaryRegistrationBloc
                   beneficiaryType == BeneficiaryType.individual
                       ? individual?.clientReferenceId
                       : household?.clientReferenceId,
+              additionalFields: _pendingEolinProjectBeneficiaryFields(),
               clientAuditDetails: ClientAuditDetails(
                 createdTime: DateTime.now().millisecondsSinceEpoch,
                 lastModifiedTime: DateTime.now().millisecondsSinceEpoch,
@@ -275,6 +308,7 @@ class BeneficiaryRegistrationBloc
             await projectBeneficiaryRepository.create(
               value.projectBeneficiaryModel!,
             );
+            clearPendingItnEolinAssessment();
 
             await householdMemberRepository.create(
               HouseholdMemberModel(

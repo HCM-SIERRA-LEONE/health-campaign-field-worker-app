@@ -1138,5 +1138,35 @@
     "locale": "pt_MZ",
     "message": "Adicionar estudante",
     "module": "hcm-bednet"
+  },
+  {
+    "code": "HOUSEHOLD_OVER_VIEW_ADD_STUDENT_TEXT",
+    "locale": "en_NG",
+    "message": "Add Student",
+    "module": "householdOverView"
+  },
+  {
+    "code": "HOUSEHOLD_OVER_VIEW_EOLIN_ASSESSMENT_TITLE",
+    "locale": "en_NG",
+    "message": "EOLIN Assessment",
+    "module": "householdOverView"
+  },
+  {
+    "code": "HOUSEHOLD_OVER_VIEW_EOLIN_OLD_NETS_QUESTION",
+    "locale": "en_NG",
+    "message": "Do you have old nets?",
+    "module": "householdOverView"
+  },
+  {
+    "code": "HOUSEHOLD_OVER_VIEW_EOLIN_RETURN_COUNT_LABEL",
+    "locale": "en_NG",
+    "message": "How many old nets are you returning?",
+    "module": "householdOverView"
+  },
+  {
+    "code": "HOUSEHOLD_OVER_VIEW_EOLIN_REMINDER",
+    "locale": "en_NG",
+    "message": "Screen the Old Nets to\nConfirm.\nDP Supervisor should ensure\nall EOLINs are retrieved.",
+    "module": "householdOverView"
   }
 ]

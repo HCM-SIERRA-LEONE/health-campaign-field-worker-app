@@ -571,6 +571,18 @@ class HouseholdOverView {
       'HOUSEHOLD_OVER_VIEW_ADD_STUDENT_TEXT';
   String get householdOverViewAddHeadText =>
       'HOUSEHOLD_OVER_VIEW_ADD_HEAD_TEXT';
+
+  String get householdOverViewEolinAssessmentTitle =>
+      'HOUSEHOLD_OVER_VIEW_EOLIN_ASSESSMENT_TITLE';
+
+  String get householdOverViewEolinOldNetsQuestion =>
+      'HOUSEHOLD_OVER_VIEW_EOLIN_OLD_NETS_QUESTION';
+
+  String get householdOverViewEolinReturnCountLabel =>
+      'HOUSEHOLD_OVER_VIEW_EOLIN_RETURN_COUNT_LABEL';
+
+  String get householdOverViewEolinReminder =>
+      'HOUSEHOLD_OVER_VIEW_EOLIN_REMINDER';
 }
 
 class MemberCard {
