@@ -1168,5 +1168,29 @@
     "locale": "en_NG",
     "message": "Screen the Old Nets to\nConfirm.\nDP Supervisor should ensure\nall EOLINs are retrieved.",
     "module": "householdOverView"
+  },
+  {
+    "code": "NO_OF_CHILDREN_BELOW_5_YR_LABEL",
+    "locale": "en_MZ",
+    "message": "Number of children U-5 living in the household*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "NO_OF_CHILDREN_BELOW_5_YR_LABEL",
+    "locale": "pt_MZ",
+    "message": "Número de crianças menores de 5 anos no agregado familiar*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "CHILDREN_COUNT_EXCEEDS_MEMBERS_ERROR",
+    "locale": "en_MZ",
+    "message": "Number of children U-5 cannot exceed total household members",
+    "module": "hcm-household"
+  },
+  {
+    "code": "CHILDREN_COUNT_EXCEEDS_MEMBERS_ERROR",
+    "locale": "pt_MZ",
+    "message": "O número de crianças menores de 5 anos não pode exceder o total de membros do agregado familiar",
+    "module": "hcm-household"
   }
 ]

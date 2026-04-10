@@ -483,6 +483,8 @@ class HouseholdDetails {
   String get noOfChildrenBelow5YearsCLFLabel =>
       'NO_OF_CHILDREN_BELOW_5_YR_CLF_LABEL';
 
+  String get childrenCountError => 'CHILDREN_COUNT_EXCEEDS_MEMBERS_ERROR';
+
   String get viewHouseHoldDetailsAction =>
       'VIEW_HOUSEHOLD_DETAILS_ACTION_LABEL';
 

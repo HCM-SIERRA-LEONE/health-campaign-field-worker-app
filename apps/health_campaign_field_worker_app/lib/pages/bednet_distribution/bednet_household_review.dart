@@ -13,12 +13,14 @@ import 'bednet_eolin_assessment.dart';
 class BednetHouseholdReviewPage extends StatelessWidget {
   final String headName;
   final int memberCount;
+  final int? childrenCount;
   final String? mobileNumber;
 
   const BednetHouseholdReviewPage({
     super.key,
     required this.headName,
     required this.memberCount,
+    this.childrenCount,
     this.mobileNumber,
   });
 
@@ -82,6 +84,8 @@ class BednetHouseholdReviewPage extends StatelessWidget {
                       const SizedBox(height: spacer2),
                       _kv('Household Head', headName),
                       _kv('Member Count', memberCount.toString().padLeft(2, '0')),
+                      if (childrenCount != null)
+                        _kv('Children U-5', childrenCount!.toString().padLeft(2, '0')),
                       _kv('Number Of ITN For Delivery', _itnForDelivery.toString()),
                     ],
                   ),

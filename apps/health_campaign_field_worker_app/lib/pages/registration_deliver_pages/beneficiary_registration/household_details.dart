@@ -38,6 +38,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
   static const _nameOfIndividualKey = 'nameOfIndividual';
   static const _mobileNumberKey = 'mobileNumber';
   static const _memberCountKey = 'memberCount';
+  static const _childrenCountKey = 'childrenCount';
   final TextEditingController _dateController = TextEditingController();
 
   bool _isHouseholdDetailsViewOnly(BeneficiaryRegistrationState state) {
@@ -114,11 +115,17 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                         mainAxisSize: MainAxisSize.max,
                         onPressed: () {
                           form.markAllAsTouched();
+                          // Manually trigger children count cross-field validation
+                          form
+                              .control(_childrenCountKey)
+                              .updateValueAndValidity();
                           if (!form.valid) return;
                           bool shouldNavigateNext = false;
 
                           final memberCount =
                               form.control(_memberCountKey).value as int;
+                          final childrenCount =
+                              form.control(_childrenCountKey).value as int;
                           final dateOfRegistration = form
                               .control(_dateOfRegistrationKey)
                               .value as DateTime;
@@ -177,6 +184,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                               }
                               fieldMap[AdditionalFieldsType.latitude.toValue()] = AdditionalField(AdditionalFieldsType.latitude.toValue(), addressModel?.latitude?.toString() ?? '');
                               fieldMap[AdditionalFieldsType.longitude.toValue()] = AdditionalField(AdditionalFieldsType.longitude.toValue(), addressModel?.longitude?.toString() ?? '');
+                              fieldMap['childrenUnder5'] = AdditionalField('childrenUnder5', childrenCount.toString());
                               final newAdditionalFields = HouseholdAdditionalFields(
                                 version: household.additionalFields?.version ?? 1,
                                 fields: fieldMap.values.toList(),
@@ -265,6 +273,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   child: BednetHouseholdReviewPage(
                                     headName: headName,
                                     memberCount: memberCount,
+                                    childrenCount: childrenCount,
                                     mobileNumber: mobile,
                                   ),
                                 ),
@@ -390,7 +399,44 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   if (value.isEmpty) return;
                                   form.control(_memberCountKey).value =
                                       int.parse(value);
+                                  // Re-validate children count against new member count
+                                  form
+                                      .control(_childrenCountKey)
+                                      .updateValueAndValidity();
                                 },
+                              ),
+                            ),
+                          ),
+                          ReactiveWrapperField(
+                            formControlName: _childrenCountKey,
+                            validationMessages: {
+                              'childrenExceedsMembers': (_) =>
+                                  localizations.translate(
+                                    i18.householdDetails.childrenCountError,
+                                  ),
+                            },
+                            builder: (field) => LabeledField(
+                              label: localizations.translate(
+                                i18.householdDetails.noOfChildrenBelow5YearsLabel,
+                              ),
+                              isRequired: true,
+                              child: DigitNumericFormInput(
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                minValue: 0,
+                                maxValue: 100,
+                                step: 1,
+                                initialValue: form
+                                    .control(_childrenCountKey)
+                                    .value
+                                    .toString(),
+                                onChange: (value) {
+                                  if (value.isEmpty) return;
+                                  form.control(_childrenCountKey).value =
+                                      int.parse(value);
+                                },
+                                errorMessage: field.errorText,
                               ),
                             ),
                           ),
@@ -426,6 +472,16 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
           value.registrationDate ?? DateTime.now(),
     );
 
+    // Read persisted childrenUnder5 from additionalFields (if editing)
+    final persistedChildren = household?.additionalFields?.fields
+        .firstWhere(
+          (f) => f.key == 'childrenUnder5',
+          orElse: () => AdditionalField('childrenUnder5', '0'),
+        )
+        .value;
+    final int initialChildrenCount =
+        int.tryParse(persistedChildren?.toString() ?? '0') ?? 0;
+
     return fb.group(<String, Object>{
       _dateOfRegistrationKey:
           FormControl<DateTime>(value: registrationDate, validators: []),
@@ -444,6 +500,27 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
       ),
       _memberCountKey: FormControl<int>(
         value: household?.memberCount ?? 1,
+      ),
+      _childrenCountKey: FormControl<int>(
+        value: initialChildrenCount,
+        validators: [
+          Validators.delegate(
+            (control) {
+              final children = (control.value as int?) ?? 0;
+              final fg = control.parent;
+              if (fg == null) return null;
+              if (fg is! FormGroup) return null;
+              final memberVal = fg.controls[_memberCountKey]?.value;
+              final members = memberVal is int
+                  ? memberVal
+                  : int.tryParse(memberVal?.toString() ?? '') ?? 0;
+              if (children > members) {
+                return <String, dynamic>{'childrenExceedsMembers': true};
+              }
+              return null;
+            },
+          ),
+        ],
       ),
     });
   }
