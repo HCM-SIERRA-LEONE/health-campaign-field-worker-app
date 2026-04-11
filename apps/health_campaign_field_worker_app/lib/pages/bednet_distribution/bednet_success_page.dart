@@ -1,11 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
-import 'package:digit_ui_components/widgets/molecules/digit_card.dart';
-import 'package:digit_ui_components/widgets/molecules/panel_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/registration_deliver/search_households/search_households.dart';
+import '../../router/app_router.dart';
 import '../../utils/registration_deliver_utils/i18_key_constants.dart' as i18;
 import '../../widgets/registartion_deliver/localized.dart';
 
@@ -15,6 +15,7 @@ import '../../widgets/registartion_deliver/localized.dart';
 /// [Navigator] stack on top of [SearchBeneficiaryRoute], so "View household"
 /// pops back to [HouseHoldDetailsPage] and "Back to search" clears search
 /// state and pops to the search screen.
+@RoutePage()
 class BednetSuccessPage extends LocalizedStatefulWidget {
   final String eToken;
   final int itnForDelivery;
@@ -31,11 +32,11 @@ class BednetSuccessPage extends LocalizedStatefulWidget {
 }
 
 class _BednetSuccessPageState extends LocalizedState<BednetSuccessPage> {
+  static const Color _successGreen = Color(0xFF0B7A3E);
+
   void _onViewHouseholdDetails() {
     if (!mounted) return;
-    // Success → review → household details (two routes below this one).
-    // Navigator.of(context).pop();
-    if (mounted) Navigator.of(context).pop();
+    context.router.popUntilRouteWithName(BednetHouseholdSummaryRoute.name);
   }
 
   void _onBackToSearch() {
@@ -43,7 +44,7 @@ class _BednetSuccessPageState extends LocalizedState<BednetSuccessPage> {
     context
         .read<SearchHouseholdsBloc>()
         .add(const SearchHouseholdsEvent.clear());
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    context.router.popUntilRouteWithName(SearchBeneficiaryRoute.name);
   }
 
   @override
@@ -60,84 +61,98 @@ class _BednetSuccessPageState extends LocalizedState<BednetSuccessPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PanelCard(
-                  type: PanelType.success,
-                  title: localizations.translate(
-                    i18.acknowledgementSuccess.acknowledgementLabelText,
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(2),
+                    color: Colors.white,
                   ),
-                  description: localizations.translate(
-                    i18.acknowledgementSuccess.acknowledgementDescriptionText,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        color: _successGreen,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: spacer3,
+                          vertical: spacer4,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Give - ${widget.itnForDelivery} Bednets',
+                              textAlign: TextAlign.center,
+                              style: textTheme.headingL.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: spacer3),
+                            const Icon(
+                              Icons.check_circle,
+                              color: Colors.white,
+                              size: 36,
+                            ),
+                            const SizedBox(height: spacer2),
+                            Text(
+                              localizations.translate(
+                                i18.bednetDistribution.informSuccessETokenLabel,
+                              ),
+                              textAlign: TextAlign.center,
+                              style: textTheme.bodyS.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              widget.eToken,
+                              textAlign: TextAlign.center,
+                              style: textTheme.headingM.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: spacer2),
+                            Text(
+                              localizations.translate(
+                                i18.bednetDistribution.informSuccessMessage,
+                              ),
+                              textAlign: TextAlign.center,
+                              style: textTheme.bodyS.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(spacer2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            DigitButton(
+                              label: localizations.translate(
+                                i18.householdDetails.viewHouseHoldDetailsAction,
+                              ),
+                              type: DigitButtonType.primary,
+                              size: DigitButtonSize.large,
+                              mainAxisSize: MainAxisSize.max,
+                              onPressed: _onViewHouseholdDetails,
+                            ),
+                            const SizedBox(height: spacer2),
+                            DigitButton(
+                              label: localizations.translate(
+                                i18.acknowledgementSuccess.actionLabelText,
+                              ),
+                              type: DigitButtonType.secondary,
+                              size: DigitButtonSize.large,
+                              mainAxisSize: MainAxisSize.max,
+                              onPressed: _onBackToSearch,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  actions: const [],
-                ),
-                const SizedBox(height: spacer2),
-                // DigitCard(
-                //   children: [
-                //     Text(
-                //       localizations.translate(
-                //         i18.bednetDistribution.informSuccessBednetsDelivered,
-                //       ),
-                //       style: textTheme.headingM.copyWith(
-                //         color: theme.colorTheme.primary.primary2,
-                //       ),
-                //       textAlign: TextAlign.center,
-                //     ),
-                //     const SizedBox(height: spacer1),
-                //     Text(
-                //       '${widget.itnForDelivery}',
-                //       style: textTheme.headingXl.copyWith(
-                //         color: theme.colorTheme.primary.primary2,
-                //         fontWeight: FontWeight.w700,
-                //       ),
-                //       textAlign: TextAlign.center,
-                //     ),
-                //     const SizedBox(height: spacer2),
-                //     Text(
-                //       localizations.translate(
-                //         i18.bednetDistribution.informSuccessETokenLabel,
-                //       ),
-                //       style: textTheme.bodyL.copyWith(
-                //         color: theme.colorTheme.primary.primary1,
-                //       ),
-                //       textAlign: TextAlign.center,
-                //     ),
-                //     const SizedBox(height: spacer1),
-                //     SelectableText(
-                //       widget.eToken,
-                //       style: textTheme.headingL.copyWith(
-                //         fontWeight: FontWeight.w700,
-                //       ),
-                //       textAlign: TextAlign.center,
-                //     ),
-                //     const SizedBox(height: spacer2),
-                //     Text(
-                //       localizations.translate(
-                //         i18.bednetDistribution.informSuccessMessage,
-                //       ),
-                //       style: textTheme.bodyL,
-                //       textAlign: TextAlign.center,
-                //     ),
-                //   ],
-                // ),
-                const SizedBox(height: spacer2),
-                DigitButton(
-                  label: localizations.translate(
-                    i18.householdDetails.viewHouseHoldDetailsAction,
-                  ),
-                  type: DigitButtonType.primary,
-                  size: DigitButtonSize.large,
-                  mainAxisSize: MainAxisSize.max,
-                  onPressed: _onViewHouseholdDetails,
-                ),
-                const SizedBox(height: spacer2),
-                DigitButton(
-                  label: localizations.translate(
-                    i18.acknowledgementSuccess.actionLabelText,
-                  ),
-                  type: DigitButtonType.secondary,
-                  size: DigitButtonSize.large,
-                  mainAxisSize: MainAxisSize.max,
-                  onPressed: _onBackToSearch,
                 ),
               ],
             ),

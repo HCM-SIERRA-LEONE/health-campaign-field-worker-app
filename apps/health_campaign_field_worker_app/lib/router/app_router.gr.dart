@@ -69,10 +69,49 @@ abstract class _$AppRouter extends RootStackRouter {
         child: WrappedRoute(child: const BednetDistributionWrapperPage()),
       );
     },
+    BednetEolinAssessmentRoute.name: (routeData) {
+      final args = routeData.argsAs<BednetEolinAssessmentRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: BednetEolinAssessmentPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+          eToken: args.eToken,
+          itnForDelivery: args.itnForDelivery,
+          householdClientReferenceId: args.householdClientReferenceId,
+          headIndividualClientReferenceId: args.headIndividualClientReferenceId,
+        ),
+      );
+    },
     BednetHouseholdOverviewWrapperRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: WrappedRoute(child: const BednetHouseholdOverviewWrapperPage()),
+      );
+    },
+    BednetHouseholdSummaryRoute.name: (routeData) {
+      final args = routeData.argsAs<BednetHouseholdSummaryRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: BednetHouseholdSummaryPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+          headName: args.headName,
+          memberCount: args.memberCount,
+          mobileNumber: args.mobileNumber,
+        ),
+      );
+    },
+    BednetInformHouseholdRoute.name: (routeData) {
+      final args = routeData.argsAs<BednetInformHouseholdRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: BednetInformHouseholdPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+          eToken: args.eToken,
+          itnForDelivery: args.itnForDelivery,
+        ),
       );
     },
     BednetIndividualDetailsWrapperRoute.name: (routeData) {
@@ -88,6 +127,18 @@ abstract class _$AppRouter extends RootStackRouter {
           projectBeneficiaryModel: args.projectBeneficiaryModel,
           isHeadOfHousehold: args.isHeadOfHousehold,
         )),
+      );
+    },
+    BednetSuccessRoute.name: (routeData) {
+      final args = routeData.argsAs<BednetSuccessRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: BednetSuccessPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+          eToken: args.eToken,
+          itnForDelivery: args.itnForDelivery,
+        ),
       );
     },
     BeneficiariesReportRoute.name: (routeData) {
@@ -543,9 +594,9 @@ class AttendanceDigitScannerRoute
       ScannedIndividualDataModel,
       AttendanceValidationResult,
     ) onScanResult,
-    required int quantity = 1,
+    int quantity = 1,
     bool singleValue = false,
-    required bool isGS1code = false,
+    bool isGS1code = false,
     List<PageRouteInfo>? children,
   }) : super(
           AttendanceDigitScannerRoute.name,
@@ -573,9 +624,9 @@ class AttendanceDigitScannerRouteArgs {
     required this.enableDynamicQRScanning,
     required this.attendees,
     required this.onScanResult,
-    required this.quantity = 1,
+    this.quantity = 1,
     this.singleValue = false,
-    required this.isGS1code = false,
+    this.isGS1code = false,
   });
 
   final Key? key;
@@ -658,6 +709,65 @@ class BednetDistributionWrapperRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [BednetEolinAssessmentPage]
+class BednetEolinAssessmentRoute
+    extends PageRouteInfo<BednetEolinAssessmentRouteArgs> {
+  BednetEolinAssessmentRoute({
+    Key? key,
+    RegistrationDeliveryLocalization? appLocalizations,
+    required String eToken,
+    required int itnForDelivery,
+    String? householdClientReferenceId,
+    String? headIndividualClientReferenceId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          BednetEolinAssessmentRoute.name,
+          args: BednetEolinAssessmentRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+            eToken: eToken,
+            itnForDelivery: itnForDelivery,
+            householdClientReferenceId: householdClientReferenceId,
+            headIndividualClientReferenceId: headIndividualClientReferenceId,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'BednetEolinAssessmentRoute';
+
+  static const PageInfo<BednetEolinAssessmentRouteArgs> page =
+      PageInfo<BednetEolinAssessmentRouteArgs>(name);
+}
+
+class BednetEolinAssessmentRouteArgs {
+  const BednetEolinAssessmentRouteArgs({
+    this.key,
+    this.appLocalizations,
+    required this.eToken,
+    required this.itnForDelivery,
+    this.householdClientReferenceId,
+    this.headIndividualClientReferenceId,
+  });
+
+  final Key? key;
+
+  final RegistrationDeliveryLocalization? appLocalizations;
+
+  final String eToken;
+
+  final int itnForDelivery;
+
+  final String? householdClientReferenceId;
+
+  final String? headIndividualClientReferenceId;
+
+  @override
+  String toString() {
+    return 'BednetEolinAssessmentRouteArgs{key: $key, appLocalizations: $appLocalizations, eToken: $eToken, itnForDelivery: $itnForDelivery, householdClientReferenceId: $householdClientReferenceId, headIndividualClientReferenceId: $headIndividualClientReferenceId}';
+  }
+}
+
+/// generated route for
 /// [BednetHouseholdOverviewWrapperPage]
 class BednetHouseholdOverviewWrapperRoute extends PageRouteInfo<void> {
   const BednetHouseholdOverviewWrapperRoute({List<PageRouteInfo>? children})
@@ -669,6 +779,109 @@ class BednetHouseholdOverviewWrapperRoute extends PageRouteInfo<void> {
   static const String name = 'BednetHouseholdOverviewWrapperRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [BednetHouseholdSummaryPage]
+class BednetHouseholdSummaryRoute
+    extends PageRouteInfo<BednetHouseholdSummaryRouteArgs> {
+  BednetHouseholdSummaryRoute({
+    Key? key,
+    RegistrationDeliveryLocalization? appLocalizations,
+    required String headName,
+    required int memberCount,
+    String? mobileNumber,
+    List<PageRouteInfo>? children,
+  }) : super(
+          BednetHouseholdSummaryRoute.name,
+          args: BednetHouseholdSummaryRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+            headName: headName,
+            memberCount: memberCount,
+            mobileNumber: mobileNumber,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'BednetHouseholdSummaryRoute';
+
+  static const PageInfo<BednetHouseholdSummaryRouteArgs> page =
+      PageInfo<BednetHouseholdSummaryRouteArgs>(name);
+}
+
+class BednetHouseholdSummaryRouteArgs {
+  const BednetHouseholdSummaryRouteArgs({
+    this.key,
+    this.appLocalizations,
+    required this.headName,
+    required this.memberCount,
+    this.mobileNumber,
+  });
+
+  final Key? key;
+
+  final RegistrationDeliveryLocalization? appLocalizations;
+
+  final String headName;
+
+  final int memberCount;
+
+  final String? mobileNumber;
+
+  @override
+  String toString() {
+    return 'BednetHouseholdSummaryRouteArgs{key: $key, appLocalizations: $appLocalizations, headName: $headName, memberCount: $memberCount, mobileNumber: $mobileNumber}';
+  }
+}
+
+/// generated route for
+/// [BednetInformHouseholdPage]
+class BednetInformHouseholdRoute
+    extends PageRouteInfo<BednetInformHouseholdRouteArgs> {
+  BednetInformHouseholdRoute({
+    Key? key,
+    RegistrationDeliveryLocalization? appLocalizations,
+    required String eToken,
+    required int itnForDelivery,
+    List<PageRouteInfo>? children,
+  }) : super(
+          BednetInformHouseholdRoute.name,
+          args: BednetInformHouseholdRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+            eToken: eToken,
+            itnForDelivery: itnForDelivery,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'BednetInformHouseholdRoute';
+
+  static const PageInfo<BednetInformHouseholdRouteArgs> page =
+      PageInfo<BednetInformHouseholdRouteArgs>(name);
+}
+
+class BednetInformHouseholdRouteArgs {
+  const BednetInformHouseholdRouteArgs({
+    this.key,
+    this.appLocalizations,
+    required this.eToken,
+    required this.itnForDelivery,
+  });
+
+  final Key? key;
+
+  final RegistrationDeliveryLocalization? appLocalizations;
+
+  final String eToken;
+
+  final int itnForDelivery;
+
+  @override
+  String toString() {
+    return 'BednetInformHouseholdRouteArgs{key: $key, appLocalizations: $appLocalizations, eToken: $eToken, itnForDelivery: $itnForDelivery}';
+  }
 }
 
 /// generated route for
@@ -727,6 +940,54 @@ class BednetIndividualDetailsWrapperRouteArgs {
   @override
   String toString() {
     return 'BednetIndividualDetailsWrapperRouteArgs{key: $key, householdModel: $householdModel, addressModel: $addressModel, individualModel: $individualModel, projectBeneficiaryModel: $projectBeneficiaryModel, isHeadOfHousehold: $isHeadOfHousehold}';
+  }
+}
+
+/// generated route for
+/// [BednetSuccessPage]
+class BednetSuccessRoute extends PageRouteInfo<BednetSuccessRouteArgs> {
+  BednetSuccessRoute({
+    Key? key,
+    RegistrationDeliveryLocalization? appLocalizations,
+    required String eToken,
+    required int itnForDelivery,
+    List<PageRouteInfo>? children,
+  }) : super(
+          BednetSuccessRoute.name,
+          args: BednetSuccessRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+            eToken: eToken,
+            itnForDelivery: itnForDelivery,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'BednetSuccessRoute';
+
+  static const PageInfo<BednetSuccessRouteArgs> page =
+      PageInfo<BednetSuccessRouteArgs>(name);
+}
+
+class BednetSuccessRouteArgs {
+  const BednetSuccessRouteArgs({
+    this.key,
+    this.appLocalizations,
+    required this.eToken,
+    required this.itnForDelivery,
+  });
+
+  final Key? key;
+
+  final RegistrationDeliveryLocalization? appLocalizations;
+
+  final String eToken;
+
+  final int itnForDelivery;
+
+  @override
+  String toString() {
+    return 'BednetSuccessRouteArgs{key: $key, appLocalizations: $appLocalizations, eToken: $eToken, itnForDelivery: $itnForDelivery}';
   }
 }
 

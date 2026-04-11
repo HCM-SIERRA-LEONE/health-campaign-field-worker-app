@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
 import 'package:digit_ui_components/widgets/atoms/pop_up_card.dart';
@@ -8,10 +9,12 @@ import 'package:health_campaign_field_worker_app/blocs/registration_deliver/bene
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 
 import '../../utils/registration_deliver_utils/i18_key_constants.dart' as i18;
+import '../../router/app_router.dart';
 import '../../widgets/header/back_navigation_help_header.dart';
 import '../../widgets/registartion_deliver/localized.dart';
-import 'bednet_success_page.dart';
+import 'bednet_household_session.dart';
 
+@RoutePage()
 class BednetInformHouseholdPage extends LocalizedStatefulWidget {
   final String eToken;
   final int itnForDelivery;
@@ -56,21 +59,12 @@ class _BednetInformHouseholdPageState
           persisted: (_) {
             if (!mounted || _isSubmitting) return;
             _isSubmitting = true;
-            final registrationBloc =
-                context.read<BeneficiaryRegistrationBloc>();
-            // Replace inform screen only so the Material stack below (review →
-            // household details → location → search) stays intact and the same
-            // [BeneficiaryRegistrationBloc] remains valid for "View household".
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: registrationBloc,
-                  child: BednetSuccessPage(
-                    eToken: widget.eToken,
-                    itnForDelivery: widget.itnForDelivery,
-                    appLocalizations: localizations,
-                  ),
-                ),
+            BednetHouseholdSession.markItnDelivered();
+            context.router.replace(
+              BednetSuccessRoute(
+                eToken: widget.eToken,
+                itnForDelivery: widget.itnForDelivery,
+                appLocalizations: localizations,
               ),
             );
           },

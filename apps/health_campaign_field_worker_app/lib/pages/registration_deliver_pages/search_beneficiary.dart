@@ -7,6 +7,7 @@ import 'package:digit_data_model/models/entities/household_type.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/services/location_bloc.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
+import 'package:digit_ui_components/utils/date_utils.dart';
 import 'package:digit_ui_components/widgets/atoms/digit_search_bar.dart';
 import 'package:digit_ui_components/widgets/atoms/switch.dart';
 import 'package:digit_ui_components/widgets/molecules/digit_card.dart';
@@ -16,7 +17,6 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/search_households/search_households.dart';
 import 'package:health_campaign_field_worker_app/blocs/bednet_distribution/bednet_distribution.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
-import 'package:health_campaign_field_worker_app/models/registration_deliver_model/entities/status.dart';
 import 'package:health_campaign_field_worker_app/router/app_router.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/global_search_parameters.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/i18_key_constants.dart'
@@ -28,7 +28,9 @@ import 'package:health_campaign_field_worker_app/widgets/registartion_deliver/be
 import 'package:health_campaign_field_worker_app/widgets/registartion_deliver/localized.dart';
 
 import '../../blocs/registration_deliver/search_households/search_bloc_common_wrapper.dart';
+import '../bednet_distribution/bednet_household_review.dart';
 import '../bednet_distribution/bednet_household_location.dart';
+import '../bednet_distribution/bednet_household_session.dart';
 
 @RoutePage()
 class SearchBeneficiaryPage extends LocalizedStatefulWidget {
@@ -52,6 +54,8 @@ class _SearchBeneficiaryPageState
   double lat = 0.0;
   double long = 0.0;
   List<String> selectedFilters = [];
+  BeneficiaryRegistrationBloc? _inlineReviewBloc;
+  HouseholdMemberWrapper? _selectedHouseholdMember;
 
   SearchHouseholdsState searchHouseholdsState = const SearchHouseholdsState(
     loading: false,
@@ -79,13 +83,121 @@ class _SearchBeneficiaryPageState
 
   @override
   void dispose() {
+    _inlineReviewBloc?.close();
     super.dispose();
+  }
+
+  void _openHouseholdFlow(HouseholdMemberWrapper householdMember) {
+    final household = householdMember.household;
+    if (household == null) return;
+
+    final existingBloc = _inlineReviewBloc;
+    final nextBloc = BeneficiaryRegistrationBloc(
+      BeneficiaryRegistrationState.persisted(
+        householdModel: household,
+        individualModel: householdMember.headOfHousehold,
+        addressModel: household.address,
+        isHeadOfHousehold: true,
+      ),
+      individualRepository:
+          context.repository<IndividualModel, IndividualSearchModel>(context),
+      householdRepository:
+          context.repository<HouseholdModel, HouseholdSearchModel>(context),
+      householdMemberRepository:
+          context.repository<HouseholdMemberModel, HouseholdMemberSearchModel>(
+              context),
+      projectBeneficiaryRepository: context.repository<ProjectBeneficiaryModel,
+          ProjectBeneficiarySearchModel>(context),
+      taskDataRepository:
+          context.repository<TaskModel, TaskSearchModel>(context),
+      beneficiaryType: RegistrationDeliverySingleton().beneficiaryType!,
+    );
+
+    context.read<BednetDistributionBloc>().add(
+          BednetDistributionEvent.selectSchool(
+            school: household,
+          ),
+        );
+
+    setState(() {
+      _inlineReviewBloc = nextBloc;
+      _selectedHouseholdMember = householdMember;
+    });
+
+    existingBloc?.close();
+  }
+
+  void _closeHouseholdFlow() {
+    final bloc = _inlineReviewBloc;
+    setState(() {
+      _inlineReviewBloc = null;
+      _selectedHouseholdMember = null;
+    });
+    bloc?.close();
+  }
+
+  void _onInlineDeliveryRecorded(IndividualModel member, TaskModel task) {
+    final selected = _selectedHouseholdMember;
+    if (selected == null) return;
+
+    final updatedTasks = [...?selected.tasks, task];
+    setState(() {
+      _selectedHouseholdMember = selected.copyWith(tasks: updatedTasks);
+    });
+  }
+
+  void _backToSchoolSelection() {
+    _closeHouseholdFlow();
+    context.router.replace(const SelectSchoolRoute());
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.digitTextTheme(context);
+
+    if (_selectedHouseholdMember != null && _inlineReviewBloc != null) {
+      final selected = _selectedHouseholdMember!;
+      final headName = [
+        selected.headOfHousehold?.name?.givenName,
+        selected.headOfHousehold?.name?.familyName,
+      ].whereType<String>().where((value) => value.trim().isNotEmpty).join(' ');
+      final childCount = (selected.members ?? []).where((member) {
+        final dob = member.dateOfBirth;
+        if (dob == null || dob.trim().isEmpty) return false;
+        final parsedDate =
+            DigitDateUtils.getFormattedDateToDateTime(dob.trim());
+        if (parsedDate == null) return false;
+        return DigitDateUtils.calculateAge(parsedDate).years < 5;
+      }).length;
+
+      return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (!didPop) {
+            _closeHouseholdFlow();
+          }
+        },
+        child: BlocProvider.value(
+          value: _inlineReviewBloc!,
+          child: BednetHouseholdReviewPage(
+            headName: headName.isEmpty
+                ? localizations.translate(i18.common.coreCommonNA)
+                : headName,
+            memberCount: selected.household?.memberCount ??
+                selected.members?.length ??
+                0,
+            childrenCount: childCount,
+            onBack: _closeHouseholdFlow,
+            prefetchedMembers: selected.members,
+            prefetchedHead: selected.headOfHousehold,
+            householdMemberData: selected,
+            onDeliveryRecorded: _onInlineDeliveryRecorded,
+            onBackToSchoolSelection: _backToSchoolSelection,
+          ),
+        ),
+      );
+    }
 
     return KeyboardVisibilityBuilder(
       builder: (context, isKeyboardVisible) => Scaffold(
@@ -146,8 +258,20 @@ class _SearchBeneficiaryPageState
                                 padding: const EdgeInsets.all(spacer2),
                                 child: DigitSearchBar(
                                   controller: searchController,
-                                  hintText:
-                                      'To start, enter the Beneficiary ID',
+                                  hintText: localizations.translate(
+                                    RegistrationDeliverySingleton()
+                                                .householdType ==
+                                            HouseholdType.community
+                                        ? i18
+                                            .searchBeneficiary.clfSearchHintText
+                                        : RegistrationDeliverySingleton()
+                                                    .beneficiaryType ==
+                                                BeneficiaryType.individual
+                                            ? i18.searchBeneficiary
+                                                .beneficiaryIndividualSearchHintText
+                                            : i18.searchBeneficiary
+                                                .beneficiarySearchHintText,
+                                  ),
                                   textCapitalization: TextCapitalization.words,
                                   onChanged: (value) {
                                     if (!isNameSearchEnabled &&
@@ -174,7 +298,9 @@ class _SearchBeneficiaryPageState
                                 ),
                                 child: DigitSwitch(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  label: 'Search by Name',
+                                  label: localizations.translate(
+                                    i18.common.searchByName,
+                                  ),
                                   value: isNameSearchEnabled,
                                   onChanged: (value) {
                                     setState(() {
@@ -261,51 +387,8 @@ class _SearchBeneficiaryPageState
                           child: ViewBeneficiaryCard(
                             distance: isProximityEnabled ? distance : null,
                             householdMember: i,
-                            onOpenPressed: () async {
-                              // final scannerBloc =
-                              //     context.read<DigitScannerBloc>();
-
-                              // scannerBloc.add(
-                              //   const DigitScannerEvent.handleScanner(),
-                              // );
-
-                              if ((i.tasks != null &&
-                                      i.tasks?.lastOrNull!.status ==
-                                          Status.closeHousehold.toValue() &&
-                                      (i.tasks ?? []).isNotEmpty) ||
-                                  (i.projectBeneficiaries ?? []).isEmpty) {
-                                setState(() {
-                                  selectedFilters = [];
-                                });
-                                blocWrapper.clearEvent();
-                                if (i.household != null) {
-                                  context.read<BednetDistributionBloc>().add(
-                                        BednetDistributionEvent.selectSchool(
-                                          school: i.household!,
-                                        ),
-                                      );
-                                  await context.router.push(
-                                    const BednetHouseholdOverviewWrapperRoute(),
-                                  );
-                                }
-                              } else {
-                                if (i.household != null) {
-                                  context.read<BednetDistributionBloc>().add(
-                                        BednetDistributionEvent.selectSchool(
-                                          school: i.household!,
-                                        ),
-                                      );
-                                  await context.router.push(
-                                    const BednetHouseholdOverviewWrapperRoute(),
-                                  );
-                                }
-                              }
-                              setState(() {
-                                isProximityEnabled = false;
-                              });
-                              searchController.clear();
-                              selectedFilters.clear();
-                              blocWrapper.clearEvent();
+                            onOpenPressed: () {
+                              _openHouseholdFlow(i);
                             },
                           ),
                         );
@@ -348,6 +431,7 @@ class _SearchBeneficiaryPageState
                     // context.read<DigitScannerBloc>().add(
                     //       const DigitScannerEvent.handleScanner(),
                     //     );
+                    BednetHouseholdSession.resetForNewHousehold();
                     final registrationBloc = BeneficiaryRegistrationBloc(
                       BeneficiaryRegistrationState.create(
                         searchQuery: searchHouseholdsState.searchQuery ??

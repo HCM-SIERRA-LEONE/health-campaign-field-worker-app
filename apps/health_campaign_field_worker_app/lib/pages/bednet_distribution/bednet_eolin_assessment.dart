@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/TextTheme/digit_text_theme.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
@@ -7,19 +8,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
 
 import '../../utils/registration_deliver_utils/i18_key_constants.dart' as i18;
+import '../../router/app_router.dart';
 import '../../widgets/registartion_deliver/back_navigation_help_header.dart';
 import '../../widgets/registartion_deliver/localized.dart';
-import 'bednet_inform_household.dart';
 
+@RoutePage()
 class BednetEolinAssessmentPage extends LocalizedStatefulWidget {
   final String eToken;
   final int itnForDelivery;
+  final String? householdClientReferenceId;
+  final String? headIndividualClientReferenceId;
 
   const BednetEolinAssessmentPage({
     super.key,
     super.appLocalizations,
     required this.eToken,
     required this.itnForDelivery,
+    this.householdClientReferenceId,
+    this.headIndividualClientReferenceId,
   });
 
   @override
@@ -46,7 +52,9 @@ class _BednetEolinAssessmentPageState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<BeneficiaryRegistrationBloc>().clearPendingItnEolinAssessment();
+      context
+          .read<BeneficiaryRegistrationBloc>()
+          .clearPendingItnEolinAssessment();
     });
   }
 
@@ -350,16 +358,11 @@ class _BednetEolinAssessmentPageState
       hasOldNets: has,
       returnedNetsCount: has ? _returnedCount : null,
     );
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: bloc,
-          child: BednetInformHouseholdPage(
-            eToken: widget.eToken,
-            itnForDelivery: widget.itnForDelivery,
-            appLocalizations: widget.appLocalizations,
-          ),
-        ),
+    context.router.push(
+      BednetInformHouseholdRoute(
+        eToken: widget.eToken,
+        itnForDelivery: widget.itnForDelivery,
+        appLocalizations: widget.appLocalizations,
       ),
     );
   }

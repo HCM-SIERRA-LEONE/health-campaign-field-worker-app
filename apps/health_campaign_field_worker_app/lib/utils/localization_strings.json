@@ -1192,5 +1192,545 @@
     "locale": "pt_MZ",
     "message": "O número de crianças menores de 5 anos não pode exceder o total de membros do agregado familiar",
     "module": "hcm-household"
+  },
+  {
+    "code": "HOUSEHOLD_SCREEN_TITLE",
+    "locale": "en_MZ",
+    "message": "Household",
+    "module": "hcm-household"
+  },
+  {
+    "code": "HOUSEHOLD_SCREEN_TITLE",
+    "locale": "pt_MZ",
+    "message": "Família",
+    "module": "hcm-household"
+  },
+  {
+    "code": "HOUSEHOLD_HEAD_LABEL",
+    "locale": "en_MZ",
+    "message": "Household Head",
+    "module": "hcm-household"
+  },
+  {
+    "code": "HOUSEHOLD_HEAD_LABEL",
+    "locale": "pt_MZ",
+    "message": "Chefe de família",
+    "module": "hcm-household"
+  },
+  {
+    "code": "MEMBER_COUNT_LABEL",
+    "locale": "en_MZ",
+    "message": "Member Count",
+    "module": "hcm-household"
+  },
+  {
+    "code": "MEMBER_COUNT_LABEL",
+    "locale": "pt_MZ",
+    "message": "Número de membros",
+    "module": "hcm-household"
+  },
+  {
+    "code": "ADMINISTRATIVE_AREA_LABEL",
+    "locale": "en_MZ",
+    "message": "Administrative Area",
+    "module": "hcm-household"
+  },
+  {
+    "code": "ADMINISTRATIVE_AREA_LABEL",
+    "locale": "pt_MZ",
+    "message": "Área administrativa",
+    "module": "hcm-household"
+  },
+  {
+    "code": "NOT_DELIVERED_LABEL",
+    "locale": "en_MZ",
+    "message": "Not Delivered",
+    "module": "hcm-household"
+  },
+  {
+    "code": "NOT_DELIVERED_LABEL",
+    "locale": "pt_MZ",
+    "message": "Não entregue",
+    "module": "hcm-household"
+  },
+  {
+    "code": "DELIVERED_LABEL",
+    "locale": "en_MZ",
+    "message": "Delivered",
+    "module": "hcm-household"
+  },
+  {
+    "code": "DELIVERED_LABEL",
+    "locale": "pt_MZ",
+    "message": "Entregue",
+    "module": "hcm-household"
+  },
+  {
+    "code": "CHILD_LABEL",
+    "locale": "en_MZ",
+    "message": "Child",
+    "module": "hcm-household"
+  },
+  {
+    "code": "CHILD_LABEL",
+    "locale": "pt_MZ",
+    "message": "Criança",
+    "module": "hcm-household"
+  },
+  {
+    "code": "RECORD_ITN_DELIVERY_LABEL",
+    "locale": "en_MZ",
+    "message": "Record ITN Delivery",
+    "module": "hcm-household"
+  },
+  {
+    "code": "RECORD_ITN_DELIVERY_LABEL",
+    "locale": "pt_MZ",
+    "message": "Registar Entrega de MILDA",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ASSESSMENT_LABEL",
+    "locale": "en_MZ",
+    "message": "TB Assessment",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ASSESSMENT_LABEL",
+    "locale": "pt_MZ",
+    "message": "Avaliação de TB",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SCREENED_STATUS_LABEL",
+    "locale": "en_MZ",
+    "message": "Screened",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SCREENED_STATUS_LABEL",
+    "locale": "pt_MZ",
+    "message": "Avaliado",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_PENDING_SCREENING_LABEL",
+    "locale": "en_MZ",
+    "message": "Not Screened",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_PENDING_SCREENING_LABEL",
+    "locale": "pt_MZ",
+    "message": "Não avaliado",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SCREENING_TITLE",
+    "locale": "en_MZ",
+    "message": "Eligibility Assessment",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SCREENING_TITLE",
+    "locale": "pt_MZ",
+    "message": "Avaliação de Elegibilidade",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SCREENING_SUBTITLE",
+    "locale": "en_MZ",
+    "message": "TB Screening",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SCREENING_SUBTITLE",
+    "locale": "pt_MZ",
+    "message": "Rastreio de TB",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q1_COUGH_TWO_WEEKS",
+    "locale": "en_MZ",
+    "message": "Has the child been coughing for two weeks or more?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q1_COUGH_TWO_WEEKS",
+    "locale": "pt_MZ",
+    "message": "A criança tem tossido há duas semanas ou mais?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q2_FEVER_TWO_WEEKS",
+    "locale": "en_MZ",
+    "message": "Has the child had fever for two weeks or more?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q2_FEVER_TWO_WEEKS",
+    "locale": "pt_MZ",
+    "message": "A criança teve febre há duas semanas ou mais?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q3_WEIGHT_LOSS",
+    "locale": "en_MZ",
+    "message": "Is the child losing weight or failing to gain as expected?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q3_WEIGHT_LOSS",
+    "locale": "pt_MZ",
+    "message": "A criança está a perder peso ou a não ganhar como esperado?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q4_TB_CONTACT",
+    "locale": "en_MZ",
+    "message": "Has the child been in contact with anyone confirmed or suspected TB?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q4_TB_CONTACT",
+    "locale": "pt_MZ",
+    "message": "A criança esteve em contacto com alguém com TB confirmada ou suspeita?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q5_NOT_EATING",
+    "locale": "en_MZ",
+    "message": "Is the child not eating well or refusing food?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q5_NOT_EATING",
+    "locale": "pt_MZ",
+    "message": "A criança não come bem ou recusa comida?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q6_LESS_PLAYFUL",
+    "locale": "en_MZ",
+    "message": "Has the child become less playful or less active than usual?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_Q6_LESS_PLAYFUL",
+    "locale": "pt_MZ",
+    "message": "A criança ficou menos brincalhona ou menos activa do que o habitual?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ADDITIONAL_SYMPTOMS_TITLE",
+    "locale": "en_MZ",
+    "message": "Additional Symptoms",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ADDITIONAL_SYMPTOMS_TITLE",
+    "locale": "pt_MZ",
+    "message": "Sintomas Adicionais",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ADDITIONAL_SYMPTOMS_SUBTITLE",
+    "locale": "en_MZ",
+    "message": "Please select all applicable symptoms",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ADDITIONAL_SYMPTOMS_SUBTITLE",
+    "locale": "pt_MZ",
+    "message": "Por favor seleccione todos os sintomas aplicáveis",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SYM_NIGHT_SWEATS",
+    "locale": "en_MZ",
+    "message": "Night Sweats",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SYM_NIGHT_SWEATS",
+    "locale": "pt_MZ",
+    "message": "Suores nocturnos",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SYM_PERSISTENT_FATIGUE",
+    "locale": "en_MZ",
+    "message": "Persistent Fatigue",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SYM_PERSISTENT_FATIGUE",
+    "locale": "pt_MZ",
+    "message": "Fadiga persistente",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SYM_SWOLLEN_LYMPH_NODES",
+    "locale": "en_MZ",
+    "message": "Swollen Lymph Nodes",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SYM_SWOLLEN_LYMPH_NODES",
+    "locale": "pt_MZ",
+    "message": "Gânglios linfáticos inchados",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SELECT_AT_LEAST_ONE_SYMPTOM",
+    "locale": "en_MZ",
+    "message": "Please select at least one symptom",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_SELECT_AT_LEAST_ONE_SYMPTOM",
+    "locale": "pt_MZ",
+    "message": "Por favor seleccione pelo menos um sintoma",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_REFERRAL_TITLE",
+    "locale": "en_MZ",
+    "message": "Referral Details",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_REFERRAL_TITLE",
+    "locale": "pt_MZ",
+    "message": "Detalhes de Referência",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_DATE_OF_REFERRAL_LABEL",
+    "locale": "en_MZ",
+    "message": "Date of Referral*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_DATE_OF_REFERRAL_LABEL",
+    "locale": "pt_MZ",
+    "message": "Data de Referência*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ADMIN_UNIT_LABEL",
+    "locale": "en_MZ",
+    "message": "Administrative Unit*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_ADMIN_UNIT_LABEL",
+    "locale": "pt_MZ",
+    "message": "Unidade Administrativa*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_REFERRED_TO_LABEL",
+    "locale": "en_MZ",
+    "message": "Referred To (Health Facility)*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_REFERRED_TO_LABEL",
+    "locale": "pt_MZ",
+    "message": "Referenciado Para (Unidade Sanitária)*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_REFERRED_BY_LABEL",
+    "locale": "en_MZ",
+    "message": "Referred By*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_REFERRED_BY_LABEL",
+    "locale": "pt_MZ",
+    "message": "Referenciado Por*",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_FACILITY_REQUIRED",
+    "locale": "en_MZ",
+    "message": "Please enter a valid health facility",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_FACILITY_REQUIRED",
+    "locale": "pt_MZ",
+    "message": "Por favor insira uma unidade sanitária válida",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_READY_TO_SUBMIT",
+    "locale": "en_MZ",
+    "message": "Ready to Submit?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_READY_TO_SUBMIT",
+    "locale": "pt_MZ",
+    "message": "Pronto para Submeter?",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_READY_TO_SUBMIT_CONTENT",
+    "locale": "en_MZ",
+    "message": "Make sure you review all details before clicking the Proceed button.",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_READY_TO_SUBMIT_CONTENT",
+    "locale": "pt_MZ",
+    "message": "Certifique-se de rever todos os detalhes antes de clicar no botão Avançar.",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_NO_REFERRAL_NEEDED",
+    "locale": "en_MZ",
+    "message": "No referral required based on screening results.",
+    "module": "hcm-household"
+  },
+  {
+    "code": "TB_NO_REFERRAL_NEEDED",
+    "locale": "pt_MZ",
+    "message": "Não é necessária referência com base nos resultados do rastreio.",
+    "module": "hcm-household"
+  },
+  {
+    "code": "BEDNET_ITN_CURRENT_ROUND_LABEL",
+    "locale": "en_MZ",
+    "message": "Current Round",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_CURRENT_ROUND_LABEL",
+    "locale": "pt_MZ",
+    "message": "Ronda Actual",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_DELIVERY_NO_LABEL",
+    "locale": "en_MZ",
+    "message": "Delivery No.",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_DELIVERY_NO_LABEL",
+    "locale": "pt_MZ",
+    "message": "N.º de entrega",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_COMPLETED_ON_LABEL",
+    "locale": "en_MZ",
+    "message": "Completed On",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_COMPLETED_ON_LABEL",
+    "locale": "pt_MZ",
+    "message": "Concluído em",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_TO_DELIVER_LABEL",
+    "locale": "en_MZ",
+    "message": "To Deliver",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_TO_DELIVER_LABEL",
+    "locale": "pt_MZ",
+    "message": "Por entregar",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_RECORD_DELIVERY_DETAILS_LABEL",
+    "locale": "en_MZ",
+    "message": "Record Delivery Details",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_RECORD_DELIVERY_DETAILS_LABEL",
+    "locale": "pt_MZ",
+    "message": "Registar detalhes da entrega",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_SELECT_RESOURCE_DELIVERED_LABEL",
+    "locale": "en_MZ",
+    "message": "Select the Resource delivered*",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_SELECT_RESOURCE_DELIVERED_LABEL",
+    "locale": "pt_MZ",
+    "message": "Seleccione o recurso entregue*",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_RESOURCE_HEADER_LABEL",
+    "locale": "en_MZ",
+    "message": "Resource",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_RESOURCE_HEADER_LABEL",
+    "locale": "pt_MZ",
+    "message": "Recurso",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_VIEW_SCHOOL_DETAILS_LABEL",
+    "locale": "en_MZ",
+    "message": "View School Details",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_VIEW_SCHOOL_DETAILS_LABEL",
+    "locale": "pt_MZ",
+    "message": "Ver detalhes da escola",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_BACK_TO_SCHOOL_SELECTION_LABEL",
+    "locale": "en_MZ",
+    "message": "Back to School Selection",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_ITN_BACK_TO_SCHOOL_SELECTION_LABEL",
+    "locale": "pt_MZ",
+    "message": "Voltar à selecção da escola",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "ITN_FOR_DELIVERY_LABEL",
+    "locale": "en_MZ",
+    "message": "Number Of ITN For Delivery",
+    "module": "hcm-household"
+  },
+  {
+    "code": "ITN_FOR_DELIVERY_LABEL",
+    "locale": "pt_MZ",
+    "message": "Número de MILDA para entrega",
+    "module": "hcm-household"
+  },
+  {
+    "code": "E_TOKEN_LABEL",
+    "locale": "en_MZ",
+    "message": "E-Token",
+    "module": "hcm-household"
+  },
+  {
+    "code": "E_TOKEN_LABEL",
+    "locale": "pt_MZ",
+    "message": "E-Token",
+    "module": "hcm-household"
   }
 ]

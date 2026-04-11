@@ -11,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/search_households/search_households.dart';
 import 'package:health_campaign_field_worker_app/models/registration_deliver_model/entities/status.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/constants.dart';
-import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/i18_key_constants.dart' as i18;
+import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/i18_key_constants.dart'
+    as i18;
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 
 import '../localized.dart';
@@ -289,63 +290,67 @@ class ViewBeneficiaryCardState extends LocalizedState<ViewBeneficiaryCard> {
     return DigitCard(
         margin: const EdgeInsets.only(top: spacer2, bottom: spacer2),
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 1.8,
-                child: BeneficiaryCard(
-                  description: [
-                    householdMember.household?.address?.doorNo,
-                    householdMember.household?.address?.addressLine1,
-                    householdMember.household?.address?.addressLine2,
-                    householdMember.household?.address?.landmark,
-                    householdMember.household?.address?.city,
-                    householdMember.household?.address?.pincode,
-                  ].whereNotNull().take(2).join(' '),
-                  subtitle: (RegistrationDeliverySingleton().householdType ==
-                          HouseholdType.family)
-                      ? widget.distance != null
-                          ? '${householdMember.members?.length ?? 1} ${householdMember.members?.length == 1 ? localizations.translate(i18.beneficiaryDetails.householdMemberSingular) : localizations.translate(i18.beneficiaryDetails.householdMemberPlural)}\n${((widget.distance!) * 1000).round() > 999 ? '(${((widget.distance!).round())} km)' : '(${((widget.distance!) * 1000).round()} mts) ${localizations.translate(i18.beneficiaryDetails.fromCurrentLocation)}'}'
-                          : '${householdMember.members?.length ?? 1} ${householdMember.members?.length == 1 ? localizations.translate(i18.beneficiaryDetails.householdMemberSingular) : localizations.translate(i18.beneficiaryDetails.householdMemberPlural)}'
-                      : (widget.distance != null)
-                          ? ((widget.distance!) * 1000).round() > 999
-                              ? '(${((widget.distance!).round())} km)'
-                              : '(${((widget.distance!) * 1000).round()} mts) ${localizations.translate(i18.beneficiaryDetails.fromCurrentLocation)}'
-                          : null,
-                  status: (RegistrationDeliverySingleton().householdType ==
-                          HouseholdType.community)
-                      ? null
-                      : getStatus(
-                          tasks ?? [],
-                          householdMember.projectBeneficiaries ?? [],
-                          RegistrationDeliverySingleton().beneficiaryType ==
-                                  BeneficiaryType.individual
-                              ? isNotEligible
-                              : false,
-                          isBeneficiaryRefused),
-                  title: (RegistrationDeliverySingleton().householdType ==
-                          HouseholdType.community)
-                      ? householdMember.household?.address?.buildingName ??
-                          localizations.translate(i18.common.coreCommonNA)
-                      : [
-                          householdMember.headOfHousehold?.name?.givenName ??
-                              localizations.translate(i18.common.coreCommonNA),
-                          householdMember.headOfHousehold?.name?.familyName,
-                        ].whereNotNull().join(''),
+          InkWell(
+            onTap: widget.onOpenPressed,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 1.8,
+                  child: BeneficiaryCard(
+                    description: [
+                      householdMember.household?.address?.doorNo,
+                      householdMember.household?.address?.addressLine1,
+                      householdMember.household?.address?.addressLine2,
+                      householdMember.household?.address?.landmark,
+                      householdMember.household?.address?.city,
+                      householdMember.household?.address?.pincode,
+                    ].whereNotNull().take(2).join(' '),
+                    subtitle: (RegistrationDeliverySingleton().householdType ==
+                            HouseholdType.family)
+                        ? widget.distance != null
+                            ? '${householdMember.members?.length ?? 1} ${householdMember.members?.length == 1 ? localizations.translate(i18.beneficiaryDetails.householdMemberSingular) : localizations.translate(i18.beneficiaryDetails.householdMemberPlural)}\n${((widget.distance!) * 1000).round() > 999 ? '(${((widget.distance!).round())} km)' : '(${((widget.distance!) * 1000).round()} mts) ${localizations.translate(i18.beneficiaryDetails.fromCurrentLocation)}'}'
+                            : '${householdMember.members?.length ?? 1} ${householdMember.members?.length == 1 ? localizations.translate(i18.beneficiaryDetails.householdMemberSingular) : localizations.translate(i18.beneficiaryDetails.householdMemberPlural)}'
+                        : (widget.distance != null)
+                            ? ((widget.distance!) * 1000).round() > 999
+                                ? '(${((widget.distance!).round())} km)'
+                                : '(${((widget.distance!) * 1000).round()} mts) ${localizations.translate(i18.beneficiaryDetails.fromCurrentLocation)}'
+                            : null,
+                    status: (RegistrationDeliverySingleton().householdType ==
+                            HouseholdType.community)
+                        ? null
+                        : getStatus(
+                            tasks ?? [],
+                            householdMember.projectBeneficiaries ?? [],
+                            RegistrationDeliverySingleton().beneficiaryType ==
+                                    BeneficiaryType.individual
+                                ? isNotEligible
+                                : false,
+                            isBeneficiaryRefused),
+                    title: (RegistrationDeliverySingleton().householdType ==
+                            HouseholdType.community)
+                        ? householdMember.household?.address?.buildingName ??
+                            localizations.translate(i18.common.coreCommonNA)
+                        : [
+                            householdMember.headOfHousehold?.name?.givenName ??
+                                localizations
+                                    .translate(i18.common.coreCommonNA),
+                            householdMember.headOfHousehold?.name?.familyName,
+                          ].whereNotNull().join(''),
+                  ),
                 ),
-              ),
-              Flexible(
-                child: DigitButton(
-                  label:
-                      localizations.translate(i18.searchBeneficiary.iconLabel),
-                  onPressed: widget.onOpenPressed,
-                  type: DigitButtonType.secondary,
-                  size: DigitButtonSize.medium,
+                Flexible(
+                  child: DigitButton(
+                    label: localizations
+                        .translate(i18.searchBeneficiary.iconLabel),
+                    onPressed: widget.onOpenPressed,
+                    type: DigitButtonType.secondary,
+                    size: DigitButtonSize.medium,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           if (RegistrationDeliverySingleton().householdType ==
               HouseholdType.family) ...[

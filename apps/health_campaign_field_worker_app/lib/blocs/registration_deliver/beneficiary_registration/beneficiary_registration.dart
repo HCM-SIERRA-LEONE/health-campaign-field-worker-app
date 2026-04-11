@@ -1,6 +1,7 @@
 // GENERATED using mason_cli
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:digit_data_model/data_model.dart';
 import 'package:digit_data_model/utils/typedefs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +10,6 @@ import 'package:health_campaign_field_worker_app/models/registration_deliver_mod
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/typedefs.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 
-
 part 'beneficiary_registration.freezed.dart';
 
 typedef BeneficiaryRegistrationEmitter = Emitter<BeneficiaryRegistrationState>;
@@ -17,6 +17,10 @@ typedef BeneficiaryRegistrationEmitter = Emitter<BeneficiaryRegistrationState>;
 //This bloc is used for registration of Beneficiaries to the project
 class BeneficiaryRegistrationBloc
     extends Bloc<BeneficiaryRegistrationEvent, BeneficiaryRegistrationState> {
+  static const _childrenUnder5FieldKey = 'childrenUnder5';
+  static const _placeholderMemberTypeKey = 'bednetPlaceholderMemberType';
+  static const _placeholderSequenceKey = 'bednetPlaceholderSequence';
+
   final IndividualDataRepository individualRepository;
 
   final HouseholdDataRepository householdRepository;
@@ -330,6 +334,14 @@ class BeneficiaryRegistrationBloc
                 ),
               ),
             );
+
+            await _createPlaceholderHouseholdMembers(
+              household: household,
+              address: address,
+              headIndividual: individual,
+              userUuid: event.userUuid,
+              tag: event.tag,
+            );
           } catch (error) {
             rethrow;
           } finally {
@@ -443,6 +455,14 @@ class BeneficiaryRegistrationBloc
                 createdTime: createdAt,
               ),
             ),
+          );
+
+          await _createPlaceholderHouseholdMembers(
+            household: household,
+            address: address,
+            headIndividual: individual,
+            userUuid: event.userUuid,
+            tag: event.tag,
           );
         } catch (error) {
           rethrow;
@@ -724,13 +744,14 @@ class BeneficiaryRegistrationBloc
             await householdRepository.update(
               merged.copyWith(
                 clientAuditDetails: ClientAuditDetails(
-                  createdBy: value.householdModel.clientAuditDetails?.createdBy ??
+                  createdBy: value
+                          .householdModel.clientAuditDetails?.createdBy ??
                       value.householdModel.auditDetails?.createdBy.toString() ??
                       event.userUuid,
-                  createdTime: value.householdModel.clientAuditDetails
-                          ?.createdTime ??
-                      value.householdModel.auditDetails?.createdTime ??
-                      nowMs,
+                  createdTime:
+                      value.householdModel.clientAuditDetails?.createdTime ??
+                          value.householdModel.auditDetails?.createdTime ??
+                          nowMs,
                   lastModifiedBy: event.userUuid,
                   lastModifiedTime: nowMs,
                 ),
@@ -811,9 +832,7 @@ class BeneficiaryRegistrationBloc
     final existingFields = household.additionalFields?.fields ?? [];
     final filtered = existingFields.where((f) {
       final k = f.key.toLowerCase();
-      return k != 'schoolhead' &&
-          k != 'school_head' &&
-          k != 'headteacher';
+      return k != 'schoolhead' && k != 'school_head' && k != 'headteacher';
     }).toList();
     return household.copyWith(
       additionalFields: HouseholdAdditionalFields(
@@ -829,6 +848,172 @@ class BeneficiaryRegistrationBloc
   getIndividualBeneficiaryClientReferenceId(
       List<IndividualModel> individualModel) {
     return individualModel.map((e) => e.clientReferenceId).toList();
+  }
+
+  int _childrenCountFromHousehold(HouseholdModel household) {
+    final raw = household.additionalFields?.fields
+        .firstWhereOrNull((field) => field.key == _childrenUnder5FieldKey)
+        ?.value
+        ?.toString();
+    return int.tryParse(raw ?? '') ?? 0;
+  }
+
+  Future<void> _createPlaceholderHouseholdMembers({
+    required HouseholdModel household,
+    required AddressModel address,
+    required IndividualModel headIndividual,
+    required String userUuid,
+    String? tag,
+  }) async {
+    final totalMembers = household.memberCount ?? 1;
+    final additionalMembers = totalMembers > 0 ? totalMembers - 1 : 0;
+    if (additionalMembers <= 0) return;
+
+    final childCount =
+        _childrenCountFromHousehold(household).clamp(0, additionalMembers);
+    final tenantId = RegistrationDeliverySingleton().tenantId;
+    final projectId = RegistrationDeliverySingleton().projectId;
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    for (var index = 0; index < additionalMembers; index++) {
+      final isChild = index < childCount;
+      final sequence = isChild ? index + 1 : (index - childCount) + 1;
+      final individualClientReferenceId = IdGen.i.identifier;
+
+      final individual = IndividualModel(
+        clientReferenceId: individualClientReferenceId,
+        tenantId: tenantId,
+        rowVersion: 1,
+        name: NameModel(
+          givenName: isChild ? 'Child $sequence' : 'Member $sequence',
+          familyName: headIndividual.name?.familyName,
+          individualClientReferenceId: individualClientReferenceId,
+          tenantId: tenantId,
+          rowVersion: 1,
+          auditDetails: AuditDetails(
+            createdBy: userUuid,
+            createdTime: now,
+            lastModifiedBy: userUuid,
+            lastModifiedTime: now,
+          ),
+          clientAuditDetails: ClientAuditDetails(
+            createdBy: userUuid,
+            createdTime: now,
+            lastModifiedBy: userUuid,
+            lastModifiedTime: now,
+          ),
+        ),
+        address: [
+          address.copyWith(
+            id: null,
+            relatedClientReferenceId: individualClientReferenceId,
+            auditDetails: AuditDetails(
+              createdBy: userUuid,
+              createdTime: now,
+              lastModifiedBy: userUuid,
+              lastModifiedTime: now,
+            ),
+            clientAuditDetails: ClientAuditDetails(
+              createdBy: userUuid,
+              createdTime: now,
+              lastModifiedBy: userUuid,
+              lastModifiedTime: now,
+            ),
+          ),
+        ],
+        additionalFields: IndividualAdditionalFields(
+          version: 1,
+          fields: [
+            AdditionalField(
+              _placeholderMemberTypeKey,
+              isChild ? 'child' : 'adult',
+            ),
+            AdditionalField(_placeholderSequenceKey, sequence.toString()),
+            AdditionalField(
+              'householdClientReferenceId',
+              household.clientReferenceId,
+            ),
+          ],
+        ),
+        auditDetails: AuditDetails(
+          createdBy: userUuid,
+          createdTime: now,
+          lastModifiedBy: userUuid,
+          lastModifiedTime: now,
+        ),
+        clientAuditDetails: ClientAuditDetails(
+          createdBy: userUuid,
+          createdTime: now,
+          lastModifiedBy: userUuid,
+          lastModifiedTime: now,
+        ),
+      );
+
+      await individualRepository.create(individual);
+
+      if (beneficiaryType == BeneficiaryType.individual) {
+        await projectBeneficiaryRepository.create(
+          ProjectBeneficiaryModel(
+            tag: tag,
+            rowVersion: 1,
+            tenantId: tenantId,
+            clientReferenceId: IdGen.i.identifier,
+            dateOfRegistration: now,
+            projectId: projectId,
+            beneficiaryClientReferenceId: individualClientReferenceId,
+            additionalFields: ProjectBeneficiaryAdditionalFields(
+              version: 1,
+              fields: [
+                AdditionalField(
+                  _placeholderMemberTypeKey,
+                  isChild ? 'child' : 'adult',
+                ),
+              ],
+            ),
+            auditDetails: AuditDetails(
+              createdBy: userUuid,
+              createdTime: now,
+            ),
+            clientAuditDetails: ClientAuditDetails(
+              createdBy: userUuid,
+              createdTime: now,
+              lastModifiedBy: userUuid,
+              lastModifiedTime: now,
+            ),
+          ),
+        );
+      }
+
+      await householdMemberRepository.create(
+        HouseholdMemberModel(
+          householdClientReferenceId: household.clientReferenceId,
+          individualClientReferenceId: individualClientReferenceId,
+          isHeadOfHousehold: false,
+          tenantId: tenantId,
+          rowVersion: 1,
+          clientReferenceId: IdGen.i.identifier,
+          additionalFields: HouseholdMemberAdditionalFields(
+            version: 1,
+            fields: [
+              AdditionalField(
+                _placeholderMemberTypeKey,
+                isChild ? 'child' : 'adult',
+              ),
+            ],
+          ),
+          auditDetails: AuditDetails(
+            createdBy: userUuid,
+            createdTime: now,
+          ),
+          clientAuditDetails: ClientAuditDetails(
+            createdBy: userUuid,
+            createdTime: now,
+            lastModifiedBy: userUuid,
+            lastModifiedTime: now,
+          ),
+        ),
+      );
+    }
   }
 }
 

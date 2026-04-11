@@ -15,7 +15,7 @@ import 'package:health_campaign_field_worker_app/models/entities/additional_fiel
 
 import '../../../blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
 import '../../../blocs/registration_deliver/search_households/search_households.dart';
-import '../../bednet_distribution/bednet_household_review.dart';
+import '../../../router/app_router.dart';
 import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
 import '../../../utils/registration_deliver_utils/i18_key_constants.dart'
     as i18;
@@ -52,7 +52,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
     context
         .read<SearchHouseholdsBloc>()
         .add(const SearchHouseholdsEvent.clear());
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    context.router.popUntilRouteWithName(SearchBeneficiaryRoute.name);
   }
 
   @override
@@ -103,65 +103,145 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                           onPressed: () => _onBackToSearch(context),
                         )
                       else
-                      DigitButton(
-                        label: registrationState.mapOrNull(
-                              editHousehold: (value) => localizations
-                                  .translate(i18.common.coreCommonSave),
-                            ) ??
-                            localizations
-                                .translate(i18.householdDetails.actionLabel),
-                        type: DigitButtonType.primary,
-                        size: DigitButtonSize.large,
-                        mainAxisSize: MainAxisSize.max,
-                        onPressed: () {
-                          form.markAllAsTouched();
-                          // Manually trigger children count cross-field validation
-                          form
-                              .control(_childrenCountKey)
-                              .updateValueAndValidity();
-                          if (!form.valid) return;
-                          bool shouldNavigateNext = false;
+                        DigitButton(
+                          label: registrationState.mapOrNull(
+                                editHousehold: (value) => localizations
+                                    .translate(i18.common.coreCommonSave),
+                              ) ??
+                              localizations
+                                  .translate(i18.householdDetails.actionLabel),
+                          type: DigitButtonType.primary,
+                          size: DigitButtonSize.large,
+                          mainAxisSize: MainAxisSize.max,
+                          onPressed: () {
+                            form.markAllAsTouched();
+                            // Manually trigger children count cross-field validation
+                            form
+                                .control(_childrenCountKey)
+                                .updateValueAndValidity();
+                            if (!form.valid) return;
+                            bool shouldNavigateNext = false;
 
-                          final memberCount =
-                              form.control(_memberCountKey).value as int;
-                          final childrenCount =
-                              form.control(_childrenCountKey).value as int;
-                          final dateOfRegistration = form
-                              .control(_dateOfRegistrationKey)
-                              .value as DateTime;
-                          final headName = form
-                              .control(_nameOfIndividualKey)
-                              .value as String;
-                          final mobile =
-                              form.control(_mobileNumberKey).value as String?;
+                            final memberCount =
+                                form.control(_memberCountKey).value as int;
+                            final childrenCount =
+                                form.control(_childrenCountKey).value as int;
+                            final dateOfRegistration = form
+                                .control(_dateOfRegistrationKey)
+                                .value as DateTime;
+                            final headName = form
+                                .control(_nameOfIndividualKey)
+                                .value as String;
+                            final mobile =
+                                form.control(_mobileNumberKey).value as String?;
 
-                          registrationState.maybeWhen(
-                            orElse: () {},
-                            create: (
-                              addressModel,
-                              householdModel,
-                              individualModel,
-                              projectBeneficiaryModel,
-                              registrationDate,
-                              searchQuery,
-                              loading,
-                              isHeadOfHousehold,
-                            ) {
-                              final createdAt =
-                                  context.millisecondsSinceEpoch();
-                              final userUuid = RegistrationDeliverySingleton()
-                                      .loggedInUserUuid ??
-                                  '';
+                            registrationState.maybeWhen(
+                              orElse: () {},
+                              create: (
+                                addressModel,
+                                householdModel,
+                                individualModel,
+                                projectBeneficiaryModel,
+                                registrationDate,
+                                searchQuery,
+                                loading,
+                                isHeadOfHousehold,
+                              ) {
+                                final createdAt =
+                                    context.millisecondsSinceEpoch();
+                                final userUuid = RegistrationDeliverySingleton()
+                                        .loggedInUserUuid ??
+                                    '';
 
-                              final clientRefId =
-                                  individualModel?.clientReferenceId ??
-                                      IdGen.i.identifier;
+                                final clientRefId =
+                                    individualModel?.clientReferenceId ??
+                                        IdGen.i.identifier;
 
-                              var household = householdModel ??
-                                  HouseholdModel(
+                                var household = householdModel ??
+                                    HouseholdModel(
+                                      tenantId: RegistrationDeliverySingleton()
+                                          .tenantId,
+                                      clientReferenceId: IdGen.i.identifier,
+                                      rowVersion: 1,
+                                      auditDetails: AuditDetails(
+                                        createdBy: userUuid,
+                                        createdTime: createdAt,
+                                        lastModifiedBy: userUuid,
+                                        lastModifiedTime: createdAt,
+                                      ),
+                                      clientAuditDetails: ClientAuditDetails(
+                                        createdBy: userUuid,
+                                        createdTime: createdAt,
+                                        lastModifiedBy: userUuid,
+                                        lastModifiedTime: createdAt,
+                                      ),
+                                    );
+
+                                var existingFields =
+                                    household.additionalFields?.fields ?? [];
+                                var fieldMap = {
+                                  for (var f in existingFields) f.key: f
+                                };
+                                if (!fieldMap.containsKey(
+                                    AdditionalFieldsType.eToken.toValue())) {
+                                  fieldMap[AdditionalFieldsType.eToken
+                                          .toValue()] =
+                                      AdditionalField(
+                                          AdditionalFieldsType.eToken.toValue(),
+                                          '');
+                                }
+                                fieldMap[
+                                    AdditionalFieldsType.latitude
+                                        .toValue()] = AdditionalField(
+                                    AdditionalFieldsType.latitude.toValue(),
+                                    addressModel?.latitude?.toString() ?? '');
+                                fieldMap[
+                                    AdditionalFieldsType.longitude
+                                        .toValue()] = AdditionalField(
+                                    AdditionalFieldsType.longitude.toValue(),
+                                    addressModel?.longitude?.toString() ?? '');
+                                fieldMap['childrenUnder5'] = AdditionalField(
+                                    'childrenUnder5', childrenCount.toString());
+                                final newAdditionalFields =
+                                    HouseholdAdditionalFields(
+                                  version:
+                                      household.additionalFields?.version ?? 1,
+                                  fields: fieldMap.values.toList(),
+                                );
+
+                                household = household.copyWith(
+                                  tenantId:
+                                      RegistrationDeliverySingleton().tenantId,
+                                  memberCount: memberCount,
+                                  address: addressModel,
+                                  latitude: addressModel?.latitude,
+                                  longitude: addressModel?.longitude,
+                                  additionalFields: newAdditionalFields,
+                                );
+
+                                final individual = IndividualModel(
+                                  clientReferenceId: clientRefId,
+                                  tenantId:
+                                      RegistrationDeliverySingleton().tenantId,
+                                  rowVersion: 1,
+                                  mobileNumber: mobile,
+                                  auditDetails: AuditDetails(
+                                    createdBy: userUuid,
+                                    createdTime: createdAt,
+                                    lastModifiedBy: userUuid,
+                                    lastModifiedTime: createdAt,
+                                  ),
+                                  clientAuditDetails: ClientAuditDetails(
+                                    createdBy: userUuid,
+                                    createdTime: createdAt,
+                                    lastModifiedBy: userUuid,
+                                    lastModifiedTime: createdAt,
+                                  ),
+                                  name: NameModel(
+                                    givenName: headName.trim(),
+                                    individualClientReferenceId: clientRefId,
                                     tenantId: RegistrationDeliverySingleton()
                                         .tenantId,
-                                    clientReferenceId: IdGen.i.identifier,
                                     rowVersion: 1,
                                     auditDetails: AuditDetails(
                                       createdBy: userUuid,
@@ -175,113 +255,47 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                       lastModifiedBy: userUuid,
                                       lastModifiedTime: createdAt,
                                     ),
-                                  );
-
-                              var existingFields = household.additionalFields?.fields ?? [];
-                              var fieldMap = { for (var f in existingFields) f.key : f };
-                              if (!fieldMap.containsKey(AdditionalFieldsType.eToken.toValue())) {
-                                fieldMap[AdditionalFieldsType.eToken.toValue()] = AdditionalField(AdditionalFieldsType.eToken.toValue(), '');
-                              }
-                              fieldMap[AdditionalFieldsType.latitude.toValue()] = AdditionalField(AdditionalFieldsType.latitude.toValue(), addressModel?.latitude?.toString() ?? '');
-                              fieldMap[AdditionalFieldsType.longitude.toValue()] = AdditionalField(AdditionalFieldsType.longitude.toValue(), addressModel?.longitude?.toString() ?? '');
-                              fieldMap['childrenUnder5'] = AdditionalField('childrenUnder5', childrenCount.toString());
-                              final newAdditionalFields = HouseholdAdditionalFields(
-                                version: household.additionalFields?.version ?? 1,
-                                fields: fieldMap.values.toList(),
-                              );
-
-                              household = household.copyWith(
-                                tenantId:
-                                    RegistrationDeliverySingleton().tenantId,
-                                memberCount: memberCount,
-                                address: addressModel,
-                                latitude: addressModel?.latitude,
-                                longitude: addressModel?.longitude,
-                                additionalFields: newAdditionalFields,
-                              );
-
-                              final individual = IndividualModel(
-                                clientReferenceId: clientRefId,
-                                tenantId:
-                                    RegistrationDeliverySingleton().tenantId,
-                                rowVersion: 1,
-                                mobileNumber: mobile,
-                                auditDetails: AuditDetails(
-                                  createdBy: userUuid,
-                                  createdTime: createdAt,
-                                  lastModifiedBy: userUuid,
-                                  lastModifiedTime: createdAt,
-                                ),
-                                clientAuditDetails: ClientAuditDetails(
-                                  createdBy: userUuid,
-                                  createdTime: createdAt,
-                                  lastModifiedBy: userUuid,
-                                  lastModifiedTime: createdAt,
-                                ),
-                                name: NameModel(
-                                  givenName: headName.trim(),
-                                  individualClientReferenceId: clientRefId,
-                                  tenantId:
-                                      RegistrationDeliverySingleton().tenantId,
-                                  rowVersion: 1,
-                                  auditDetails: AuditDetails(
-                                    createdBy: userUuid,
-                                    createdTime: createdAt,
-                                    lastModifiedBy: userUuid,
-                                    lastModifiedTime: createdAt,
                                   ),
-                                  clientAuditDetails: ClientAuditDetails(
-                                    createdBy: userUuid,
-                                    createdTime: createdAt,
-                                    lastModifiedBy: userUuid,
-                                    lastModifiedTime: createdAt,
-                                  ),
-                                ),
-                              );
+                                );
 
-                              bloc.add(
-                                BeneficiaryRegistrationEvent
-                                    .saveIndividualDetails(
-                                  model: individual,
-                                  isHeadOfHousehold: true,
-                                ),
-                              );
-                              bloc.add(
-                                BeneficiaryRegistrationSaveHouseholdDetailsEvent(
-                                  household: household,
-                                  registrationDate: dateOfRegistration,
-                                ),
-                              );
-                              shouldNavigateNext = true;
-                            },
-                          );
-
-                          if (shouldNavigateNext) {
-                            final memberCount =
-                                form.control(_memberCountKey).value as int;
-                            final headName = (form
-                                    .control(_nameOfIndividualKey)
-                                    .value as String)
-                                .trim();
-                            final mobile = (form.control(_mobileNumberKey).value
-                                    as String?)
-                                ?.trim();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider.value(
-                                  value: bloc,
-                                  child: BednetHouseholdReviewPage(
-                                    headName: headName,
-                                    memberCount: memberCount,
-                                    childrenCount: childrenCount,
-                                    mobileNumber: mobile,
+                                bloc.add(
+                                  BeneficiaryRegistrationEvent
+                                      .saveIndividualDetails(
+                                    model: individual,
+                                    isHeadOfHousehold: true,
                                   ),
-                                ),
-                              ),
+                                );
+                                bloc.add(
+                                  BeneficiaryRegistrationSaveHouseholdDetailsEvent(
+                                    household: household,
+                                    registrationDate: dateOfRegistration,
+                                  ),
+                                );
+                                shouldNavigateNext = true;
+                              },
                             );
-                          }
-                        },
-                      ),
+
+                            if (shouldNavigateNext) {
+                              final memberCount =
+                                  form.control(_memberCountKey).value as int;
+                              final headName = (form
+                                      .control(_nameOfIndividualKey)
+                                      .value as String)
+                                  .trim();
+                              final mobile = (form
+                                      .control(_mobileNumberKey)
+                                      .value as String?)
+                                  ?.trim();
+                              context.router.push(
+                                BednetHouseholdSummaryRoute(
+                                  headName: headName,
+                                  memberCount: memberCount,
+                                  mobileNumber: mobile,
+                                ),
+                              );
+                            }
+                          },
+                        ),
                     ]),
                 slivers: [
                   SliverToBoxAdapter(
@@ -417,7 +431,8 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                             },
                             builder: (field) => LabeledField(
                               label: localizations.translate(
-                                i18.householdDetails.noOfChildrenBelow5YearsLabel,
+                                i18.householdDetails
+                                    .noOfChildrenBelow5YearsLabel,
                               ),
                               isRequired: true,
                               child: DigitNumericFormInput(
@@ -468,8 +483,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
     final registrationDate = state.mapOrNull(
       editHousehold: (value) => value.registrationDate,
       create: (value) => DateTime.now(),
-      persisted: (value) =>
-          value.registrationDate ?? DateTime.now(),
+      persisted: (value) => value.registrationDate ?? DateTime.now(),
     );
 
     // Read persisted childrenUnder5 from additionalFields (if editing)

@@ -21,6 +21,7 @@ const deliverInterventionShowcase = DeliverInterventionShowcase();
 const checklist = Checklist();
 const clfLocationShowCase = CLFLocationShowcase();
 const clfDetailsShowcase = CLFDetailsShowcase();
+const tbAssessment = TbAssessment();
 
 class Common {
   const Common();
@@ -224,6 +225,14 @@ class BeneficiaryDetails {
   String get beneficiaryCycle => 'BENEFICIARY_DETAILS_CYCLE';
 
   String get currentCycleLabel => 'BENEFICIARY_DETAILS_CURRENT_CYCLE_LABEL';
+
+  String get currentRoundLabel => 'BEDNET_ITN_CURRENT_ROUND_LABEL';
+
+  String get deliveryNoLabel => 'BEDNET_ITN_DELIVERY_NO_LABEL';
+
+  String get completedOnLabel => 'BEDNET_ITN_COMPLETED_ON_LABEL';
+
+  String get toDeliverLabel => 'BEDNET_ITN_TO_DELIVER_LABEL';
 
   String get fromCurrentLocation => 'FROM_CURRENT_LOCATION';
 
@@ -501,6 +510,21 @@ class HouseholdDetails {
   String get memberCountError => 'MEMBER_COUNT_ERROR';
 
   String get typeOfStructure => 'TYPE_OF_STRUCTURE';
+
+  // Household overview screen
+  String get householdScreenTitle => 'HOUSEHOLD_SCREEN_TITLE';
+  String get householdHeadLabel => 'HOUSEHOLD_HEAD_LABEL';
+  String get memberCountLabel => 'MEMBER_COUNT_LABEL';
+  String get administrativeAreaLabel => 'ADMINISTRATIVE_AREA_LABEL';
+  String get notDeliveredLabel => 'NOT_DELIVERED_LABEL';
+  String get deliveredLabel => 'DELIVERED_LABEL';
+  String get childLabel => 'CHILD_LABEL';
+  String get recordItnDelivery => 'RECORD_ITN_DELIVERY_LABEL';
+  String get tbAssessmentLabel => 'TB_ASSESSMENT_LABEL';
+  String get tbScreenedStatus => 'TB_SCREENED_STATUS_LABEL';
+  String get tbPendingScreening => 'TB_PENDING_SCREENING_LABEL';
+  String get itnForDeliveryLabel => 'ITN_FOR_DELIVERY_LABEL';
+  String get eTokenLabel => 'E_TOKEN_LABEL';
 }
 
 class HouseholdOverView {
@@ -667,6 +691,14 @@ class DeliverIntervention {
   String get deliveryDetailsLabel =>
       'DELIVER_INTERVENTION_DELIVERY_DETAILS_LABEL';
 
+  String get recordDeliveryDetailsLabel =>
+      'BEDNET_ITN_RECORD_DELIVERY_DETAILS_LABEL';
+
+  String get selectResourceDeliveredLabel =>
+      'BEDNET_ITN_SELECT_RESOURCE_DELIVERED_LABEL';
+
+  String get resourceHeaderLabel => 'BEDNET_ITN_RESOURCE_HEADER_LABEL';
+
   String get idTypeText => 'DELIVER_INTERVENTION_ID_TYPE_TEXT';
 
   String get idNumberText => 'DELIVER_INTERVENTION_ID_NUMBER_TEXT';
@@ -679,6 +711,11 @@ class DeliverIntervention {
   String get dialogTitle => 'DELIVER_INTERVENTION_DIALOG_TITLE';
 
   String get dialogContent => 'DELIVER_INTERVENTION_DIALOG_CONTENT';
+
+  String get viewSchoolDetails => 'BEDNET_ITN_VIEW_SCHOOL_DETAILS_LABEL';
+
+  String get backToSchoolSelection =>
+      'BEDNET_ITN_BACK_TO_SCHOOL_SELECTION_LABEL';
 
   String get didYouObserveAdvEventsTitle =>
       'DID_YOU_OBSERVE_ADVERSE_EVENTS_TITLE';
@@ -1142,4 +1179,38 @@ class BednetDistribution {
   String get informSuccessETokenLabel => 'BEDNET_INFORM_SUCCESS_ETOKEN_LABEL';
 
   String get informSuccessMessage => 'BEDNET_INFORM_SUCCESS_MESSAGE';
+}
+
+class TbAssessment {
+  const TbAssessment();
+
+  String get screeningTitle => 'TB_SCREENING_TITLE';
+  String get screeningSubtitle => 'TB_SCREENING_SUBTITLE';
+
+  // Screening questions
+  String get q1 => 'TB_Q1_COUGH_TWO_WEEKS';
+  String get q2 => 'TB_Q2_FEVER_TWO_WEEKS';
+  String get q3 => 'TB_Q3_WEIGHT_LOSS';
+  String get q4 => 'TB_Q4_TB_CONTACT';
+  String get q5 => 'TB_Q5_NOT_EATING';
+  String get q6 => 'TB_Q6_LESS_PLAYFUL';
+
+  // Additional symptoms
+  String get additionalSymptomsTitle => 'TB_ADDITIONAL_SYMPTOMS_TITLE';
+  String get additionalSymptomsSubtitle => 'TB_ADDITIONAL_SYMPTOMS_SUBTITLE';
+  String get symNightSweats => 'TB_SYM_NIGHT_SWEATS';
+  String get symFatigue => 'TB_SYM_PERSISTENT_FATIGUE';
+  String get symSwollenNodes => 'TB_SYM_SWOLLEN_LYMPH_NODES';
+  String get selectAtLeastOneSymptom => 'TB_SELECT_AT_LEAST_ONE_SYMPTOM';
+
+  // Referral
+  String get referralTitle => 'TB_REFERRAL_TITLE';
+  String get dateOfReferral => 'TB_DATE_OF_REFERRAL_LABEL';
+  String get adminUnit => 'TB_ADMIN_UNIT_LABEL';
+  String get referredTo => 'TB_REFERRED_TO_LABEL';
+  String get referredBy => 'TB_REFERRED_BY_LABEL';
+  String get facilityRequired => 'TB_FACILITY_REQUIRED';
+  String get readyToSubmit => 'TB_READY_TO_SUBMIT';
+  String get readyToSubmitContent => 'TB_READY_TO_SUBMIT_CONTENT';
+  String get noReferralNeeded => 'TB_NO_REFERRAL_NEEDED';
 }
