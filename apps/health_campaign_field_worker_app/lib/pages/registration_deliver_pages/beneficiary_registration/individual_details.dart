@@ -212,188 +212,192 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                                   return;
                                 },
                                 create: (
-                                addressModel,
-                                householdModel,
-                                individualModel,
-                                projectBeneficiaryModel,
-                                registrationDate,
-                                searchQuery,
-                                loading,
-                                isHeadOfHousehold,
-                              ) async {
-                                final individual = _getIndividualModel(
-                                  context,
-                                  form: form,
-                                  oldIndividual: null,
-                                );
+                                  addressModel,
+                                  householdModel,
+                                  individualModel,
+                                  projectBeneficiaryModel,
+                                  registrationDate,
+                                  searchQuery,
+                                  loading,
+                                  isHeadOfHousehold,
+                                ) async {
+                                  final individual = _getIndividualModel(
+                                    context,
+                                    form: form,
+                                    oldIndividual: null,
+                                  );
 
-                                final boundary =
-                                    RegistrationDeliverySingleton().boundary;
+                                  final boundary =
+                                      RegistrationDeliverySingleton().boundary;
 
-                                bloc.add(
-                                  BeneficiaryRegistrationSaveIndividualDetailsEvent(
-                                    model: individual,
-                                    isHeadOfHousehold: widget.isHeadOfHousehold,
-                                  ),
-                                );
-                                final scannerBloc =
-                                    context.read<DigitScannerBloc>();
-                                scannerBloc.add(
-                                  const DigitScannerEvent.handleScanner(),
-                                );
-
-                                if (scannerBloc.state.duplicate) {
-                                  Toast.showToast(context,
-                                      message: localizations.translate(
-                                        i18.deliverIntervention
-                                            .resourceAlreadyScanned,
-                                      ),
-                                      type: ToastType.error);
-                                } else {
-                                  clickedStatus.value = true;
+                                  bloc.add(
+                                    BeneficiaryRegistrationSaveIndividualDetailsEvent(
+                                      model: individual,
+                                      isHeadOfHousehold:
+                                          widget.isHeadOfHousehold,
+                                    ),
+                                  );
                                   final scannerBloc =
                                       context.read<DigitScannerBloc>();
                                   scannerBloc.add(
                                     const DigitScannerEvent.handleScanner(),
                                   );
-                                  bloc.add(
-                                    BeneficiaryRegistrationSummaryEvent(
-                                      projectId: projectId!,
-                                      userUuid: userId!,
-                                      boundary: boundary!,
-                                      tag: scannerBloc.state.qrCodes.isNotEmpty
-                                          ? scannerBloc.state.qrCodes.first
-                                          : null,
-                                    ),
-                                  );
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => BlocProvider.value(
-                                        value: bloc,
-                                        child: const SummaryPage(),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                              editIndividual: (
-                                householdModel,
-                                individualModel,
-                                addressModel,
-                                projectBeneficiaryModel,
-                                loading,
-                              ) {
-                                final scannerBloc =
-                                    context.read<DigitScannerBloc>();
-                                scannerBloc.add(
-                                  const DigitScannerEvent.handleScanner(),
-                                );
-                                final individual = _getIndividualModel(
-                                  context,
-                                  form: form,
-                                  oldIndividual: individualModel,
-                                );
-                                final tag = scannerBloc.state.qrCodes.isNotEmpty
-                                    ? scannerBloc.state.qrCodes.first
-                                    : null;
 
-                                if (tag != null &&
-                                    tag != projectBeneficiaryModel?.tag &&
-                                    scannerBloc.state.duplicate) {
-                                  Toast.showToast(context,
-                                      message: localizations.translate(
-                                        i18.deliverIntervention
-                                            .resourceAlreadyScanned,
-                                      ),
-                                      type: ToastType.error);
-                                } else {
-                                  bloc.add(
-                                    BeneficiaryRegistrationUpdateIndividualDetailsEvent(
-                                      addressModel: addressModel,
-                                      householdModel: householdModel,
-                                      model: individual.copyWith(
-                                        clientAuditDetails: (individual
-                                                        .clientAuditDetails
-                                                        ?.createdBy !=
-                                                    null &&
-                                                individual.clientAuditDetails
-                                                        ?.createdTime !=
-                                                    null)
-                                            ? ClientAuditDetails(
-                                                createdBy: individual
-                                                    .clientAuditDetails!
-                                                    .createdBy,
-                                                createdTime: individual
-                                                    .clientAuditDetails!
-                                                    .createdTime,
-                                                lastModifiedBy:
-                                                    RegistrationDeliverySingleton()
-                                                        .loggedInUserUuid,
-                                                lastModifiedTime: context
-                                                    .millisecondsSinceEpoch(),
-                                              )
-                                            : null,
-                                      ),
-                                      tag: scannerBloc.state.qrCodes.isNotEmpty
-                                          ? scannerBloc.state.qrCodes.first
-                                          : null,
-                                    ),
-                                  );
-                                }
-                              },
-                              addMember: (
-                                addressModel,
-                                householdModel,
-                                loading,
-                                isHeadFromState,
-                              ) {
-                                final individual = _getIndividualModel(
-                                  context,
-                                  form: form,
-                                );
-
-                                if (context.mounted) {
-                                  final scannerBloc =
-                                      context.read<DigitScannerBloc>();
-                                  scannerBloc.add(
-                                    const DigitScannerEvent.handleScanner(),
-                                  );
                                   if (scannerBloc.state.duplicate) {
-                                    Toast.showToast(
-                                      context,
-                                      message: localizations.translate(
-                                        i18.deliverIntervention
-                                            .resourceAlreadyScanned,
-                                      ),
-                                      type: ToastType.error,
-                                    );
+                                    Toast.showToast(context,
+                                        message: localizations.translate(
+                                          i18.deliverIntervention
+                                              .resourceAlreadyScanned,
+                                        ),
+                                        type: ToastType.error);
                                   } else {
+                                    clickedStatus.value = true;
+                                    final scannerBloc =
+                                        context.read<DigitScannerBloc>();
+                                    scannerBloc.add(
+                                      const DigitScannerEvent.handleScanner(),
+                                    );
                                     bloc.add(
-                                      BeneficiaryRegistrationAddMemberEvent(
-                                        beneficiaryType:
-                                            RegistrationDeliverySingleton()
-                                                .beneficiaryType!,
-                                        householdModel: householdModel,
-                                        individualModel: individual,
-                                        addressModel: addressModel,
-                                        userUuid:
-                                            RegistrationDeliverySingleton()
-                                                .loggedInUserUuid!,
-                                        projectId:
-                                            RegistrationDeliverySingleton()
-                                                .projectId!,
+                                      BeneficiaryRegistrationSummaryEvent(
+                                        projectId: projectId!,
+                                        userUuid: userId!,
+                                        boundary: boundary!,
                                         tag: scannerBloc
                                                 .state.qrCodes.isNotEmpty
                                             ? scannerBloc.state.qrCodes.first
                                             : null,
-                                        isHeadOfHousehold: isHeadFromState ||
-                                            widget.isHeadOfHousehold,
+                                      ),
+                                    );
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => BlocProvider.value(
+                                          value: bloc,
+                                          child: const SummaryPage(),
+                                        ),
                                       ),
                                     );
                                   }
-                                }
-                              },
-                            );
+                                },
+                                editIndividual: (
+                                  householdModel,
+                                  individualModel,
+                                  addressModel,
+                                  projectBeneficiaryModel,
+                                  loading,
+                                ) {
+                                  final scannerBloc =
+                                      context.read<DigitScannerBloc>();
+                                  scannerBloc.add(
+                                    const DigitScannerEvent.handleScanner(),
+                                  );
+                                  final individual = _getIndividualModel(
+                                    context,
+                                    form: form,
+                                    oldIndividual: individualModel,
+                                  );
+                                  final tag =
+                                      scannerBloc.state.qrCodes.isNotEmpty
+                                          ? scannerBloc.state.qrCodes.first
+                                          : null;
+
+                                  if (tag != null &&
+                                      tag != projectBeneficiaryModel?.tag &&
+                                      scannerBloc.state.duplicate) {
+                                    Toast.showToast(context,
+                                        message: localizations.translate(
+                                          i18.deliverIntervention
+                                              .resourceAlreadyScanned,
+                                        ),
+                                        type: ToastType.error);
+                                  } else {
+                                    bloc.add(
+                                      BeneficiaryRegistrationUpdateIndividualDetailsEvent(
+                                        addressModel: addressModel,
+                                        householdModel: householdModel,
+                                        model: individual.copyWith(
+                                          clientAuditDetails: (individual
+                                                          .clientAuditDetails
+                                                          ?.createdBy !=
+                                                      null &&
+                                                  individual.clientAuditDetails
+                                                          ?.createdTime !=
+                                                      null)
+                                              ? ClientAuditDetails(
+                                                  createdBy: individual
+                                                      .clientAuditDetails!
+                                                      .createdBy,
+                                                  createdTime: individual
+                                                      .clientAuditDetails!
+                                                      .createdTime,
+                                                  lastModifiedBy:
+                                                      RegistrationDeliverySingleton()
+                                                          .loggedInUserUuid,
+                                                  lastModifiedTime: context
+                                                      .millisecondsSinceEpoch(),
+                                                )
+                                              : null,
+                                        ),
+                                        tag: scannerBloc
+                                                .state.qrCodes.isNotEmpty
+                                            ? scannerBloc.state.qrCodes.first
+                                            : null,
+                                      ),
+                                    );
+                                  }
+                                },
+                                addMember: (
+                                  addressModel,
+                                  householdModel,
+                                  loading,
+                                  isHeadFromState,
+                                ) {
+                                  final individual = _getIndividualModel(
+                                    context,
+                                    form: form,
+                                  );
+
+                                  if (context.mounted) {
+                                    final scannerBloc =
+                                        context.read<DigitScannerBloc>();
+                                    scannerBloc.add(
+                                      const DigitScannerEvent.handleScanner(),
+                                    );
+                                    if (scannerBloc.state.duplicate) {
+                                      Toast.showToast(
+                                        context,
+                                        message: localizations.translate(
+                                          i18.deliverIntervention
+                                              .resourceAlreadyScanned,
+                                        ),
+                                        type: ToastType.error,
+                                      );
+                                    } else {
+                                      bloc.add(
+                                        BeneficiaryRegistrationAddMemberEvent(
+                                          beneficiaryType:
+                                              RegistrationDeliverySingleton()
+                                                  .beneficiaryType!,
+                                          householdModel: householdModel,
+                                          individualModel: individual,
+                                          addressModel: addressModel,
+                                          userUuid:
+                                              RegistrationDeliverySingleton()
+                                                  .loggedInUserUuid!,
+                                          projectId:
+                                              RegistrationDeliverySingleton()
+                                                  .projectId!,
+                                          tag: scannerBloc
+                                                  .state.qrCodes.isNotEmpty
+                                              ? scannerBloc.state.qrCodes.first
+                                              : null,
+                                          isHeadOfHousehold: isHeadFromState ||
+                                              widget.isHeadOfHousehold,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                              );
                             }
                           },
                         );
@@ -467,9 +471,9 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                             ),
                           ],
                         ),
-if (!widget.isHeadOfHousehold)
+                        if (!widget.isHeadOfHousehold)
                           individualDetailsShowcaseData.dateOfBirth.buildWith(
-                            child: DigitDobPicker(
+                            child: _RequiredDigitDobPicker(
                               datePickerFormControl: _dobKey,
                               datePickerLabel: localizations.translate(
                                 i18.individualDetails.dobLabelText,
@@ -505,7 +509,9 @@ if (!widget.isHeadOfHousehold)
                                     if ((age.years == 0 && age.months == 0) ||
                                         (age.months > 11) ||
                                         (age.years >= 150 && age.months >= 0)) {
-                                      form.control(_dobKey).setErrors({'': true});
+                                      form
+                                          .control(_dobKey)
+                                          .setErrors({'': true});
                                     } else {
                                       form.control(_dobKey).value = value;
                                       form.control(_dobKey).removeError('');
@@ -560,41 +566,41 @@ if (!widget.isHeadOfHousehold)
                                   .translate(i18.common.corecommonRequired)
                               : null,
                         ),
-                        if(widget.isHeadOfHousehold)
-                        individualDetailsShowcaseData.mobile.buildWith(
-                          child: ReactiveWrapperField(
-                            formControlName: _mobileNumberKey,
-                            validationMessages: {
-                              'maxLength': (object) => localizations.translate(
-                                  i18.individualDetails
-                                      .mobileNumberLengthValidationMessage),
-                              'minLength': (object) => localizations.translate(
-                                  i18.individualDetails
-                                      .mobileNumberLengthValidationMessage),
-                            },
-                            builder: (field) => LabeledField(
-                              label: localizations.translate(
-                                i18.individualDetails.mobileNumberLabelText,
-                              ),
-                              child: DigitTextFormInput(
-                                keyboardType: TextInputType.number,
-                                maxLength: 10,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                initialValue:
-                                    form.control(_mobileNumberKey).value,
-                                onChange: (value) {
-                                  form.control(_mobileNumberKey).value = value;
-                                },
-                                errorMessage: field.errorText,
+                        if (widget.isHeadOfHousehold)
+                          individualDetailsShowcaseData.mobile.buildWith(
+                            child: ReactiveWrapperField(
+                              formControlName: _mobileNumberKey,
+                              validationMessages: {
+                                'maxLength': (object) =>
+                                    localizations.translate(i18
+                                        .individualDetails
+                                        .mobileNumberLengthValidationMessage),
+                                'minLength': (object) =>
+                                    localizations.translate(i18
+                                        .individualDetails
+                                        .mobileNumberLengthValidationMessage),
+                              },
+                              builder: (field) => LabeledField(
+                                label: localizations.translate(
+                                  i18.individualDetails.mobileNumberLabelText,
+                                ),
+                                child: DigitTextFormInput(
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 10,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  initialValue:
+                                      form.control(_mobileNumberKey).value,
+                                  onChange: (value) {
+                                    form.control(_mobileNumberKey).value =
+                                        value;
+                                  },
+                                  errorMessage: field.errorText,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        
-                                
-                        
                       ]),
                 ),
               ],
@@ -770,5 +776,262 @@ if (!widget.isHeadOfHousehold)
         : null;
 
     return date;
+  }
+}
+
+class _RequiredDigitDobPicker extends StatefulWidget {
+  final String datePickerFormControl;
+  final bool readOnly;
+  final String datePickerLabel;
+  final String ageFieldLabel;
+  final String yearsHintLabel;
+  final String monthsHintLabel;
+  final String separatorLabel;
+  final String? initialValue;
+  final String yearsAndMonthsErrMsg;
+  final String cancelText;
+  final String confirmText;
+  final String? errorMessage;
+  final String? ageErrorMessage;
+  final String? monthErrorMessage;
+  final DateTime? initialDate;
+  final void Function(DateTime?)? onChangeOfFormControl;
+
+  const _RequiredDigitDobPicker({
+    required this.datePickerFormControl,
+    required this.datePickerLabel,
+    required this.ageFieldLabel,
+    required this.yearsHintLabel,
+    required this.monthsHintLabel,
+    required this.separatorLabel,
+    required this.yearsAndMonthsErrMsg,
+    required this.cancelText,
+    required this.confirmText,
+    this.readOnly = false,
+    this.initialValue,
+    this.errorMessage,
+    this.ageErrorMessage,
+    this.monthErrorMessage,
+    this.initialDate,
+    this.onChangeOfFormControl,
+  });
+
+  @override
+  State<_RequiredDigitDobPicker> createState() =>
+      _RequiredDigitDobPickerState();
+}
+
+class _RequiredDigitDobPickerState extends State<_RequiredDigitDobPicker> {
+  final yearController = TextEditingController();
+  final monthController = TextEditingController();
+  DateTime? selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialValue != null) {
+      selectedDate = DigitDateUtils.getFormattedDateToDateTime(
+        widget.initialValue.toString(),
+      );
+      _setAgeFromDate(selectedDate);
+    }
+  }
+
+  void _setAgeFromDate(DateTime? date) {
+    if (date == null) return;
+
+    final now = DateTime.now();
+    int years = now.year - date.year;
+    int months = now.month - date.month;
+    int days = now.day - date.day;
+
+    if (days < 0) {
+      months--;
+      days += DateTime(now.year, now.month, 0).day;
+    }
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    setState(() {
+      yearController.text = years.toString();
+      monthController.text = months.toString();
+    });
+  }
+
+  DateTime _getDateFromAge() {
+    final years = int.tryParse(yearController.text) ?? 0;
+    final months = int.tryParse(monthController.text) ?? 0;
+    final now = DateTime.now();
+    final totalMonths = (years * 12) + months;
+
+    int newYear = now.year;
+    int newMonth = now.month - totalMonths;
+
+    while (newMonth <= 0) {
+      newMonth += 12;
+      newYear -= 1;
+    }
+
+    int day = now.day;
+    final maxDayInMonth = DateTime(newYear, newMonth + 1, 0).day;
+    if (day > maxDayInMonth) {
+      day = maxDayInMonth;
+    }
+
+    return DateTime(newYear, newMonth, day);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.digitTextTheme(context);
+    final currentLocale = Localizations.localeOf(context).toString();
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        DigitCard(
+          borderColor:
+              widget.errorMessage != null ? theme.colorTheme.alert.error : null,
+          cardType: CardType.secondary,
+          children: [
+            Column(
+              children: [
+                LabeledField(
+                  label: widget.datePickerLabel,
+                  isRequired: true,
+                  child: DigitDateFormInput(
+                    readOnly: widget.readOnly,
+                    editable: false,
+                    initialValue: selectedDate != null
+                        ? DateFormat('dd MMM yyyy', currentLocale)
+                            .format(selectedDate!)
+                        : '',
+                    firstDate: widget.initialDate,
+                    cancelText: widget.cancelText,
+                    confirmText: widget.confirmText,
+                    lastDate: DateTime.now(),
+                    onChange: (value) {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          selectedDate =
+                              DateFormat('dd MMM yyyy', currentLocale)
+                                  .parse(value);
+                          _setAgeFromDate(selectedDate);
+                        });
+                        widget.onChangeOfFormControl?.call(selectedDate);
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  widget.separatorLabel,
+                  style: theme.textTheme.bodyLarge,
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: LabeledField(
+                        labelInline: false,
+                        label: widget.ageFieldLabel,
+                        isRequired: true,
+                        child: DigitTextFormInput(
+                          errorMessage: widget.ageErrorMessage,
+                          prefixTextStyle: textTheme.bodyS.copyWith(
+                            color: theme.colorTheme.text.secondary,
+                          ),
+                          prefixText: widget.yearsHintLabel,
+                          maxLength: 3,
+                          controller: yearController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChange: (_) {
+                            setState(() {
+                              selectedDate = _getDateFromAge();
+                            });
+                            widget.onChangeOfFormControl?.call(selectedDate);
+                          },
+                          keyboardType: TextInputType.number,
+                          readOnly: widget.readOnly,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: LabeledField(
+                        labelInline: false,
+                        label: '',
+                        child: DigitTextFormInput(
+                          errorMessage: widget.monthErrorMessage,
+                          prefixTextStyle: textTheme.bodyS.copyWith(
+                            color: theme.colorTheme.text.secondary,
+                          ),
+                          prefixText: widget.monthsHintLabel,
+                          maxLength: 2,
+                          controller: monthController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChange: (_) {
+                            setState(() {
+                              selectedDate = _getDateFromAge();
+                            });
+                            widget.onChangeOfFormControl?.call(selectedDate);
+                          },
+                          keyboardType: TextInputType.number,
+                          readOnly: widget.readOnly,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+        if (widget.errorMessage != null) ...[
+          const SizedBox(height: spacer1),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  const SizedBox(height: spacer1 / 2),
+                  SizedBox(
+                    height: spacer4,
+                    width: spacer4,
+                    child: Icon(
+                      Icons.info,
+                      color: theme.colorTheme.alert.error,
+                      size: spacer4,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: spacer1),
+              Flexible(
+                fit: FlexFit.tight,
+                child: Text(
+                  widget.errorMessage!,
+                  style: textTheme.bodyL.copyWith(
+                    color: theme.colorTheme.alert.error,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
   }
 }
