@@ -18,6 +18,7 @@ import '../../widgets/registartion_deliver/localized.dart';
 
 @RoutePage()
 class BednetHouseholdSummaryPage extends LocalizedStatefulWidget {
+  final BeneficiaryRegistrationBloc registrationBloc;
   final String headName;
   final int memberCount;
   final String? mobileNumber;
@@ -25,6 +26,7 @@ class BednetHouseholdSummaryPage extends LocalizedStatefulWidget {
   const BednetHouseholdSummaryPage({
     super.key,
     super.appLocalizations,
+    required this.registrationBloc,
     required this.headName,
     required this.memberCount,
     this.mobileNumber,
@@ -77,8 +79,7 @@ class _BednetHouseholdSummaryPageState
   }
 
   void _onNext() {
-    final bloc = context.read<BeneficiaryRegistrationBloc>();
-    final household = bloc.state.mapOrNull(
+    final household = widget.registrationBloc.state.mapOrNull(
       create: (value) => value.householdModel,
       summary: (value) => value.householdModel,
       persisted: (value) => value.householdModel,
@@ -87,6 +88,7 @@ class _BednetHouseholdSummaryPageState
 
     context.router.push(
       BednetEolinAssessmentRoute(
+        registrationBloc: widget.registrationBloc,
         eToken: _eTokenForHousehold(household),
         itnForDelivery: _itnForDelivery,
         householdClientReferenceId: household?.clientReferenceId,
@@ -99,13 +101,12 @@ class _BednetHouseholdSummaryPageState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.digitTextTheme(context);
-    final household =
-        context.read<BeneficiaryRegistrationBloc>().state.mapOrNull(
-              create: (value) => value.householdModel,
-              summary: (value) => value.householdModel,
-              persisted: (value) => value.householdModel,
-              editHousehold: (value) => value.householdModel,
-            );
+    final household = widget.registrationBloc.state.mapOrNull(
+      create: (value) => value.householdModel,
+      summary: (value) => value.householdModel,
+      persisted: (value) => value.householdModel,
+      editHousehold: (value) => value.householdModel,
+    );
 
     return Scaffold(
       body: ScrollableContent(

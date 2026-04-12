@@ -288,6 +288,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   ?.trim();
                               context.router.push(
                                 BednetHouseholdSummaryRoute(
+                                  registrationBloc: bloc,
                                   headName: headName,
                                   memberCount: memberCount,
                                   mobileNumber: mobile,

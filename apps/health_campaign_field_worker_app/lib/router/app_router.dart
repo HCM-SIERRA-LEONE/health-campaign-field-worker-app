@@ -17,6 +17,7 @@ import 'package:transit_post/router/transit_post_router.dart';
 
 import '../blocs/localization/app_localization.dart';
 import '../blocs/registration_deliver/app_localization.dart';
+import '../blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
 import '../pages/acknowledgement.dart';
 import '../pages/attendance_qr_scanner.dart';
 import '../pages/authenticated.dart';

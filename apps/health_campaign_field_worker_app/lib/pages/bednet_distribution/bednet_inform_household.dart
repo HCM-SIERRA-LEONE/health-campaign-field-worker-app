@@ -16,12 +16,14 @@ import 'bednet_household_session.dart';
 
 @RoutePage()
 class BednetInformHouseholdPage extends LocalizedStatefulWidget {
+  final BeneficiaryRegistrationBloc registrationBloc;
   final String eToken;
   final int itnForDelivery;
 
   const BednetInformHouseholdPage({
     super.key,
     super.appLocalizations,
+    required this.registrationBloc,
     required this.eToken,
     required this.itnForDelivery,
   });
@@ -54,6 +56,7 @@ class _BednetInformHouseholdPageState
 
     return BlocListener<BeneficiaryRegistrationBloc,
         BeneficiaryRegistrationState>(
+      bloc: widget.registrationBloc,
       listener: (context, state) {
         state.mapOrNull(
           persisted: (_) {
@@ -187,7 +190,6 @@ class _BednetInformHouseholdPageState
     );
 
     if (submit == true && mounted) {
-      final registrationBloc = context.read<BeneficiaryRegistrationBloc>();
       final boundary = RegistrationDeliverySingleton().boundary;
       final userUuid = RegistrationDeliverySingleton().loggedInUserUuid ?? '';
       final projectId = RegistrationDeliverySingleton().projectId ?? '';
@@ -195,14 +197,14 @@ class _BednetInformHouseholdPageState
       if (boundary == null) return;
 
       // Build projectBeneficiaryModel with the eToken as tag, then persist.
-      registrationBloc.add(BeneficiaryRegistrationEvent.summary(
+      widget.registrationBloc.add(BeneficiaryRegistrationEvent.summary(
         userUuid: userUuid,
         projectId: projectId,
         boundary: boundary,
         tag: widget.eToken,
         navigateToSummary: false,
       ));
-      registrationBloc.add(BeneficiaryRegistrationEvent.create(
+      widget.registrationBloc.add(BeneficiaryRegistrationEvent.create(
         userUuid: userUuid,
         projectId: projectId,
         boundary: boundary,

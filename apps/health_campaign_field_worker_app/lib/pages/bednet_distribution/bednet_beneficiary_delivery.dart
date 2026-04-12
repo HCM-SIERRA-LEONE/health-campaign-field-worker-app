@@ -473,7 +473,8 @@ class _BednetBeneficiaryDeliveryPageState
                         border: TableBorder.all(color: _tableBorderColor),
                         children: [
                           TableRow(
-                            decoration: const BoxDecoration(color: Colors.white),
+                            decoration:
+                                const BoxDecoration(color: Colors.white),
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(spacer2),

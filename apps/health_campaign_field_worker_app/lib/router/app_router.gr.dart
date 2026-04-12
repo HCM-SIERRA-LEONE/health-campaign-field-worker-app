@@ -76,6 +76,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: BednetEolinAssessmentPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+          registrationBloc: args.registrationBloc,
           eToken: args.eToken,
           itnForDelivery: args.itnForDelivery,
           householdClientReferenceId: args.householdClientReferenceId,
@@ -96,6 +97,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: BednetHouseholdSummaryPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+          registrationBloc: args.registrationBloc,
           headName: args.headName,
           memberCount: args.memberCount,
           mobileNumber: args.mobileNumber,
@@ -109,6 +111,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: BednetInformHouseholdPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+          registrationBloc: args.registrationBloc,
           eToken: args.eToken,
           itnForDelivery: args.itnForDelivery,
         ),
@@ -715,6 +718,7 @@ class BednetEolinAssessmentRoute
   BednetEolinAssessmentRoute({
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
+    required BeneficiaryRegistrationBloc registrationBloc,
     required String eToken,
     required int itnForDelivery,
     String? householdClientReferenceId,
@@ -725,6 +729,7 @@ class BednetEolinAssessmentRoute
           args: BednetEolinAssessmentRouteArgs(
             key: key,
             appLocalizations: appLocalizations,
+            registrationBloc: registrationBloc,
             eToken: eToken,
             itnForDelivery: itnForDelivery,
             householdClientReferenceId: householdClientReferenceId,
@@ -743,6 +748,7 @@ class BednetEolinAssessmentRouteArgs {
   const BednetEolinAssessmentRouteArgs({
     this.key,
     this.appLocalizations,
+    required this.registrationBloc,
     required this.eToken,
     required this.itnForDelivery,
     this.householdClientReferenceId,
@@ -752,6 +758,8 @@ class BednetEolinAssessmentRouteArgs {
   final Key? key;
 
   final RegistrationDeliveryLocalization? appLocalizations;
+
+  final BeneficiaryRegistrationBloc registrationBloc;
 
   final String eToken;
 
@@ -763,7 +771,7 @@ class BednetEolinAssessmentRouteArgs {
 
   @override
   String toString() {
-    return 'BednetEolinAssessmentRouteArgs{key: $key, appLocalizations: $appLocalizations, eToken: $eToken, itnForDelivery: $itnForDelivery, householdClientReferenceId: $householdClientReferenceId, headIndividualClientReferenceId: $headIndividualClientReferenceId}';
+    return 'BednetEolinAssessmentRouteArgs{key: $key, appLocalizations: $appLocalizations, registrationBloc: $registrationBloc, eToken: $eToken, itnForDelivery: $itnForDelivery, householdClientReferenceId: $householdClientReferenceId, headIndividualClientReferenceId: $headIndividualClientReferenceId}';
   }
 }
 
@@ -788,6 +796,7 @@ class BednetHouseholdSummaryRoute
   BednetHouseholdSummaryRoute({
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
+    required BeneficiaryRegistrationBloc registrationBloc,
     required String headName,
     required int memberCount,
     String? mobileNumber,
@@ -797,6 +806,7 @@ class BednetHouseholdSummaryRoute
           args: BednetHouseholdSummaryRouteArgs(
             key: key,
             appLocalizations: appLocalizations,
+            registrationBloc: registrationBloc,
             headName: headName,
             memberCount: memberCount,
             mobileNumber: mobileNumber,
@@ -814,6 +824,7 @@ class BednetHouseholdSummaryRouteArgs {
   const BednetHouseholdSummaryRouteArgs({
     this.key,
     this.appLocalizations,
+    required this.registrationBloc,
     required this.headName,
     required this.memberCount,
     this.mobileNumber,
@@ -823,6 +834,8 @@ class BednetHouseholdSummaryRouteArgs {
 
   final RegistrationDeliveryLocalization? appLocalizations;
 
+  final BeneficiaryRegistrationBloc registrationBloc;
+
   final String headName;
 
   final int memberCount;
@@ -831,7 +844,7 @@ class BednetHouseholdSummaryRouteArgs {
 
   @override
   String toString() {
-    return 'BednetHouseholdSummaryRouteArgs{key: $key, appLocalizations: $appLocalizations, headName: $headName, memberCount: $memberCount, mobileNumber: $mobileNumber}';
+    return 'BednetHouseholdSummaryRouteArgs{key: $key, appLocalizations: $appLocalizations, registrationBloc: $registrationBloc, headName: $headName, memberCount: $memberCount, mobileNumber: $mobileNumber}';
   }
 }
 
@@ -842,6 +855,7 @@ class BednetInformHouseholdRoute
   BednetInformHouseholdRoute({
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
+    required BeneficiaryRegistrationBloc registrationBloc,
     required String eToken,
     required int itnForDelivery,
     List<PageRouteInfo>? children,
@@ -850,6 +864,7 @@ class BednetInformHouseholdRoute
           args: BednetInformHouseholdRouteArgs(
             key: key,
             appLocalizations: appLocalizations,
+            registrationBloc: registrationBloc,
             eToken: eToken,
             itnForDelivery: itnForDelivery,
           ),
@@ -866,6 +881,7 @@ class BednetInformHouseholdRouteArgs {
   const BednetInformHouseholdRouteArgs({
     this.key,
     this.appLocalizations,
+    required this.registrationBloc,
     required this.eToken,
     required this.itnForDelivery,
   });
@@ -874,13 +890,15 @@ class BednetInformHouseholdRouteArgs {
 
   final RegistrationDeliveryLocalization? appLocalizations;
 
+  final BeneficiaryRegistrationBloc registrationBloc;
+
   final String eToken;
 
   final int itnForDelivery;
 
   @override
   String toString() {
-    return 'BednetInformHouseholdRouteArgs{key: $key, appLocalizations: $appLocalizations, eToken: $eToken, itnForDelivery: $itnForDelivery}';
+    return 'BednetInformHouseholdRouteArgs{key: $key, appLocalizations: $appLocalizations, registrationBloc: $registrationBloc, eToken: $eToken, itnForDelivery: $itnForDelivery}';
   }
 }
 

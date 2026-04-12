@@ -1732,5 +1732,23 @@
     "locale": "pt_MZ",
     "message": "E-Token",
     "module": "hcm-household"
+  },
+  {
+    "code": "BEDNET_INFORM_SUCCESS_BEDNETS_DELIVERED",
+    "locale": "en_MZ",
+    "message": "Bednets Delivered Successfully",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_INFORM_SUCCESS_ETOKEN_LABEL",
+    "locale": "en_MZ",
+    "message": "E-Token",
+    "module": "hcm-bednet"
+  },
+  {
+    "code": "BEDNET_INFORM_SUCCESS_MESSAGE",
+    "locale": "en_MZ",
+    "message": "Bednets Delivered Successfully.",
+    "module": "hcm-bednet"
   }
 ]

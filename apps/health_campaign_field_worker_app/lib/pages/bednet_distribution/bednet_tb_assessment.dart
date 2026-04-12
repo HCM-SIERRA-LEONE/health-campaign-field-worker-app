@@ -497,6 +497,8 @@ class _BednetTbAssessmentPageState
   }
 
   Future<void> _navigateToReferral() async {
+    final projectBeneficiaryClientReferenceId =
+        await _resolveProjectBeneficiaryClientReferenceId();
     final ok = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (_) => BednetTbReferralPage(
@@ -506,7 +508,7 @@ class _BednetTbAssessmentPageState
           childIndividualClientReferenceId:
               widget.childIndividualClientReferenceId,
           projectBeneficiaryClientReferenceId:
-              widget.projectBeneficiaryClientReferenceId,
+              projectBeneficiaryClientReferenceId,
           screeningAnswers: _answers.whereType<bool>().toList(growable: false),
           selectedSymptomKeys: _selectedSymptomKeys,
           onBackToSearch: widget.onBackToSearch,
@@ -519,7 +521,9 @@ class _BednetTbAssessmentPageState
   }
 
   Future<void> _persistScreeningOutcome({required bool referred}) async {
-    if (widget.projectBeneficiaryClientReferenceId == null) return;
+    final projectBeneficiaryClientReferenceId =
+        await _resolveProjectBeneficiaryClientReferenceId();
+    if (projectBeneficiaryClientReferenceId == null) return;
 
     final taskRepository =
         context.repository<TaskModel, TaskSearchModel>(context);
@@ -530,8 +534,7 @@ class _BednetTbAssessmentPageState
     final areaCode = boundary?.code ?? '';
 
     final screeningTask = TaskModel(
-      projectBeneficiaryClientReferenceId:
-          widget.projectBeneficiaryClientReferenceId,
+      projectBeneficiaryClientReferenceId: projectBeneficiaryClientReferenceId,
       clientReferenceId: taskClientReferenceId,
       projectId: RegistrationDeliverySingleton().projectId,
       tenantId: RegistrationDeliverySingleton().tenantId,
@@ -587,5 +590,29 @@ class _BednetTbAssessmentPageState
     );
 
     await taskRepository.create(screeningTask);
+  }
+
+  Future<String?> _resolveProjectBeneficiaryClientReferenceId() async {
+    if (widget.projectBeneficiaryClientReferenceId != null &&
+        widget.projectBeneficiaryClientReferenceId!.isNotEmpty) {
+      return widget.projectBeneficiaryClientReferenceId;
+    }
+
+    final childRef = widget.childIndividualClientReferenceId;
+    final projectId = RegistrationDeliverySingleton().projectId;
+    if (childRef == null || childRef.isEmpty || projectId == null) {
+      return null;
+    }
+
+    final repository = context.repository<ProjectBeneficiaryModel,
+        ProjectBeneficiarySearchModel>(context);
+    final matches = await repository.search(
+      ProjectBeneficiarySearchModel(
+        projectId: [projectId],
+        beneficiaryClientReferenceId: [childRef],
+      ),
+    );
+
+    return matches.firstOrNull?.clientReferenceId;
   }
 }

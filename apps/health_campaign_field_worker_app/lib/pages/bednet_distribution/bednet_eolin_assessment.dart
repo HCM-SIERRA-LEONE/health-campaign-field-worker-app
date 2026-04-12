@@ -14,6 +14,7 @@ import '../../widgets/registartion_deliver/localized.dart';
 
 @RoutePage()
 class BednetEolinAssessmentPage extends LocalizedStatefulWidget {
+  final BeneficiaryRegistrationBloc registrationBloc;
   final String eToken;
   final int itnForDelivery;
   final String? householdClientReferenceId;
@@ -22,6 +23,7 @@ class BednetEolinAssessmentPage extends LocalizedStatefulWidget {
   const BednetEolinAssessmentPage({
     super.key,
     super.appLocalizations,
+    required this.registrationBloc,
     required this.eToken,
     required this.itnForDelivery,
     this.householdClientReferenceId,
@@ -52,9 +54,7 @@ class _BednetEolinAssessmentPageState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context
-          .read<BeneficiaryRegistrationBloc>()
-          .clearPendingItnEolinAssessment();
+      widget.registrationBloc.clearPendingItnEolinAssessment();
     });
   }
 
@@ -351,15 +351,15 @@ class _BednetEolinAssessmentPageState
 
   void _onNext() {
     if (!_canProceed) return;
-    final bloc = context.read<BeneficiaryRegistrationBloc>();
     final has = _hasOldNets;
     if (has == null) return;
-    bloc.setPendingItnEolinAssessment(
+    widget.registrationBloc.setPendingItnEolinAssessment(
       hasOldNets: has,
       returnedNetsCount: has ? _returnedCount : null,
     );
     context.router.push(
       BednetInformHouseholdRoute(
+        registrationBloc: widget.registrationBloc,
         eToken: widget.eToken,
         itnForDelivery: widget.itnForDelivery,
         appLocalizations: widget.appLocalizations,

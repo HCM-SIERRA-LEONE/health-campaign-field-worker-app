@@ -64,6 +64,7 @@ class _BednetTbReferralPageState extends LocalizedState<BednetTbReferralPage> {
   static const _referredByKey = 'referredBy';
 
   bool _submitted = false;
+  bool _isSubmitting = false;
   FacilityModel? _selectedFacility;
 
   late final FormGroup _form;
@@ -128,7 +129,8 @@ class _BednetTbReferralPageState extends LocalizedState<BednetTbReferralPage> {
                 type: DigitButtonType.primary,
                 size: DigitButtonSize.large,
                 mainAxisSize: MainAxisSize.max,
-                onPressed: _onSubmit,
+                isDisabled: _isSubmitting,
+                onPressed: () => _onSubmit(),
               ),
             ],
           ),
@@ -333,153 +335,230 @@ class _BednetTbReferralPageState extends LocalizedState<BednetTbReferralPage> {
   }
 
   Future<void> _onSubmit() async {
+    if (_isSubmitting) return;
     _form.markAllAsTouched();
     if (!_form.valid) return;
-    if (_selectedFacility == null ||
-        widget.projectBeneficiaryClientReferenceId == null) {
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      _selectedFacility ??= await _resolveSelectedFacility();
+      final projectBeneficiaryClientReferenceId =
+          await _resolveProjectBeneficiaryClientReferenceId();
+
+      if (_selectedFacility == null ||
+          projectBeneficiaryClientReferenceId == null) {
+        _form.control(_referredToKey).markAsTouched();
+        _form.control(_referredToKey).setErrors({'required': true});
+        if (mounted) {
+          Toast.showToast(
+            context,
+            message: localizations.translate(i18.tbAssessment.facilityRequired),
+            type: ToastType.error,
+          );
+          setState(() => _isSubmitting = false);
+        }
+        return;
+      }
+
+      final now = context.millisecondsSinceEpoch();
+      final userId = RegistrationDeliverySingleton().loggedInUserUuid!;
+      final projectId = RegistrationDeliverySingleton().projectId;
+      final tenantId = RegistrationDeliverySingleton().tenantId;
+      final boundary = RegistrationDeliverySingleton().boundary;
+
+      final taskRepository =
+          context.repository<TaskModel, TaskSearchModel>(context);
+      final referralRepository =
+          context.repository<ReferralModel, ReferralSearchModel>(context);
+
+      final screeningTask = TaskModel(
+        projectBeneficiaryClientReferenceId:
+            projectBeneficiaryClientReferenceId,
+        clientReferenceId: IdGen.i.identifier,
+        projectId: projectId,
+        tenantId: tenantId,
+        rowVersion: 1,
+        status: Status.beneficiaryReferred.toValue(),
+        additionalFields: TaskAdditionalFields(
+          version: 1,
+          fields: [
+            AdditionalField(
+              'taskStatus',
+              Status.beneficiaryReferred.toValue(),
+            ),
+            AdditionalField('tbAssessmentCompleted', true.toString()),
+            AdditionalField(
+              'tbAssessmentQuestions',
+              widget.screeningAnswers.join(','),
+            ),
+            AdditionalField(
+              'tbAssessmentSymptoms',
+              widget.selectedSymptomKeys.join(','),
+            ),
+            AdditionalField(
+              'householdClientReferenceId',
+              widget.householdClientReferenceId,
+            ),
+            AdditionalField(
+              'childIndividualClientReferenceId',
+              widget.childIndividualClientReferenceId,
+            ),
+            AdditionalField('administrativeArea', boundary?.name),
+            AdditionalField('administrativeAreaCode', boundary?.code),
+            AdditionalField(
+              AdditionalFieldsType.dateOfVerification.toValue(),
+              now.toString(),
+            ),
+            AdditionalField(
+              AdditionalFieldsType.cycleIndex.toValue(),
+              '0${context.selectedCycle?.id ?? 1}',
+            ),
+          ],
+        ),
+        clientAuditDetails: ClientAuditDetails(
+          createdBy: userId,
+          createdTime: now,
+          lastModifiedBy: userId,
+          lastModifiedTime: now,
+        ),
+        auditDetails: AuditDetails(
+          createdBy: userId,
+          createdTime: now,
+        ),
+      );
+
+      final referral = ReferralModel(
+        clientReferenceId: IdGen.i.identifier,
+        projectId: projectId,
+        tenantId: tenantId,
+        rowVersion: 1,
+        projectBeneficiaryClientReferenceId:
+            projectBeneficiaryClientReferenceId,
+        referrerId: userId,
+        recipientType: 'FACILITY',
+        recipientId: _selectedFacility!.id,
+        reasons: _referralReasons(),
+        additionalFields: ReferralAdditionalFields(
+          version: 1,
+          fields: [
+            AdditionalField(
+              'dateOfReferral',
+              (_form.control(_dateKey).value as DateTime)
+                  .millisecondsSinceEpoch
+                  .toString(),
+            ),
+            AdditionalField(
+              'administrativeArea',
+              _form.control(_adminUnitKey).value?.toString(),
+            ),
+            AdditionalField(
+              'administrativeAreaCode',
+              boundary?.code,
+            ),
+            AdditionalField(
+              'householdClientReferenceId',
+              widget.householdClientReferenceId,
+            ),
+            AdditionalField(
+              'childIndividualClientReferenceId',
+              widget.childIndividualClientReferenceId,
+            ),
+            AdditionalField(
+              AdditionalFieldsType.referredBy.toValue(),
+              _form.control(_referredByKey).value?.toString(),
+            ),
+            AdditionalField(
+              AdditionalFieldsType.nameOfReferral.toValue(),
+              _selectedFacilityLabel,
+            ),
+            AdditionalField(
+              'tbAssessmentQuestions',
+              widget.screeningAnswers.join(','),
+            ),
+            AdditionalField(
+              'tbAssessmentSymptoms',
+              widget.selectedSymptomKeys.join(','),
+            ),
+          ],
+        ),
+        clientAuditDetails: ClientAuditDetails(
+          createdBy: userId,
+          createdTime: now,
+          lastModifiedBy: userId,
+          lastModifiedTime: now,
+        ),
+        auditDetails: AuditDetails(
+          createdBy: userId,
+          createdTime: now,
+        ),
+      );
+
+      await taskRepository.create(screeningTask);
+      await referralRepository.create(referral);
+
+      if (!mounted) return;
+      setState(() {
+        _isSubmitting = false;
+        _submitted = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      Toast.showToast(
+        context,
+        message: 'Unable to submit referral',
+        type: ToastType.error,
+      );
+      setState(() => _isSubmitting = false);
+    }
+  }
+
+  Future<FacilityModel?> _resolveSelectedFacility() async {
+    if (_selectedFacility != null) return _selectedFacility;
+
+    final rawValue = _form.control(_referredToKey).value?.toString().trim();
+    if (rawValue == null || rawValue.isEmpty) {
       _form.control(_referredToKey).markAsTouched();
       _form.control(_referredToKey).setErrors({'required': true});
-      setState(() {});
-      return;
+      return null;
     }
 
-    final now = context.millisecondsSinceEpoch();
-    final userId = RegistrationDeliverySingleton().loggedInUserUuid!;
+    final repository = context.repository<FacilityModel, FacilitySearchModel>(
+      context,
+    );
+    final byId = await repository.search(FacilitySearchModel(id: [rawValue]));
+    if (byId.isNotEmpty) return byId.first;
+
+    final byName = await repository.search(FacilitySearchModel(name: rawValue));
+    return byName.firstOrNull;
+  }
+
+  Future<String?> _resolveProjectBeneficiaryClientReferenceId() async {
+    if (widget.projectBeneficiaryClientReferenceId != null &&
+        widget.projectBeneficiaryClientReferenceId!.isNotEmpty) {
+      return widget.projectBeneficiaryClientReferenceId;
+    }
+
+    final childRef = widget.childIndividualClientReferenceId;
     final projectId = RegistrationDeliverySingleton().projectId;
-    final tenantId = RegistrationDeliverySingleton().tenantId;
-    final boundary = RegistrationDeliverySingleton().boundary;
+    if (childRef == null || childRef.isEmpty || projectId == null) {
+      return null;
+    }
 
-    final taskRepository =
-        context.repository<TaskModel, TaskSearchModel>(context);
-    final referralRepository =
-        context.repository<ReferralModel, ReferralSearchModel>(context);
-
-    final screeningTask = TaskModel(
-      projectBeneficiaryClientReferenceId:
-          widget.projectBeneficiaryClientReferenceId,
-      clientReferenceId: IdGen.i.identifier,
-      projectId: projectId,
-      tenantId: tenantId,
-      rowVersion: 1,
-      status: Status.beneficiaryReferred.toValue(),
-      additionalFields: TaskAdditionalFields(
-        version: 1,
-        fields: [
-          AdditionalField(
-            'taskStatus',
-            Status.beneficiaryReferred.toValue(),
-          ),
-          AdditionalField('tbAssessmentCompleted', true.toString()),
-          AdditionalField(
-            'tbAssessmentQuestions',
-            widget.screeningAnswers.join(','),
-          ),
-          AdditionalField(
-            'tbAssessmentSymptoms',
-            widget.selectedSymptomKeys.join(','),
-          ),
-          AdditionalField(
-            'householdClientReferenceId',
-            widget.householdClientReferenceId,
-          ),
-          AdditionalField(
-            'childIndividualClientReferenceId',
-            widget.childIndividualClientReferenceId,
-          ),
-          AdditionalField('administrativeArea', boundary?.name),
-          AdditionalField('administrativeAreaCode', boundary?.code),
-          AdditionalField(
-            AdditionalFieldsType.dateOfVerification.toValue(),
-            now.toString(),
-          ),
-          AdditionalField(
-            AdditionalFieldsType.cycleIndex.toValue(),
-            '0${context.selectedCycle?.id ?? 1}',
-          ),
-        ],
-      ),
-      clientAuditDetails: ClientAuditDetails(
-        createdBy: userId,
-        createdTime: now,
-        lastModifiedBy: userId,
-        lastModifiedTime: now,
-      ),
-      auditDetails: AuditDetails(
-        createdBy: userId,
-        createdTime: now,
+    final repository = context.repository<ProjectBeneficiaryModel,
+        ProjectBeneficiarySearchModel>(context);
+    final matches = await repository.search(
+      ProjectBeneficiarySearchModel(
+        projectId: [projectId],
+        beneficiaryClientReferenceId: [childRef],
       ),
     );
 
-    final referral = ReferralModel(
-      clientReferenceId: IdGen.i.identifier,
-      projectId: projectId,
-      tenantId: tenantId,
-      rowVersion: 1,
-      projectBeneficiaryClientReferenceId:
-          widget.projectBeneficiaryClientReferenceId,
-      referrerId: userId,
-      recipientType: 'FACILITY',
-      recipientId: _selectedFacility!.id,
-      reasons: _referralReasons(),
-      additionalFields: ReferralAdditionalFields(
-        version: 1,
-        fields: [
-          AdditionalField(
-            'dateOfReferral',
-            (_form.control(_dateKey).value as DateTime)
-                .millisecondsSinceEpoch
-                .toString(),
-          ),
-          AdditionalField(
-            'administrativeArea',
-            _form.control(_adminUnitKey).value?.toString(),
-          ),
-          AdditionalField(
-            'administrativeAreaCode',
-            boundary?.code,
-          ),
-          AdditionalField(
-            'householdClientReferenceId',
-            widget.householdClientReferenceId,
-          ),
-          AdditionalField(
-            'childIndividualClientReferenceId',
-            widget.childIndividualClientReferenceId,
-          ),
-          AdditionalField(
-            AdditionalFieldsType.referredBy.toValue(),
-            _form.control(_referredByKey).value?.toString(),
-          ),
-          AdditionalField(
-            AdditionalFieldsType.nameOfReferral.toValue(),
-            _selectedFacilityLabel,
-          ),
-          AdditionalField(
-            'tbAssessmentQuestions',
-            widget.screeningAnswers.join(','),
-          ),
-          AdditionalField(
-            'tbAssessmentSymptoms',
-            widget.selectedSymptomKeys.join(','),
-          ),
-        ],
-      ),
-      clientAuditDetails: ClientAuditDetails(
-        createdBy: userId,
-        createdTime: now,
-        lastModifiedBy: userId,
-        lastModifiedTime: now,
-      ),
-      auditDetails: AuditDetails(
-        createdBy: userId,
-        createdTime: now,
-      ),
-    );
-
-    await taskRepository.create(screeningTask);
-    await referralRepository.create(referral);
-
-    setState(() => _submitted = true);
+    final existing = matches.firstOrNull?.clientReferenceId;
+    if (existing != null && existing.isNotEmpty) {
+      return existing;
+    }
+    return childRef;
   }
 
   String get _selectedFacilityLabel =>
