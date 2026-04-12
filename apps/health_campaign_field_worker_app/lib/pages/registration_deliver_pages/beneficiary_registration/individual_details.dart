@@ -472,10 +472,10 @@ if (!widget.isHeadOfHousehold)
                             child: DigitDobPicker(
                               datePickerFormControl: _dobKey,
                               datePickerLabel: localizations.translate(
-                                i18.individualDetails.dobLabelText,
+                                '${i18.individualDetails.dobLabelText} *',
                               ),
                               ageFieldLabel: localizations.translate(
-                                i18.individualDetails.ageLabelText,
+                                '${i18.individualDetails.ageLabelText} *',
                               ),
                               yearsHintLabel: localizations.translate(
                                 i18.individualDetails.yearsHintText,
