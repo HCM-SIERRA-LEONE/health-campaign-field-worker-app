@@ -33,13 +33,6 @@ import '../pages/bednet_distribution/bednet_success_page.dart';
 import '../pages/bednet_distribution/select_school.dart';
 import '../pages/beneficiary_type_selection.dart';
 import '../pages/boundary_selection.dart';
-import '../pages/bednet_distribution/bednet_distribution_acknowledgement.dart';
-import '../pages/bednet_distribution/beneficiary_acknowledgement1.dart';
-import '../pages/bednet_distribution/bednet_distribution_success.dart';
-import '../pages/bednet_distribution/bednet_distribution_wrapper.dart';
-import '../pages/bednet_distribution/distribution_summary.dart';
-import '../pages/bednet_distribution/school_details.dart';
-import '../pages/bednet_distribution/select_school.dart';
 import '../pages/current_boundary.dart';
 import '../pages/home.dart';
 import '../pages/language_selection.dart';
@@ -74,7 +67,6 @@ import '../pages/reports/summary_report/custom_summary_report.dart';
 import '../pages/unauthenticated.dart';
 
 export 'package:auto_route/auto_route.dart';
-import '../pages/beneficiary_type_selection.dart';
 
 part 'app_router.gr.dart';
 
@@ -176,10 +168,6 @@ class AppRouter extends _$AppRouter {
               path: 'household-success',
             ),
             AutoRoute(
-              page: DistributionSummaryRoute.page,
-              path: 'distribution-summary',
-            ),
-            AutoRoute(
               page: BednetHouseholdOverviewWrapperRoute.page,
               path: 'overview',
               children: [
@@ -219,10 +207,6 @@ class AppRouter extends _$AppRouter {
               ],
             ),
             AutoRoute(
-              page: BednetDistributionAcknowledgementRoute.page,
-              path: 'beneficiary-acknowledgement',
-            ),
-            AutoRoute(
               page: BednetDistributionSuccessRoute.page,
               path: 'success',
             ),
@@ -252,7 +236,6 @@ class AppRouter extends _$AppRouter {
           page: ProjectFacilitySelectionRoute.page,
           path: 'select-project-facilities',
         ),
-
         AutoRoute(
           page: CustomSummaryReportRoute.page,
           path: 'custom-report-summary',
