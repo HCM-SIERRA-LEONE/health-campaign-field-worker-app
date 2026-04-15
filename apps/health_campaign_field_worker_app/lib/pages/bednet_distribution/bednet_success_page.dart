@@ -53,12 +53,12 @@ class _BednetSuccessPageState extends LocalizedState<BednetSuccessPage> {
 
   void _onViewHouseholdDetails() {
     if (!mounted) return;
-    _dispatchHouseholdOverviewReload();
     final root = context.router.root;
     final nav = Navigator.of(context);
-    if (!nav.canPop()) return;
-    // Dismiss this overlay only; the route below is often [SearchBeneficiaryPage].
-    nav.pop();
+    nav.popUntil(
+      (route) =>
+          route.settings.name == SearchBeneficiaryRoute.name || route.isFirst,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       root.navigate(
         BednetHouseholdOverviewWrapperRoute(
