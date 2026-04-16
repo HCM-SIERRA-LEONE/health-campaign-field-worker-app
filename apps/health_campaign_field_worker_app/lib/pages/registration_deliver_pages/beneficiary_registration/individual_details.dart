@@ -495,12 +495,14 @@ if (!widget.isHeadOfHousehold)
                           _showcaseIndividualDob.buildWith(
                             child: DigitDobPicker(
                               datePickerFormControl: _dobKey,
-                              datePickerLabel: localizations.translate(
+                              datePickerLabel:
+                                  '${localizations.translate(
                                 i18.individualDetails.dobLabelText,
-                              ),
-                              ageFieldLabel: localizations.translate(
+                              )} *',
+                              ageFieldLabel:
+                                  '${localizations.translate(
                                 i18.individualDetails.ageLabelText,
-                              ),
+                              )} *',
                               yearsHintLabel: localizations.translate(
                                 i18.individualDetails.yearsHintText,
                               ),
