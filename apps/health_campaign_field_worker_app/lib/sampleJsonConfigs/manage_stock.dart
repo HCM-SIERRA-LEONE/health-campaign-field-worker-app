@@ -1018,7 +1018,7 @@ final dynamic sampleInventoryFlows = {
             //   "enums": null
             // },
             {
-              "type": "string",
+              "type": "integer",
               "label": "APPONE_INVENTORY_QUANTITY_SENT_LABEL",
               "order": 4,
               "value": "",
@@ -1057,7 +1057,7 @@ final dynamic sampleInventoryFlows = {
               }
             },
             {
-              "type": "string",
+              "type": "integer",
               "label": "APPONE_INVENTORY_QUANTITY_LOST_LABEL",
               "order": 4,
               "value": "",
@@ -1096,7 +1096,7 @@ final dynamic sampleInventoryFlows = {
               }
             },
             {
-              "type": "string",
+              "type": "integer",
               "label": "APPONE_INVENTORY_QUANTITY_DAMAGED_LABEL",
               "order": 4,
               "value": "",
@@ -1135,7 +1135,7 @@ final dynamic sampleInventoryFlows = {
               }
             },
             {
-              "type": "string",
+              "type": "integer",
               "label": "APPONE_INVENTORY_QUANTITY_RETURNED_LABEL",
               "order": 4,
               "value": "",
@@ -1174,7 +1174,7 @@ final dynamic sampleInventoryFlows = {
               "enums": null
             },
             {
-              "type": "string",
+              "type": "integer",
               "label": "APPONE_INVENTORY_QUANTITY_RECEIVED_LABEL",
               "order": 4,
               "value": "",

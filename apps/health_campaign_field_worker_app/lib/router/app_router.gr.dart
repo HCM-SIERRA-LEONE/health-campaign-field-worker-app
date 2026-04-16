@@ -87,6 +87,17 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    BeneficiaryIdDownSyncRoute.name: (routeData) {
+      final args = routeData.argsAs<BeneficiaryIdDownSyncRouteArgs>(
+          orElse: () => const BeneficiaryIdDownSyncRouteArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: BeneficiaryIdDownSyncPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+        ),
+      );
+    },
     BoundarySelectionRoute.name: (routeData) {
       final args = routeData.argsAs<BoundarySelectionRouteArgs>(
           orElse: () => const BoundarySelectionRouteArgs());
@@ -179,6 +190,18 @@ abstract class _$AppRouter extends RootStackRouter {
           key: args.key,
           nearbyService: args.nearbyService,
           connectedDevices: args.connectedDevices,
+        ),
+      );
+    },
+    DeviceChangeReasonRoute.name: (routeData) {
+      final args = routeData.argsAs<DeviceChangeReasonRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DeviceChangeReasonPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+          username: args.username,
+          password: args.password,
         ),
       );
     },
@@ -389,9 +412,9 @@ class AttendanceDigitScannerRoute
       ScannedIndividualDataModel,
       AttendanceValidationResult,
     ) onScanResult,
-    required int quantity,
+    int quantity = 1,
     bool singleValue = false,
-    required bool isGS1code,
+    bool isGS1code = false,
     List<PageRouteInfo>? children,
   }) : super(
           AttendanceDigitScannerRoute.name,
@@ -419,9 +442,9 @@ class AttendanceDigitScannerRouteArgs {
     required this.enableDynamicQRScanning,
     required this.attendees,
     required this.onScanResult,
-    required this.quantity,
+    this.quantity = 1,
     this.singleValue = false,
-    required this.isGS1code,
+    this.isGS1code = false,
   });
 
   final Key? key;
@@ -558,6 +581,45 @@ class BeneficiaryAcknowledgementRouteArgs {
   @override
   String toString() {
     return 'BeneficiaryAcknowledgementRouteArgs{key: $key, appLocalizations: $appLocalizations, enableViewHousehold: $enableViewHousehold}';
+  }
+}
+
+/// generated route for
+/// [BeneficiaryIdDownSyncPage]
+class BeneficiaryIdDownSyncRoute
+    extends PageRouteInfo<BeneficiaryIdDownSyncRouteArgs> {
+  BeneficiaryIdDownSyncRoute({
+    Key? key,
+    AppLocalizations? appLocalizations,
+    List<PageRouteInfo>? children,
+  }) : super(
+          BeneficiaryIdDownSyncRoute.name,
+          args: BeneficiaryIdDownSyncRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'BeneficiaryIdDownSyncRoute';
+
+  static const PageInfo<BeneficiaryIdDownSyncRouteArgs> page =
+      PageInfo<BeneficiaryIdDownSyncRouteArgs>(name);
+}
+
+class BeneficiaryIdDownSyncRouteArgs {
+  const BeneficiaryIdDownSyncRouteArgs({
+    this.key,
+    this.appLocalizations,
+  });
+
+  final Key? key;
+
+  final AppLocalizations? appLocalizations;
+
+  @override
+  String toString() {
+    return 'BeneficiaryIdDownSyncRouteArgs{key: $key, appLocalizations: $appLocalizations}';
   }
 }
 
@@ -907,6 +969,55 @@ class DataTransferRouteArgs {
   @override
   String toString() {
     return 'DataTransferRouteArgs{key: $key, nearbyService: $nearbyService, connectedDevices: $connectedDevices}';
+  }
+}
+
+/// generated route for
+/// [DeviceChangeReasonPage]
+class DeviceChangeReasonRoute
+    extends PageRouteInfo<DeviceChangeReasonRouteArgs> {
+  DeviceChangeReasonRoute({
+    Key? key,
+    AppLocalizations? appLocalizations,
+    required String username,
+    required String password,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DeviceChangeReasonRoute.name,
+          args: DeviceChangeReasonRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+            username: username,
+            password: password,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DeviceChangeReasonRoute';
+
+  static const PageInfo<DeviceChangeReasonRouteArgs> page =
+      PageInfo<DeviceChangeReasonRouteArgs>(name);
+}
+
+class DeviceChangeReasonRouteArgs {
+  const DeviceChangeReasonRouteArgs({
+    this.key,
+    this.appLocalizations,
+    required this.username,
+    required this.password,
+  });
+
+  final Key? key;
+
+  final AppLocalizations? appLocalizations;
+
+  final String username;
+
+  final String password;
+
+  @override
+  String toString() {
+    return 'DeviceChangeReasonRouteArgs{key: $key, appLocalizations: $appLocalizations, username: $username, password: $password}';
   }
 }
 
