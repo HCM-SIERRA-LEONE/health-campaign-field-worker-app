@@ -59,7 +59,13 @@ class BeneficiaryAcknowledgementPageState
                           .read<SearchHouseholdsBloc>()
                           .add(const SearchHouseholdsEvent.clear());
                       _popOverviewStackToRoot(context);
-                      context.router.push(const SchoolDetailsRoute());
+                      context.router.push(
+                        BednetHouseholdOverviewWrapperRoute(
+                          children: [
+                            CustomHouseholdOverviewRoute(),
+                          ],
+                        ),
+                      );
                     },
                     type: DigitButtonType.primary,
                     size: DigitButtonSize.large,
