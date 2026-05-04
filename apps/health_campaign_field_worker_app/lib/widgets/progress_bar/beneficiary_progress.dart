@@ -79,7 +79,16 @@ class BeneficiaryProgressBarState extends State<BeneficiaryProgressBar> {
               return taskDate.isAfter(gte) &&
                   taskDate.isBefore(lte) &&
                   element.status == Status.administeredSuccess.toValue();
-            }).length;
+            }).fold<int>(0, (sum, task) {
+              final resourceQuantity =
+                  task.resources?.fold<int>(0, (resourceSum, resource) {
+                        final quantity =
+                            num.tryParse(resource.quantity ?? '')?.toInt() ?? 0;
+                        return resourceSum + quantity;
+                      }) ??
+                      0;
+              return sum + resourceQuantity;
+            });
           });
         }
       },
