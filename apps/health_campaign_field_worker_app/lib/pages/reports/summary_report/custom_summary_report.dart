@@ -146,7 +146,6 @@ class _CustomSummaryReportState
                                     ],
                                     rows: summaryReportState.data.entries
                                         .toList()
-                                        .reversed
                                         .map((entry) {
                                       final metrics = entry.value;
                                       return DigitGridRow([
@@ -198,7 +197,6 @@ class _CustomSummaryReportState
                                     ],
                                     rows: summaryReportState.data.entries
                                         .toList()
-                                        .reversed
                                         .map((entry) {
                                       final metrics = entry.value;
                                       return DigitGridRow([

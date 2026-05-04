@@ -205,7 +205,30 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
         },
     };
 
-    emit(SummaryReportDataState(data: data));
+    final sortedData = _sortByDate(data);
+    emit(SummaryReportDataState(data: sortedData));
+  }
+
+  Map<String, Map<String, int>> _sortByDate(
+    Map<String, Map<String, int>> input,
+  ) {
+    final entries = input.entries.toList()
+      ..sort((a, b) {
+        final dateA = DateTime.parse(_toIsoFormat(a.key));
+        final dateB = DateTime.parse(_toIsoFormat(b.key));
+        return dateA.compareTo(dateB);
+      });
+    Map<String, Map<String, int>> sorted = {};
+    for (final e in entries) {
+      sorted[e.key] = e.value;
+    }
+    return sorted;
+  }
+
+  /// Converts 'dd/MM/yyyy' to 'yyyy-MM-dd' for proper DateTime parsing
+  String _toIsoFormat(String dateStr) {
+    final parts = dateStr.split('/');
+    return '${parts[2]}-${parts[1]}-${parts[0]}';
   }
 
   Future<void> _handleLoadingEvent(
