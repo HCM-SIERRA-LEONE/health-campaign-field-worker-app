@@ -412,8 +412,8 @@ final dynamic inventoryReportFlows = {
         {
           "type": "template",
           "format": "infoCard",
-          "label": "STOCK_REPORT_DETAILS_INFO_CARD_LABEL",
-          "description": "STOCK_REPORT_DETAILS_INFO_CARD_DESCRIPTION",
+          "label": "STOCKREPORTS_REPORT_DETAILS_INFO_CARD_LABEL",
+          "description": "STOCKREPORTS_REPORT_DETAILS_INFO_CARD_DESC",
           "properties": {"type": "info"},
           "visible":
               "{{fn:isEmpty(selectedFacility)}} && {{fn:isEmpty(selectedProduct)}}",
