@@ -22,6 +22,8 @@ import '../pages/attendance_qr_scanner.dart';
 import '../pages/authenticated.dart';
 import '../pages/bednet_distribution/bednet_distribution_success.dart';
 import '../pages/bednet_distribution/bednet_distribution_wrapper.dart';
+import '../pages/bednet_distribution/household_bednet_distribution_wrapper.dart';
+
 import '../pages/bednet_distribution/bednet_household_overview_wrapper.dart';
 import '../pages/bednet_distribution/bednet_individual_details_wrapper.dart';
 import '../pages/bednet_distribution/school_details.dart';
@@ -137,17 +139,75 @@ class AppRouter extends _$AppRouter {
           path: 'bednet-distribution',
           children: [
             AutoRoute(
-              page: BeneficiaryTypeSelectionRoute.page,
-              path: '',
+              page: SelectSchoolRoute.page,
+              path: 'select-school',
               initial: true,
             ),
             AutoRoute(
-              page: SelectSchoolRoute.page,
-              path: 'select-school',
+              page: BednetHouseholdOverviewWrapperRoute.page,
+              path: 'overview',
+              children: [
+                AutoRoute(
+                  page: SchoolDetailsRoute.page,
+                  path: 'details',
+                ),
+                AutoRoute(
+                  page: HouseholdOverviewRoute.page,
+                  path: '',
+                  initial: true,
+                ),
+                AutoRoute(
+                  page: CustomHouseholdOverviewRoute.page,
+                  path: 'custom-household-route',
+                ),
+                AutoRoute(
+                  page: BednetIndividualDetailsWrapperRoute.page,
+                  path: 'individual-details',
+                ),
+                AutoRoute(
+                  page: BeneficiaryDetailsRoute.page,
+                  path: 'beneficiary-details',
+                ),
+                AutoRoute(
+                  page: BeneficiaryChecklistRoute.page,
+                  path: 'beneficiary-checklist',
+                ),
+                AutoRoute(
+                  page: DeliverInterventionRoute.page,
+                  path: 'deliver-intervention',
+                ),
+                AutoRoute(
+                  page: HouseholdAcknowledgementRoute.page,
+                  path: 'household-acknowledgement',
+                ),
+                AutoRoute(
+                  page: BeneficiaryAcknowledgementRoute.page,
+                  path: 'beneficiary-acknowledgement',
+                ),
+                // AutoRoute(
+                //   page: DeliverySummaryRoute.page,
+                //   path: 'delivery-summary',
+                // ),
+                // AutoRoute(
+                //     page: DoseAdministeredRoute.page,
+                //     path: 'dose-administered',
+                //   ),
+              ],
             ),
             AutoRoute(
+              page: BednetDistributionSuccessRoute.page,
+              path: 'success',
+            ),
+          ],
+        ),
+        AutoRoute(
+          page: HouseholdBednetDistributionWrapperRoute.page,
+          path: 'household-bednet-distribution',
+          children: [
+            AutoRoute(
               page: SearchBeneficiaryRoute.page,
-              path: 'search-beneficiary',
+              path: 'select-school',
+              initial: true,
             ),
             AutoRoute(
               page: BednetHouseholdOverviewWrapperRoute.page,
@@ -230,8 +290,6 @@ class AppRouter extends _$AppRouter {
           page: ProjectFacilitySelectionRoute.page,
           path: 'select-project-facilities',
         ),
-
-
 
         AutoRoute(
           page: CustomSummaryReportRoute.page,

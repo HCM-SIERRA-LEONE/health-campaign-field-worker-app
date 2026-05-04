@@ -286,6 +286,13 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    HouseholdBednetDistributionWrapperRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child:
+            WrappedRoute(child: const HouseholdBednetDistributionWrapperPage()),
+      );
+    },
     HouseholdOverviewRoute.name: (routeData) {
       final args = routeData.argsAs<HouseholdOverviewRouteArgs>(
           orElse: () => const HouseholdOverviewRouteArgs());
@@ -1411,6 +1418,20 @@ class HouseholdAcknowledgementRouteArgs {
   String toString() {
     return 'HouseholdAcknowledgementRouteArgs{key: $key, appLocalizations: $appLocalizations, enableViewHousehold: $enableViewHousehold}';
   }
+}
+
+/// generated route for
+/// [HouseholdBednetDistributionWrapperPage]
+class HouseholdBednetDistributionWrapperRoute extends PageRouteInfo<void> {
+  const HouseholdBednetDistributionWrapperRoute({List<PageRouteInfo>? children})
+      : super(
+          HouseholdBednetDistributionWrapperRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'HouseholdBednetDistributionWrapperRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
