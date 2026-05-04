@@ -728,8 +728,8 @@ class _CustomHouseholdOverviewPageState
                                                         0;
                                                     return n > 0 ? n : 1;
                                                   }(),
-                                                  bednetChildrenUnder5Count:
-                                                      _childrenUnder5FromHousehold(
+                                                  bednetChildrenUnder14Count:
+                                                      _childrenUnder14FromHousehold(
                                                     householdModel,
                                                   ),
                                                   bednetDeliveryEToken:
@@ -1275,28 +1275,25 @@ class _CustomHouseholdOverviewPageState
     return null;
   }
 
-  /// Uses [childrenUnder5] from additional fields as cap; counts non-head members
-  /// under 5 (or no DOB yet) vs that cap, and enforces [HouseholdModel.memberCount].
   bool _canAddMoreChildrenUnderFive(HouseholdMemberWrapper wrapper) {
     final h = wrapper.household;
     if (h == null) return false;
     final householdMembers = wrapper.members?.length ?? 0;
 
-    final cap = _childrenUnder5FromHousehold(h);
+    final cap = _childrenUnder14FromHousehold(h);
     if (cap <= 0) return false;
 
     return householdMembers <= cap;
   }
 
-  /// Same field as [HouseHoldDetailsPage] / MDMS `childrenUnder5`.
-  int _childrenUnder5FromHousehold(HouseholdModel? household) {
+  int _childrenUnder14FromHousehold(HouseholdModel? household) {
     final fields = household?.additionalFields?.fields;
     if (fields == null) return 0;
     final raw = fields
         .firstWhere(
-          (f) => f.key == AdditionalFieldsType.childrenUnder5.toValue(),
+          (f) => f.key == AdditionalFieldsType.childrenUnder14.toValue(),
           orElse: () => AdditionalField(
-            AdditionalFieldsType.childrenUnder5.toValue(),
+            AdditionalFieldsType.childrenUnder14.toValue(),
             '0',
           ),
         )

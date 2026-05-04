@@ -329,10 +329,10 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                       AdditionalFieldsType.longitude.toValue(),
                                       addressModel?.longitude?.toString() ??
                                           '');
-                                  fieldMap[AdditionalFieldsType.childrenUnder5
+                                  fieldMap[AdditionalFieldsType.childrenUnder14
                                           .toValue()] =
                                       AdditionalField(
-                                          AdditionalFieldsType.childrenUnder5
+                                          AdditionalFieldsType.childrenUnder14
                                               .toValue(),
                                           childrenCount.toString());
                                   final newAdditionalFields =
@@ -593,7 +593,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   builder: (field) => LabeledField(
                                     label: localizations.translate(
                                       i18.householdDetails
-                                          .noOfChildrenBelow5YearsLabel,
+                                          .noOfChildrenBelow14YearsLabel,
                                     ),
                                     isRequired: true,
                                     child: DigitNumericFormInput(
@@ -741,9 +741,10 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                       .firstWhere(
                         (f) =>
                             f.key ==
-                            AdditionalFieldsType.childrenUnder5.toValue(),
+                            AdditionalFieldsType.childrenUnder14.toValue(),
                         orElse: () => AdditionalField(
-                            AdditionalFieldsType.childrenUnder5.toValue(), '0'),
+                            AdditionalFieldsType.childrenUnder14.toValue(),
+                            '0'),
                       )
                       .value
                       .toString() ??

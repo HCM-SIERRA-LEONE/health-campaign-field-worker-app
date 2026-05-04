@@ -56,7 +56,7 @@ class _BednetEolinAssessmentPageState extends State<BednetEolinAssessmentPage> {
   int _returningCount = 1;
   bool _isSaving = false;
 
-  int get _itnForDelivery => max(1, (widget.memberCount / 2).ceil());
+  int get _itnForDelivery => min(4, max(1, (widget.memberCount / 2).ceil()));
 
   String get _effectiveToken {
     final stored = widget.householdEToken?.trim();
@@ -294,8 +294,8 @@ class _BednetEolinAssessmentPageState extends State<BednetEolinAssessmentPage> {
                           child: Text(
                             'Distributors can retrieve any valid number of old nets.',
                             style: textTheme.bodyS.copyWith(
-                              color: theme.colorScheme.onSurface
-                                  .withOpacity(0.65),
+                              color:
+                                  theme.colorScheme.onSurface.withOpacity(0.65),
                             ),
                           ),
                         ),

@@ -557,7 +557,7 @@ class BeneficiaryDetailsPageState
 
     final headName = head.name?.givenName?.trim() ?? '';
     final members = household.memberCount ?? 1;
-    final children = _childrenUnder5FromHouseholdFields(household);
+    final children = _childrenUnder14FromHouseholdFields(household);
     final eToken = _eTokenFromHousehold(wrapper.household);
 
     Navigator.of(context).push<void>(
@@ -578,7 +578,7 @@ class BeneficiaryDetailsPageState
     );
   }
 
-  int _childrenUnder5FromHouseholdFields(HouseholdModel household) {
+  int _childrenUnder14FromHouseholdFields(HouseholdModel household) {
     final fields = household.additionalFields?.fields;
     if (fields == null) return 0;
     return int.tryParse(
@@ -586,9 +586,9 @@ class BeneficiaryDetailsPageState
               .firstWhere(
                 (f) =>
                     f.key ==
-                    household_af.AdditionalFieldsType.childrenUnder5.toValue(),
+                    household_af.AdditionalFieldsType.childrenUnder14.toValue(),
                 orElse: () => AdditionalField(
-                  household_af.AdditionalFieldsType.childrenUnder5.toValue(),
+                  household_af.AdditionalFieldsType.childrenUnder14.toValue(),
                   '0',
                 ),
               )

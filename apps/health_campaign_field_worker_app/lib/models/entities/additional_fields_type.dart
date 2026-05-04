@@ -45,8 +45,8 @@ enum AdditionalFieldsType {
   eToken,
   @MappableValue("EMPLOYEE")
   employee,
-  @MappableValue("childrenUnder5")
-  childrenUnder5,
+  @MappableValue("childrenUnder14")
+  childrenUnder14,
   @MappableValue("eolinOldNetsReturningCount")
   eolinOldNetsReturningCount,
   @MappableValue("isSchool")

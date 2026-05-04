@@ -114,8 +114,7 @@ class _BednetInformHouseholdPageState
                 type: DigitButtonType.primary,
                 size: DigitButtonSize.large,
                 mainAxisSize: MainAxisSize.max,
-                isDisabled:
-                    _checked.contains(false) || _isSubmitting,
+                isDisabled: _checked.contains(false) || _isSubmitting,
                 onPressed: _openSubmitDialog,
               ),
             ],
@@ -170,9 +169,9 @@ class _BednetInformHouseholdPageState
                               Expanded(
                                 child: Text(
                                   localizations.translate(_messageKeys[idx]),
-                                  style: textTheme.headingXl.copyWith(
+                                  style: textTheme.headingL.copyWith(
                                     fontSize:
-                                        (textTheme.headingXl.fontSize ?? 24) *
+                                        (textTheme.headingL.fontSize ?? 20) *
                                             0.7,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black87,
@@ -205,8 +204,8 @@ class _BednetInformHouseholdPageState
     final pbRepo = context.read<
         LocalRepository<ProjectBeneficiaryModel,
             ProjectBeneficiarySearchModel>>();
-    final householdRepo = context
-        .repository<HouseholdModel, HouseholdSearchModel>();
+    final householdRepo =
+        context.repository<HouseholdModel, HouseholdSearchModel>();
     final taskLocalRepository =
         context.read<LocalRepository<TaskModel, TaskSearchModel>>();
 
@@ -359,7 +358,8 @@ class _BednetInformHouseholdPageState
         kBednetTaskAdministrationSuccessStatus,
       ),
       AdditionalField(kBednetTaskDistributionDateKey, now),
-      AdditionalField('householdClientReferenceId', household.clientReferenceId),
+      AdditionalField(
+          'householdClientReferenceId', household.clientReferenceId),
       AdditionalField('eToken', widget.eToken),
       AdditionalField('itnDeliveredCount', widget.itnForDelivery),
       const AdditionalField('isSchool', false),
@@ -441,7 +441,7 @@ class _BednetInformHouseholdPageState
     );
 
     await taskRepo.create(task);
-    
+
     await _refreshStockInHandAfterTaskSave(context);
   }
 
@@ -523,7 +523,7 @@ class _BednetInformHouseholdPageState
       boundary: boundary,
       navigateToSummary: false,
     ));
-    
+
     await _refreshStockInHandAfterTaskSave(context);
   }
 

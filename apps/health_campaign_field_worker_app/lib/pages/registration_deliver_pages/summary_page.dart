@@ -11,14 +11,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
 import 'package:health_campaign_field_worker_app/models/registration_deliver_model/entities/additional_fields_type.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/constants.dart';
-import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/i18_key_constants.dart' as i18;
+import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/i18_key_constants.dart'
+    as i18;
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 import 'package:health_campaign_field_worker_app/widgets/registartion_deliver/back_navigation_help_header.dart';
 
-
 import '../../../widgets/localized.dart';
 import '../bednet_distribution/bednet_distribution_success.dart';
-
 
 @RoutePage()
 class SummaryPage extends LocalizedStatefulWidget {
@@ -92,7 +91,8 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                       localizations.translate(
                         i18.common.coreCommonSummaryDetails,
                       ),
-                      style: textTheme.headingXl.copyWith(color: theme.colorTheme.primary.primary2),
+                      style: textTheme.headingXl
+                          .copyWith(color: theme.colorTheme.primary.primary2),
                     ),
                   ),
                 ),
@@ -211,16 +211,16 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                                 ),
                                 items: [
                                   LabelValueItem(
-                                    label: localizations.translate(
-                                        i18.householdLocation.villageLabel),
-                                    value: localizations.translate(
-                                        householdState.householdModel?.address
-                                                ?.locality?.code ??
-                                            i18.common.coreCommonNA),
-                                    isInline: true,
-                                    labelFlex: 5,
-                                      padding: const EdgeInsets.only(bottom: spacer2)
-                                  ),
+                                      label: localizations.translate(
+                                          i18.householdLocation.villageLabel),
+                                      value: localizations.translate(
+                                          householdState.householdModel?.address
+                                                  ?.locality?.code ??
+                                              i18.common.coreCommonNA),
+                                      isInline: true,
+                                      labelFlex: 5,
+                                      padding: const EdgeInsets.only(
+                                          bottom: spacer2)),
                                   LabelValueItem(
                                     label: localizations.translate(i18
                                         .householdLocation.landmarkFormLabel),
@@ -230,7 +230,8 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                                             .translate(i18.common.coreCommonNA),
                                     isInline: true,
                                     labelFlex: 5,
-                                    padding: const EdgeInsets.only(top: spacer2),
+                                    padding:
+                                        const EdgeInsets.only(top: spacer2),
                                   ),
                                 ]),
                           ]),
@@ -246,16 +247,16 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                                 ),
                                 items: [
                                   LabelValueItem(
-                                    label: localizations.translate(
-                                        i18.beneficiaryDetails.totalMembers),
-                                    value: householdState
-                                            .householdModel?.memberCount
-                                            .toString() ??
-                                        '0',
-                                    isInline: true,
-                                    labelFlex: 5,
-                                      padding: const EdgeInsets.only(bottom: spacer2)
-                                  ),
+                                      label: localizations.translate(
+                                          i18.beneficiaryDetails.totalMembers),
+                                      value: householdState
+                                              .householdModel?.memberCount
+                                              .toString() ??
+                                          '0',
+                                      isInline: true,
+                                      labelFlex: 5,
+                                      padding: const EdgeInsets.only(
+                                          bottom: spacer2)),
                                   LabelValueItem(
                                     label: localizations.translate(i18
                                         .householdDetails
@@ -275,23 +276,23 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                                     labelFlex: 5,
                                   ),
                                   LabelValueItem(
-                                    label: localizations.translate(i18
-                                        .householdDetails
-                                        .noOfChildrenBelow5YearsLabel),
-                                    value: householdState.householdModel
-                                            ?.additionalFields?.fields
-                                            .where((h) =>
-                                                h.key ==
-                                                AdditionalFieldsType.children
-                                                    .toValue())
-                                            .firstOrNull
-                                            ?.value
-                                            .toString() ??
-                                        '0',
-                                    isInline: true,
-                                    labelFlex: 5,
-                                      padding: const EdgeInsets.only(top: spacer2)
-                                  ),
+                                      label: localizations.translate(i18
+                                          .householdDetails
+                                          .noOfChildrenBelow14YearsLabel),
+                                      value: householdState.householdModel
+                                              ?.additionalFields?.fields
+                                              .where((h) =>
+                                                  h.key ==
+                                                  AdditionalFieldsType.children
+                                                      .toValue())
+                                              .firstOrNull
+                                              ?.value
+                                              .toString() ??
+                                          '0',
+                                      isInline: true,
+                                      labelFlex: 5,
+                                      padding:
+                                          const EdgeInsets.only(top: spacer2)),
                                 ]),
                           ]),
                       DigitCard(
@@ -306,45 +307,45 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                                 ),
                                 items: [
                                   LabelValueItem(
-                                    label: localizations.translate(
-                                        i18.householdDetails.noOfRoomsLabel),
-                                    value: householdState.householdModel
-                                            ?.additionalFields?.fields
-                                            .where((h) =>
-                                                h.key ==
-                                                AdditionalFieldsType.noOfRooms
-                                                    .toValue())
-                                            .firstOrNull
-                                            ?.value
-                                            .toString() ??
-                                        '0',
-                                    isInline: true,
-                                    labelFlex: 5,
-                                      padding: const EdgeInsets.only(bottom: spacer2)
-                                  ),
+                                      label: localizations.translate(
+                                          i18.householdDetails.noOfRoomsLabel),
+                                      value: householdState.householdModel
+                                              ?.additionalFields?.fields
+                                              .where((h) =>
+                                                  h.key ==
+                                                  AdditionalFieldsType.noOfRooms
+                                                      .toValue())
+                                              .firstOrNull
+                                              ?.value
+                                              .toString() ??
+                                          '0',
+                                      isInline: true,
+                                      labelFlex: 5,
+                                      padding: const EdgeInsets.only(
+                                          bottom: spacer2)),
                                   LabelValueItem(
-                                    label: localizations.translate(
-                                        i18.householdDetails.typeOfStructure),
-                                    value: (householdState.householdModel
-                                                ?.additionalFields?.fields
-                                                .where((h) =>
-                                                    h.key ==
-                                                    AdditionalFieldsType
-                                                        .houseStructureTypes
-                                                        .toValue())
-                                                .firstOrNull
-                                                ?.value ??
-                                            [])
-                                        .toString()
-                                        .split('|')
-                                        .map(
-                                            (item) => getLocalizedMessage(item))
-                                        .toList()
-                                        .join(', '),
-                                    isInline: true,
-                                    labelFlex: 5,
-                                      padding: const EdgeInsets.only(top: spacer2)
-                                  ),
+                                      label: localizations.translate(
+                                          i18.householdDetails.typeOfStructure),
+                                      value: (householdState.householdModel
+                                                  ?.additionalFields?.fields
+                                                  .where((h) =>
+                                                      h.key ==
+                                                      AdditionalFieldsType
+                                                          .houseStructureTypes
+                                                          .toValue())
+                                                  .firstOrNull
+                                                  ?.value ??
+                                              [])
+                                          .toString()
+                                          .split('|')
+                                          .map((item) =>
+                                              getLocalizedMessage(item))
+                                          .toList()
+                                          .join(', '),
+                                      isInline: true,
+                                      labelFlex: 5,
+                                      padding:
+                                          const EdgeInsets.only(top: spacer2)),
                                 ]),
                           ]),
                       DigitCard(
@@ -360,27 +361,28 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                                 ),
                                 items: [
                                   LabelValueItem(
-                                    label: localizations.translate(
-                                        i18.individualDetails.nameLabelText),
-                                    value: householdState.maybeWhen(
-                                        orElse: () => localizations
-                                            .translate(i18.common.coreCommonNA),
-                                        summary: (
-                                          navigateToRoot,
-                                          householdModel,
-                                          individualModel,
-                                          projectBeneficiaryModel,
-                                          registrationDate,
-                                          addressModel,
-                                          loading,
-                                          isHeadOfHousehold,
-                                        ) =>
-                                            individualModel?.name?.givenName ??
-                                            localizations.translate(
-                                                i18.common.coreCommonNA)),
-                                    labelFlex: 5,
-                                      padding: const EdgeInsets.only(bottom: spacer2)
-                                  ),
+                                      label: localizations.translate(
+                                          i18.individualDetails.nameLabelText),
+                                      value: householdState.maybeWhen(
+                                          orElse: () => localizations.translate(
+                                              i18.common.coreCommonNA),
+                                          summary: (
+                                            navigateToRoot,
+                                            householdModel,
+                                            individualModel,
+                                            projectBeneficiaryModel,
+                                            registrationDate,
+                                            addressModel,
+                                            loading,
+                                            isHeadOfHousehold,
+                                          ) =>
+                                              individualModel
+                                                  ?.name?.givenName ??
+                                              localizations.translate(
+                                                  i18.common.coreCommonNA)),
+                                      labelFlex: 5,
+                                      padding: const EdgeInsets.only(
+                                          bottom: spacer2)),
                                   LabelValueItem(
                                     label: localizations.translate(
                                         i18.individualDetails.dobLabelText),
@@ -412,32 +414,32 @@ class SummaryPageState extends LocalizedState<SummaryPage> {
                                     labelFlex: 5,
                                   ),
                                   LabelValueItem(
-                                    label: localizations.translate(
-                                        i18.individualDetails.genderLabelText),
-                                    value: householdState.maybeWhen(
-                                        orElse: () => localizations
-                                            .translate(i18.common.coreCommonNA),
-                                        summary: (
-                                          navigateToRoot,
-                                          householdModel,
-                                          individualModel,
-                                          projectBeneficiaryModel,
-                                          registrationDate,
-                                          addressModel,
-                                          loading,
-                                          isHeadOfHousehold,
-                                        ) =>
-                                            individualModel?.gender != null
-                                                ? localizations.translate(
-                                                    individualModel
-                                                            ?.gender?.name
-                                                            .toUpperCase() ??
-                                                        '')
-                                                : localizations.translate(
-                                                    i18.common.coreCommonNA)),
-                                    labelFlex: 5,
-                                      padding: const EdgeInsets.only(top: spacer2)
-                                  ),
+                                      label: localizations.translate(i18
+                                          .individualDetails.genderLabelText),
+                                      value: householdState.maybeWhen(
+                                          orElse: () => localizations.translate(
+                                              i18.common.coreCommonNA),
+                                          summary: (
+                                            navigateToRoot,
+                                            householdModel,
+                                            individualModel,
+                                            projectBeneficiaryModel,
+                                            registrationDate,
+                                            addressModel,
+                                            loading,
+                                            isHeadOfHousehold,
+                                          ) =>
+                                              individualModel?.gender != null
+                                                  ? localizations.translate(
+                                                      individualModel
+                                                              ?.gender?.name
+                                                              .toUpperCase() ??
+                                                          '')
+                                                  : localizations.translate(
+                                                      i18.common.coreCommonNA)),
+                                      labelFlex: 5,
+                                      padding:
+                                          const EdgeInsets.only(top: spacer2)),
                                 ]),
                           ]),
                     ],

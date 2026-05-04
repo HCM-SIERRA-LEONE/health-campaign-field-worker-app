@@ -69,7 +69,7 @@ class CustomMemberCard extends StatelessWidget {
   final HouseholdModel? bednetHousehold;
   final String? bednetHeadDisplayName;
   final int? bednetMemberCount;
-  final int? bednetChildrenUnder5Count;
+  final int? bednetChildrenUnder14Count;
 
   /// Household additional field `e-Token` (and fallback from project beneficiary tag).
   final String? bednetDeliveryEToken;
@@ -98,7 +98,7 @@ class CustomMemberCard extends StatelessWidget {
     this.bednetHousehold,
     this.bednetHeadDisplayName,
     this.bednetMemberCount,
-    this.bednetChildrenUnder5Count,
+    this.bednetChildrenUnder14Count,
     this.bednetDeliveryEToken,
   });
 
@@ -687,7 +687,7 @@ class CustomMemberCard extends StatelessWidget {
                         }();
 
                         final members = bednetMemberCount ?? 1;
-                        final children = bednetChildrenUnder5Count ?? 0;
+                        final children = bednetChildrenUnder14Count ?? 0;
 
                         Navigator.of(context)
                             .push<void>(

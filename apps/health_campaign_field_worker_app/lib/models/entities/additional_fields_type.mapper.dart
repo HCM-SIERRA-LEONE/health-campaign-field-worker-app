@@ -65,8 +65,8 @@ class AdditionalFieldsTypeMapper extends EnumMapper<AdditionalFieldsType> {
         return AdditionalFieldsType.eToken;
       case "EMPLOYEE":
         return AdditionalFieldsType.employee;
-      case "childrenUnder5":
-        return AdditionalFieldsType.childrenUnder5;
+      case "childrenUnder14":
+        return AdditionalFieldsType.childrenUnder14;
       case "eolinOldNetsReturningCount":
         return AdditionalFieldsType.eolinOldNetsReturningCount;
       case "isSchool":
@@ -119,8 +119,8 @@ class AdditionalFieldsTypeMapper extends EnumMapper<AdditionalFieldsType> {
         return "e-Token";
       case AdditionalFieldsType.employee:
         return "EMPLOYEE";
-      case AdditionalFieldsType.childrenUnder5:
-        return "childrenUnder5";
+      case AdditionalFieldsType.childrenUnder14:
+        return "childrenUnder14";
       case AdditionalFieldsType.eolinOldNetsReturningCount:
         return "eolinOldNetsReturningCount";
       case AdditionalFieldsType.isSchool:
