@@ -439,13 +439,38 @@ class _TbFacilitySearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final textTheme = theme.digitTextTheme(context);
     final searchController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          localizations.translate(i18_local.tbScreening.searchFacilitiesHeader),
-        ),
+        backgroundColor: theme.colorTheme.primary.primary2,
+        foregroundColor: theme.colorTheme.paper.primary,
+        actions: [
+          BlocBuilder<BoundaryBloc, BoundaryState>(
+            builder: (context, state) {
+              final selectedBoundary = context.boundaryOrNull;
+
+              return selectedBoundary != null
+                  ? DigitButton(
+                      label:
+                          localizations.translate(selectedBoundary.code ?? ''),
+                      suffixIcon: Icons.arrow_drop_down,
+                      type: DigitButtonType.tertiary,
+                      size: DigitButtonSize.large,
+                      onPressed: () {
+                        if (context.router.topRoute.name !=
+                            CurrentBoundaryRoute.name) {
+                          context.router.push(CurrentBoundaryRoute());
+                        }
+                      },
+                      iconColor: theme.colorTheme.generic.background,
+                      textColor: theme.colorTheme.generic.background,
+                    )
+                  : const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
       body: StatefulBuilder(
         builder: (context, setState) {
@@ -461,48 +486,78 @@ class _TbFacilitySearchPage extends StatelessWidget {
                   return name.contains(q) || id.contains(q);
                 }).toList();
 
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: spacer2),
-                child: BackNavigationHelpHeaderWidget(
+          return ScrollableContent(
+            header: const Column(
+              children: [
+                BackNavigationHelpHeaderWidget(
                   showHelp: false,
-                  handleBack: () {
-                    Navigator.pop(context);
-                  },
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(spacer2),
-                child: TextField(
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    hintText:
-                        localizations.translate(i18_local.common.searchByName),
-                    border: const OutlineInputBorder(),
+              ],
+            ),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(spacer2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        localizations.translate(
+                          i18_local.tbScreening.searchFacilitiesHeader,
+                        ),
+                        style: textTheme.headingXl.copyWith(
+                          color: theme.colorTheme.primary.primary2,
+                        ),
+                      ),
+                      const SizedBox(height: spacer2),
+                      DigitSearchFormInput(
+                        controller: searchController,
+                        helpText: localizations
+                            .translate(i18_local.common.searchByName),
+                        onChange: (_) => filter(),
+                      ),
+                    ],
                   ),
-                  onChanged: (_) => filter(),
                 ),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    final f = filtered[index];
-                    return ListTile(
-                      title: Text(
-                        localizations.translate('FAC_${f.id}'),
-                        style: theme.textTheme.bodyLarge,
+              if (filtered.isEmpty)
+                SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      localizations.translate(
+                        i18_local.common.noResultsFound,
                       ),
-                      subtitle: Text(
-                        f.id,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      onTap: () => Navigator.of(context).pop(f),
-                    );
-                  },
+                      style: textTheme.bodyL,
+                    ),
+                  ),
+                )
+              else
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final f = filtered[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: spacer2,
+                          vertical: spacer1,
+                        ),
+                        child: DigitCard(
+                          padding: const EdgeInsets.all(spacer4),
+                          onPressed: () => Navigator.of(context).pop(f),
+                          children: [
+                            Text(
+                              localizations.translate('FAC_${f.id}'),
+                              style: textTheme.headingM.copyWith(
+                                color: theme.colorTheme.primary.primary2,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                    childCount: filtered.length,
+                  ),
                 ),
-              ),
             ],
           );
         },

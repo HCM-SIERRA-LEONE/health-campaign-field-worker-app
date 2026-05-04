@@ -86,6 +86,7 @@ import '../widgets/showcase/showcase_button.dart';
 import '../widgets/stock_balance/stock_balance_card.dart';
 import '../widgets/stock_reconciliation/stock_reconciliation_card.dart';
 import '../widgets/task_functions.dart';
+import 'registration_deliver_pages/beneficiary_registration/refer_beneficiary_page.dart';
 
 @RoutePage()
 class HomePage extends LocalizedStatefulWidget {
@@ -2360,7 +2361,11 @@ class _HomePageState extends LocalizedState<HomePage> {
           icon: Icons.house,
           label: i18.home.beneficiaryLabel,
           onPressed: () async {
-            context.router.push(const BednetDistributionWrapperRoute());
+            if (contextIsCommunityDistributor(context)) {
+              context.router.push(HouseholdBednetDistributionWrapperRoute());
+            } else {
+              context.router.push(BednetDistributionWrapperRoute());
+            }
           },
         ),
       ),
@@ -2818,7 +2823,7 @@ class _HomePageState extends LocalizedState<HomePage> {
               onBoundarySelected: (ctx) async {
                 final moduleName =
                     'hcm-stockreports-${context.selectedProject.referenceID}';
-                triggerLocalization(module: moduleName);
+                triggerLocalization(module: moduleName, loadOnline: true);
                 isTriggerLocalisation = false;
 
                 await FlowNavigationUtils.navigateToFlowModule(
@@ -3138,7 +3143,9 @@ class _HomePageState extends LocalizedState<HomePage> {
         .map((label) => homeItemsShowcaseMap[label]!)
         .toList();
 
-    filteredLabels.add(i18.home.summaryLabel);
+    if (contextIsMdtUser(context)) {
+      filteredLabels.add(i18.home.summaryLabel);
+    }
 
     if (envConfig.variables.envType == EnvType.demo && kReleaseMode) {
       filteredLabels.remove(i18.home.db);
@@ -3181,7 +3188,7 @@ class _HomePageState extends LocalizedState<HomePage> {
                   .read<LocalizationBloc>()
                   .add(LocalizationEvent.onLoadLocalization(
                     module: module != null && module.isNotEmpty
-                        ? "$module,hcm-common,hcm-login,hcm-scanner,hcm-checklist,hcm-stock"
+                        ? "$module,hcm-common,hcm-login,hcm-scanner,hcm-checklist,hcm-stock,hcm-household,hcm-inventory"
                         : localizationModulesList?.interfaces
                                 .where(
                                     (e) => e.type == Modules.localizationModule)

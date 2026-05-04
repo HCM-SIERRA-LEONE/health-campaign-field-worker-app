@@ -13,6 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../models/entities/roles_type.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/extensions/extensions.dart';
 import '../../../utils/i18_key_constants.dart' as i18;
 import '../../utils/stock_calculation_utils.dart';
 import '../localized.dart';
@@ -556,15 +559,65 @@ class _StockReconciliationCardState
           .map((pf) => pf.facilityId)
           .toSet();
 
-      // Return FacilityModel entries matching filtered IDs
+      // Get FacilityModel entries matching filtered IDs
+      List<FacilityModel> facilities;
       if (allFacilities != null && allFacilities.isNotEmpty) {
-        return allFacilities
+        facilities = allFacilities
             .map((e) => e is FacilityModel
                 ? e
                 : FacilityModelMapper.fromMap(e as Map<String, dynamic>))
             .where((f) => facilityIds.contains(f.id))
             .toList();
+      } else {
+        facilities = [];
       }
+
+      // Apply role-based and boundary-level filtering (same as stock_balance_card.dart)
+      final isWareHouseMgr = context.loggedInUserRoles
+          .any((role) => role.code == RolesType.warehouseManager.toValue());
+
+      final isDistributor = context.loggedInUserRoles
+          .where(
+            (role) => role.code == RolesType.distributor.toValue(),
+          )
+          .toList()
+          .isNotEmpty;
+
+      final isCommunityDistributor = context.loggedInUserRoles
+          .any((role) => role.code == RolesType.communityDistributor.toValue());
+
+      final isHFS = context.loggedInUserRoles.any(
+          (role) => role.code == RolesType.healthFacilitySupervisor.toValue());
+
+      String usage = "";
+      final boundaryLevel = context.selectedProject.address?.boundaryType;
+
+      if (isWareHouseMgr) {
+        if (boundaryLevel == Constants.stateBoundaryLevel) {
+          usage = Constants.stateFacility;
+        } else if (boundaryLevel == Constants.lgaBoundaryLevel) {
+          usage = Constants.districtFacility;
+        } else {
+          usage = Constants.dhFacility;
+        }
+      } else if (isDistributor || isCommunityDistributor) {
+        usage = "None";
+      } else {
+        usage = Constants.healthFacility;
+      }
+
+      if (isHFS) {
+        usage = Constants.healthFacility;
+      }
+
+      // Filter facilities by usage
+      if (usage.trim().isNotEmpty && usage != "None") {
+        facilities = facilities
+            .where((facility) => (facility.usage ?? '').trim() == usage.trim())
+            .toList();
+      }
+
+      return facilities;
     } catch (e) {
       // Silently handle parsing errors
     }

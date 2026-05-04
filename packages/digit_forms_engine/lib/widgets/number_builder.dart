@@ -29,7 +29,11 @@ class JsonSchemaNumberBuilder extends JsonSchemaBuilder<int> {
   Widget build(BuildContext context) {
     final loc = FormLocalization.of(context);
     final validationMessages = buildValidationMessages(validations, loc);
-    final inputFormatter = getPatternFormatter(validations);
+    final patternFormatter = getPatternFormatter(validations);
+    final effectiveFormatters = <TextInputFormatter>[
+      FilteringTextInputFormatter.digitsOnly,
+      if (patternFormatter != null) patternFormatter,
+    ];
 
     return ReactiveFormConsumer(
       builder: (context, formGroup, child) {
@@ -57,7 +61,10 @@ class JsonSchemaNumberBuilder extends JsonSchemaBuilder<int> {
                   form.control(formControlName).value = null;
                   return;
                 }
-                form.control(formControlName).value = int.parse(value);
+                final parsed = int.tryParse(value);
+                if (parsed != null) {
+                  form.control(formControlName).value = parsed;
+                }
                 if (getMinLength(validations) != null &&
                     value.length < getMinLength(validations)!) {
                   form.control(formControlName).setErrors({'minLength': true});
@@ -66,7 +73,7 @@ class JsonSchemaNumberBuilder extends JsonSchemaBuilder<int> {
                 }
               },
               errorMessage: _getNumberErrorMessage(field.control, context),
-              inputFormatters: inputFormatter != null ? [inputFormatter] : null,
+              inputFormatters: effectiveFormatters,
             ),
           ),
         );

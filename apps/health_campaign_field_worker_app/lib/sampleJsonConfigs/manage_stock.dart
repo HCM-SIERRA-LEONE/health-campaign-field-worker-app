@@ -1052,6 +1052,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "regex",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "pattern",
+                  "value": r"^[0-9]+$",
+                  "message": "Please enter a valid number"
                 }
               ],
               "errorMessage": "",
@@ -1091,6 +1096,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "regex",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "pattern",
+                  "value": r"^[0-9]+$",
+                  "message": "Please enter a valid number"
                 }
               ],
               "errorMessage": "",
@@ -1128,6 +1138,11 @@ final dynamic sampleInventoryFlows = {
                 },
                 {
                   "type": "regex",
+                  "value": r"^[0-9]+$",
+                  "message": "Please enter a valid number"
+                },
+                {
+                  "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
                 }
@@ -1177,6 +1192,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "regex",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "pattern",
+                  "value": r"^[0-9]+$",
+                  "message": "Please enter a valid number"
                 }
               ],
               "errorMessage": "",
@@ -1214,6 +1234,11 @@ final dynamic sampleInventoryFlows = {
                 },
                 {
                   "type": "regex",
+                  "value": r"^[0-9]+$",
+                  "message": "Please enter a valid number"
+                },
+                {
+                  "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
                 }
@@ -1746,6 +1771,11 @@ final dynamic sampleInventoryFlows = {
                 },
                 {
                   "type": "regex",
+                  "value": r"^[0-9]+$",
+                  "message": "Please enter a valid number"
+                },
+                {
+                  "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
                 }
@@ -2794,6 +2824,11 @@ final dynamic sampleInventoryFlows = {
                 },
                 {
                   "type": "regex",
+                  "value": r"^[0-9]+$",
+                  "message": "Please enter a valid number"
+                },
+                {
+                  "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
                 }

@@ -501,7 +501,8 @@ class HouseholdDetails {
 
   String get noOfPregnantWomenCountCLFLabel => 'NO_OF_PREGNANT_WOMEN_CLF_LABEL';
 
-  String get noOfChildrenBelow5YearsLabel => 'NO_OF_CHILDREN_BELOW_5_YR_LABEL';
+  String get noOfChildrenBelow14YearsLabel =>
+      'NO_OF_CHILDREN_BELOW_14_YR_LABEL';
 
   String get noOfChildrenBelow5YearsCLFLabel =>
       'NO_OF_CHILDREN_BELOW_5_YR_CLF_LABEL';

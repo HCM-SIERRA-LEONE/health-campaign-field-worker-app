@@ -141,6 +141,9 @@ class Constants {
     'hcm-attendance',
     'hcm-dashboard',
     'hcm-beneficiary',
+    'hcm-inventory',
+    'hcm-checklist',
+    'hcm-household',
   ];
 
   // Modules to load on home page and logout.
@@ -269,21 +272,21 @@ class Constants {
     final config = appConfigs.firstOrNull;
 
     // Always initialize Firebase Core (required for FCM, analytics, etc.)
-    await firebase_services.initialize(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // await firebase_services.initialize(
+    //   options: DefaultFirebaseOptions.currentPlatform,
+    // );
 
-    final enableCrashlytics =
-        config?.firebaseConfig?.enableCrashlytics ?? false;
+    // final enableCrashlytics =
+    //     config?.firebaseConfig?.enableCrashlytics ?? false;
 
-    if (enableCrashlytics) {
-      await firebase_services.initialize(
-        options: DefaultFirebaseOptions.currentPlatform,
-        onErrorMessage: (value) {
-          AppLogger.instance.error(title: 'CRASHLYTICS', message: value);
-        },
-      );
-    }
+    // if (enableCrashlytics) {
+    //   await firebase_services.initialize(
+    //     options: DefaultFirebaseOptions.currentPlatform,
+    //     onErrorMessage: (value) {
+    //       AppLogger.instance.error(title: 'CRASHLYTICS', message: value);
+    //     },
+    //   );
+    // }
 
     _version = version;
   }

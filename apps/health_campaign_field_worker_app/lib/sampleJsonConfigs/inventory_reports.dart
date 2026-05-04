@@ -140,6 +140,31 @@ final dynamic inventoryReportFlows = {
         {
           "type": "template",
           "format": "menu_card",
+          "heading": "STOCKREPORTS_VIEW_REPORTS_STOCK_RECON_HEADING",
+          "description": "STOCKREPORTS_VIEW_REPORTS_STOCK_RECON_DESCRIPTION",
+          "icon": "Assessment",
+          "onAction": [
+            {
+              "actionType": "NAVIGATION",
+              "properties": {
+                "type": "TEMPLATE",
+                "name": "reckonReportDetails",
+                "data": [
+                  {"key": "reportType", "value": "reconciliation"},
+                  {
+                    "key": "facilities",
+                    "value":
+                        "{{fn:filterProjectFacilitiesByUsage(ProjectFacilityModel, FacilityModel)}}"
+                  },
+                  {"key": "productVariants", "value": "{{ProductVariantModel}}"}
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "template",
+          "format": "menu_card",
           "heading": "STOCKREPORTS_VIEW_REPORTS_STOCK_DAMAGED_HEADING",
           "description": "STOCKREPORTS_VIEW_REPORTS_STOCK_DAMAGED_DESCRIPTION",
           "icon": "Assessment",
@@ -240,31 +265,6 @@ final dynamic inventoryReportFlows = {
             }
           ],
           "visible": "{{fn:hasRole('DISTRIBUTOR')}} == true",
-        },
-        {
-          "type": "template",
-          "format": "menu_card",
-          "heading": "STOCKREPORTS_VIEW_REPORTS_STOCK_RECON_HEADING",
-          "description": "STOCKREPORTS_VIEW_REPORTS_STOCK_RECON_DESCRIPTION",
-          "icon": "Assessment",
-          "onAction": [
-            {
-              "actionType": "NAVIGATION",
-              "properties": {
-                "type": "TEMPLATE",
-                "name": "reckonReportDetails",
-                "data": [
-                  {"key": "reportType", "value": "reconciliation"},
-                  {
-                    "key": "facilities",
-                    "value":
-                        "{{fn:filterProjectFacilitiesByUsage(ProjectFacilityModel, FacilityModel)}}"
-                  },
-                  {"key": "productVariants", "value": "{{ProductVariantModel}}"}
-                ]
-              }
-            }
-          ]
         }
       ]
     },
