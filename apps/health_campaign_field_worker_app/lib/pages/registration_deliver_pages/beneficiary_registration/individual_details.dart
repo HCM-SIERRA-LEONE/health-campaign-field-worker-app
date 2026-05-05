@@ -52,10 +52,15 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
   static const _dobKey = 'dob';
   static const _genderKey = 'gender';
   static const _mobileNumberKey = 'mobileNumber';
+  static const _requiredIndicator = '*';
   bool isDuplicateTag = false;
   static const maxLength = 200;
   final clickedStatus = ValueNotifier<bool>(false);
   DateTime now = DateTime.now();
+
+  String _requiredLabel(String localizationKey) {
+    return '${localizations.translate(localizationKey)} $_requiredIndicator';
+  }
 
   /// New key each time this [State] is created (each navigation to this page).
   /// [DigitDobPicker] and other inputs keep internal state from the first
@@ -503,12 +508,10 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                           _showcaseIndividualDob.buildWith(
                             child: DigitDobPicker(
                               datePickerFormControl: _dobKey,
-                              datePickerLabel: localizations.translate(
-                                i18.individualDetails.dobLabelText,
-                              ),
-                              ageFieldLabel: localizations.translate(
-                                i18.individualDetails.ageLabelText,
-                              ),
+                              datePickerLabel:
+                                  _requiredLabel(i18.individualDetails.dobLabelText),
+                              ageFieldLabel:
+                                  _requiredLabel(i18.individualDetails.ageLabelText),
                               yearsHintLabel: localizations.translate(
                                 i18.individualDetails.yearsHintText,
                               ),
