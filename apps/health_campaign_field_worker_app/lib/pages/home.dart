@@ -2823,7 +2823,7 @@ class _HomePageState extends LocalizedState<HomePage> {
               onBoundarySelected: (ctx) async {
                 final moduleName =
                     'hcm-stockreports-${context.selectedProject.referenceID}';
-                triggerLocalization(module: moduleName, loadOnline: true);
+                triggerLocalization(module: moduleName, loadOnline: false);
                 isTriggerLocalisation = false;
 
                 await FlowNavigationUtils.navigateToFlowModule(
@@ -3188,7 +3188,7 @@ class _HomePageState extends LocalizedState<HomePage> {
                   .read<LocalizationBloc>()
                   .add(LocalizationEvent.onLoadLocalization(
                     module: module != null && module.isNotEmpty
-                        ? "$module,hcm-common,hcm-login,hcm-scanner,hcm-checklist,hcm-stock,hcm-household,hcm-inventory"
+                        ? "$module,hcm-common,hcm-login,hcm-scanner,hcm-checklist,hcm-stock,hcm-stockreports,hcm-household,hcm-inventory"
                         : localizationModulesList?.interfaces
                                 .where(
                                     (e) => e.type == Modules.localizationModule)

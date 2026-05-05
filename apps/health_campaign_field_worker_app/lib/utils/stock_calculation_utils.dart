@@ -93,7 +93,10 @@ class StockCalculationUtils {
         // Distributors: received stocks are counted, LOSS/DAMAGED are counted as lost/damaged
         if (transactionType == 'RECEIVED') {
           if (transactionReason == 'RETURNED' || stockEntryType == 'RETURNED') {
-            stockReturned += quantity;
+            // Warehouse rejected the return — do not treat as completed return for MDT balance
+            if (status != 'REJECTED') {
+              stockReturned += quantity;
+            }
           } else if (stockEntryType == 'EXCESS') {
             stockExcess += quantity;
           } else if (stockEntryType == 'LESS') {
@@ -115,7 +118,10 @@ class StockCalculationUtils {
             stockDamaged += quantity;
           }
           if (transactionReason == 'RETURNED' || stockEntryType == 'RETURNED') {
-            stockReturned += quantity;
+            // Same as warehouse: rejected inbound return — stock stays with distributor
+            if (status != 'REJECTED') {
+              stockReturned += quantity;
+            }
           }
         }
         continue;

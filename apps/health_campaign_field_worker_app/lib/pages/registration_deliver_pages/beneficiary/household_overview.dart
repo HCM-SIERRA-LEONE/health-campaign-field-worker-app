@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/delivery_intervention/deliver_intervention.dart';
 import '../../../models/bednet_distribution/bednet_distribution_models.dart';
+import '../../../utils/bednet_class_selection_singleton.dart';
 import 'package:health_campaign_field_worker_app/models/registration_deliver_model/entities/status.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 import 'package:health_campaign_field_worker_app/widgets/registartion_deliver/back_navigation_help_header.dart';
@@ -1148,11 +1149,50 @@ class _HouseholdOverviewPageState
   List<IndividualModel> _membersOrderedHeadFirst(
     HouseholdMemberWrapper wrapper,
   ) {
+    final selectedClass = BednetClassSelectionSingleton().selectedClass;
     final raw = wrapper.members ?? [];
-    return [
-      ...raw.where((e) => _isHouseholdHeadMember(e, wrapper)),
-      ...raw.where((e) => !_isHouseholdHeadMember(e, wrapper)),
-    ];
+
+    // If no class selected, return all members with head first
+    if (selectedClass == null) {
+      return [
+        ...raw.where((e) => _isHouseholdHeadMember(e, wrapper)),
+        ...raw.where((e) => !_isHouseholdHeadMember(e, wrapper)),
+      ];
+    }
+
+    // Filter members by class, always include head (never filter the head)
+    final head = raw.where((e) => _isHouseholdHeadMember(e, wrapper)).toList();
+    final nonHead =
+        raw.where((e) => !_isHouseholdHeadMember(e, wrapper)).toList();
+
+    // Filter non-head members by class
+    // Show students if: they have no class field OR their class matches selected class
+    final filteredNonHead = nonHead.where((member) {
+      final fields =
+          member.additionalFields?.fields ?? const <AdditionalField>[];
+
+      // If no additional fields or no class field, show the student (default behavior)
+      if (fields.isEmpty) {
+        return true;
+      }
+
+      final map = <String, Object?>{
+        for (final field in fields)
+          field.key.toLowerCase(): field.value as Object?,
+      };
+      final memberClass = map['class']?.toString();
+
+      // If no class field, show the student (default behavior)
+      if (memberClass == null || memberClass.isEmpty) {
+        return true;
+      }
+
+      // Only filter if class field exists and doesn't match
+      return memberClass == selectedClass;
+    }).toList();
+
+    // Always return head first, then filtered non-head
+    return [...head, ...filteredNonHead];
   }
 
   /// When there is no DB head (e.g. school household), match [bednetSchoolHead] to a member's given name.

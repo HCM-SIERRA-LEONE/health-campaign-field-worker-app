@@ -7,6 +7,7 @@ import '../../blocs/bednet_distribution/bednet_distribution.dart';
 import '../../blocs/registration_deliver/household_overview/household_overview.dart';
 import '../../models/bednet_distribution/bednet_distribution_models.dart';
 import '../../router/app_router.dart';
+import '../../utils/bednet_class_selection_singleton.dart';
 import '../../widgets/header/back_navigation_help_header.dart';
 import 'widgets/bednet_info_card.dart';
 
@@ -16,6 +17,8 @@ class SchoolDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedClass = BednetClassSelectionSingleton().selectedClass;
+
     return BlocBuilder<BednetDistributionBloc, BednetDistributionState>(
       builder: (context, distributionState) {
         final school = distributionState.selectedSchool;
@@ -44,6 +47,7 @@ class SchoolDetailsPage extends StatelessWidget {
                       size: DigitButtonSize.large,
                       mainAxisSize: MainAxisSize.max,
                       onPressed: () {
+                        BednetClassSelectionSingleton().clear();
                         context.router.push(HouseholdOverviewRoute());
                       },
                     )
@@ -55,6 +59,8 @@ class SchoolDetailsPage extends StatelessWidget {
                       title: 'School Details',
                       items: [
                         MapEntry('School Name', school.bednetDisplayName),
+                        if (selectedClass != null)
+                          MapEntry('Selected Class', 'Class $selectedClass'),
                         MapEntry(
                           'School Head',
                           headName.isNotEmpty

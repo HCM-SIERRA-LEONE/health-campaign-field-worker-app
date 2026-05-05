@@ -832,7 +832,7 @@ final dynamic sampleComplaintFlows = {
               "mandatory": true,
               "deleteFlag": false,
               "innerLabel": "",
-              "prefixText": "+91",
+              "prefixText": "+234",
               "systemDate": false,
               "validations": [
                 {
@@ -905,7 +905,7 @@ final dynamic sampleComplaintFlows = {
               "fieldName": "supervisorContactNumber",
               "deleteFlag": false,
               "innerLabel": "",
-              "prefixText": "+91",
+              "prefixText": "+234",
               "systemDate": false,
               "validations": [
                 {

@@ -915,6 +915,8 @@ class DataShare {
 
   String get invalidFileError => 'INVALID_FILE_FORMAT_ERROR';
 
+  String get invalidUserIdFormat => 'INVALID_USER_ID_FORMAT';
+
   String get fileNotFoundError => 'FILE_NOT_FOUND_ERROR';
 
   String get failedToTransfer => 'FAILED_TO_TRANSFER';

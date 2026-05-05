@@ -96,13 +96,18 @@
     "locale": "",
     "message": "Assign As CLF Head",
     "module": "hcm-beneficiary"
-  }
-
+  },
 
   {
     "code": "FETCH_BOUNDARY_FAILED",
     "locale": "",
     "message": "No boundary data associated with this project.",
     "module": "hcm-home"
+  },
+  {
+    "code": "INVALID_USER_ID_FORMAT",
+    "locale": "",
+    "message": "Please scan a valid user ID (UUID format)",
+    "module": "hcm-inventory"
   }
 ]

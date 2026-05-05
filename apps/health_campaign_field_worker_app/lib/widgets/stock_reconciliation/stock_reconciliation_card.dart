@@ -186,6 +186,18 @@ class _StockReconciliationCardState
         return ValueListenableBuilder<FlowCrudState?>(
           valueListenable: FlowCrudStateRegistry().listen(widget.pageSchema),
           builder: (context, flowState, child) {
+            // Check user roles for filtering stock metrics
+            final isDistributor = context.loggedInUserRoles
+                .where(
+                  (role) => role.code == RolesType.distributor.toValue(),
+                )
+                .toList()
+                .isNotEmpty;
+
+            final isCommunityDistributor = context.loggedInUserRoles.any(
+                (role) =>
+                    role.code == RolesType.communityDistributor.toValue());
+
             // Get facilities and product variants from FlowCrudStateRegistry
             final facilities = _getFacilities(flowState);
             final productVariants = _getProductVariants(flowState);
@@ -348,35 +360,38 @@ class _StockReconciliationCardState
                         labelFlex: 5,
                       ),
                       const DigitDivider(),
-                      LabelValueItem(
-                        label: localizations.translate(
-                            i18.stockReconciliationMetrics.stockLost),
-                        value: _stockMetrics['stockLost']!.toStringAsFixed(0),
-                        labelFlex: 5,
-                      ),
-                      const DigitDivider(),
-                      // LabelValueItem(
-                      //   label: localizations.translate(
-                      //       i18.stockReconciliationMetrics.stockDamaged),
-                      //   value:
-                      //       _stockMetrics['stockDamaged']!.toStringAsFixed(0),
-                      //   labelFlex: 5,
-                      // ),
-                      // const DigitDivider(),
-                      LabelValueItem(
-                        label: localizations.translate(
-                            i18.stockReconciliationMetrics.stockExcess),
-                        value: _stockMetrics['stockExcess']!.toStringAsFixed(0),
-                        labelFlex: 5,
-                      ),
-                      const DigitDivider(),
-                      LabelValueItem(
-                        label: localizations.translate(
-                            i18.stockReconciliationMetrics.stockLess),
-                        value: _stockMetrics['stockLess']!.toStringAsFixed(0),
-                        labelFlex: 5,
-                      ),
-                      const DigitDivider(),
+                      if (isDistributor || isCommunityDistributor) ...[
+                        LabelValueItem(
+                          label: localizations.translate(
+                              i18.stockReconciliationMetrics.stockLost),
+                          value: _stockMetrics['stockLost']!.toStringAsFixed(0),
+                          labelFlex: 5,
+                        ),
+                        const DigitDivider(),
+                        // LabelValueItem(
+                        //   label: localizations.translate(
+                        //       i18.stockReconciliationMetrics.stockDamaged),
+                        //   value:
+                        //       _stockMetrics['stockDamaged']!.toStringAsFixed(0),
+                        //   labelFlex: 5,
+                        // ),
+                        // const DigitDivider(),
+                        LabelValueItem(
+                          label: localizations.translate(
+                              i18.stockReconciliationMetrics.stockExcess),
+                          value:
+                              _stockMetrics['stockExcess']!.toStringAsFixed(0),
+                          labelFlex: 5,
+                        ),
+                        const DigitDivider(),
+                        LabelValueItem(
+                          label: localizations.translate(
+                              i18.stockReconciliationMetrics.stockLess),
+                          value: _stockMetrics['stockLess']!.toStringAsFixed(0),
+                          labelFlex: 5,
+                        ),
+                        const DigitDivider(),
+                      ],
                       LabelValueItem(
                         label: localizations.translate(
                             i18.stockReconciliationMetrics.stockOnHand),

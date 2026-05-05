@@ -139,7 +139,8 @@ class BednetDistributionEvent with _$BednetDistributionEvent {
 
   /// Same as [selectSchool] for stored data, but does not bump [BednetDistributionState.schoolSelectionSeq].
   const factory BednetDistributionEvent.updateSelectedSchool(
-      {required HouseholdModel school}) = BednetDistributionUpdateSelectedSchoolEvent;
+          {required HouseholdModel school}) =
+      BednetDistributionUpdateSelectedSchoolEvent;
 }
 
 @freezed

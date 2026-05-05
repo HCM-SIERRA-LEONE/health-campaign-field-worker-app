@@ -38,6 +38,9 @@ class Common {
 
   String get coreCommonMobileNumber => 'CORE_COMMON_MOBILE_NUMBER';
 
+  String get coreCommonMobileNumberValidation =>
+      'CORE_COMMON_MOBILE_NUMBER_VALIDATION';
+
   String get coreCommonSubmit => 'CORE_COMMON_SUBMIT';
 
   String get coreCommonSave => 'CORE_COMMON_SAVE';

@@ -13,11 +13,13 @@ import 'package:digit_ui_components/widgets/molecules/show_pop_up.dart';
 import 'package:digit_ui_components/widgets/scrollable_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../blocs/localization/app_localization.dart';
 import '../../../blocs/registration_deliver/delivery_intervention/deliver_intervention.dart';
 import '../../../models/bednet_distribution/bednet_distribution_models.dart';
 import '../../../models/entities/additional_fields_type.dart';
 import '../../../models/registration_deliver_model/entities/status.dart';
 import '../../../utils/registration_deliver_utils/utils.dart';
+import '../../../utils/utils.dart' as stock_utils;
 import '../../../widgets/registartion_deliver/back_navigation_help_header.dart';
 import '../../../widgets/registartion_deliver/localized.dart';
 import '../../../widgets/registartion_deliver/table_card/table_card.dart';
@@ -52,6 +54,51 @@ class _CustomHouseholdOverviewPageState
   String? householdClientReferenceId;
 
   List<String> selectedFilters = [];
+
+  Future<void> _checkStockAndProceed(
+    BuildContext context, {
+    required VoidCallback onSuccess,
+  }) async {
+    final localizations = AppLocalizations.of(context);
+
+    // Using the centralized stock count from the Singleton (updated by AuthBloc)
+    final stockCount = stock_utils.RegistrationDeliverySingleton().stockCount;
+
+    // If stock is specifically 0 (or less), show the blocking popup.
+    // If it's null, we allow proceeding as the count might not be initialized yet.
+    if (stockCount != null && stockCount <= 0) {
+      showCustomPopup(
+        context: context,
+        builder: (popupContext) => Popup(
+          title: localizations
+              .translate(i18.beneficiaryDetails.insufficientStockHeading),
+          onOutsideTap: () {
+            Navigator.of(popupContext).pop(false);
+          },
+          description: localizations.translate(
+            i18.beneficiaryDetails.insufficientStockDescription,
+          ),
+          type: PopUpType.simple,
+          actions: [
+            DigitButton(
+              label: localizations.translate(i18.beneficiaryDetails.goToHome),
+              onPressed: () {
+                Navigator.of(
+                  popupContext,
+                  rootNavigator: true,
+                ).pop();
+                context.router.replaceAll([HomeRoute()]);
+              },
+              type: DigitButtonType.primary,
+              size: DigitButtonSize.large,
+            ),
+          ],
+        ),
+      );
+    } else {
+      onSuccess();
+    }
+  }
 
   @override
   void initState() {
@@ -998,27 +1045,33 @@ class _CustomHouseholdOverviewPageState
     IndividualModel child,
     HouseholdMemberWrapper wrapper,
   ) async {
-    final pbId = wrapper.projectBeneficiaries
-        ?.firstWhereOrNull(
-          (b) => b.beneficiaryClientReferenceId == child.clientReferenceId,
-        )
-        ?.clientReferenceId;
-    if (pbId == null || pbId.isEmpty) return;
+    _checkStockAndProceed(
+      context,
+      onSuccess: () async {
+        final pbId = wrapper.projectBeneficiaries
+            ?.firstWhereOrNull(
+              (b) => b.beneficiaryClientReferenceId == child.clientReferenceId,
+            )
+            ?.clientReferenceId;
+        if (pbId == null || pbId.isEmpty) return;
 
-    final householdId = wrapper.household?.clientReferenceId ?? '';
-    final areaCode = wrapper.headOfHousehold?.address?.first.locality?.code ??
-        RegistrationDeliverySingleton().boundary?.code ??
-        '';
+        final householdId = wrapper.household?.clientReferenceId ?? '';
+        final areaCode =
+            wrapper.headOfHousehold?.address?.first.locality?.code ??
+                RegistrationDeliverySingleton().boundary?.code ??
+                '';
 
-    await context.router.push<void>(
-      BeneficiaryChecklistRoute(
-        beneficiaryClientRefId: child.clientReferenceId,
-        projectBeneficiaryClientRefId: pbId,
-        householdClientReferenceId: householdId,
-        administrativeAreaCode: areaCode,
-        screeningIndividual: child,
-        appLocalizations: localizations,
-      ),
+        await context.router.push<void>(
+          BeneficiaryChecklistRoute(
+            beneficiaryClientRefId: child.clientReferenceId,
+            projectBeneficiaryClientRefId: pbId,
+            householdClientReferenceId: householdId,
+            administrativeAreaCode: areaCode,
+            screeningIndividual: child,
+            appLocalizations: localizations,
+          ),
+        );
+      },
     );
   }
 
@@ -1030,14 +1083,19 @@ class _CustomHouseholdOverviewPageState
     ProjectBeneficiaryModel? projectBeneficiaryModel,
     required bool isHeadOfHousehold,
   }) async {
-    await context.router.push(
-      BednetIndividualDetailsWrapperRoute(
-        householdModel: householdModel,
-        addressModel: addressModel,
-        individualModel: individualModel,
-        projectBeneficiaryModel: projectBeneficiaryModel,
-        isHeadOfHousehold: isHeadOfHousehold,
-      ),
+    _checkStockAndProceed(
+      context,
+      onSuccess: () async {
+        await context.router.push(
+          BednetIndividualDetailsWrapperRoute(
+            householdModel: householdModel,
+            addressModel: addressModel,
+            individualModel: individualModel,
+            projectBeneficiaryModel: projectBeneficiaryModel,
+            isHeadOfHousehold: isHeadOfHousehold,
+          ),
+        );
+      },
     );
   }
 

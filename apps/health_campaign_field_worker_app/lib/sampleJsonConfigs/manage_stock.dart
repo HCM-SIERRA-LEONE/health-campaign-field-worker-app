@@ -169,34 +169,34 @@ final dynamic sampleInventoryFlows = {
             }
           ],
         },
-        {
-          "format": "menu_card",
-          "heading":
-              "APP_CONFIG_INVENTORY_manageStock_RECORD_STOCK_LOSS_HEADING",
-          "description":
-              "APP_CONFIG_INVENTORY_manageStock_RECORD_THE_LIST_OF_RESOURCES_LOST_DURING_CAMPAIGN_OPERATIONS_DESCRIPTION",
-          "icon": 'Store',
-          "onAction": [
-            {
-              "actionType": "NAVIGATION",
-              "properties": {
-                "type": "FORM",
-                "name": "RECORDSTOCK",
-                "data": [
-                  {"key": "stockEntryType", "value": "LOSS"},
-                  {"key": "transactionType", "value": "DISPATCHED"},
-                  {"key": "primaryRole", "value": "SENDER"},
-                  {"key": "secondaryRole", "value": "RECEIVER"},
-                  {
-                    "key": "mrnNumber",
-                    "value": "{{fn:generateUniqueMaterialNoteNumber()}}"
-                  }
-                ]
-              }
-            }
-          ],
-          "visible": "{{fn:hasRole('DISTRIBUTOR')}} == false",
-        },
+        // {
+        //   "format": "menu_card",
+        //   "heading":
+        //       "APP_CONFIG_INVENTORY_manageStock_RECORD_STOCK_LOSS_HEADING",
+        //   "description":
+        //       "APP_CONFIG_INVENTORY_manageStock_RECORD_THE_LIST_OF_RESOURCES_LOST_DURING_CAMPAIGN_OPERATIONS_DESCRIPTION",
+        //   "icon": 'Store',
+        //   "onAction": [
+        //     {
+        //       "actionType": "NAVIGATION",
+        //       "properties": {
+        //         "type": "FORM",
+        //         "name": "RECORDSTOCK",
+        //         "data": [
+        //           {"key": "stockEntryType", "value": "LOSS"},
+        //           {"key": "transactionType", "value": "DISPATCHED"},
+        //           {"key": "primaryRole", "value": "SENDER"},
+        //           {"key": "secondaryRole", "value": "RECEIVER"},
+        //           {
+        //             "key": "mrnNumber",
+        //             "value": "{{fn:generateUniqueMaterialNoteNumber()}}"
+        //           }
+        //         ]
+        //       }
+        //     }
+        //   ],
+        //   "visible": "{{fn:hasRole('DISTRIBUTOR')}} == true",
+        // },
         {
           "format": "menu_card",
           "heading": "INVENTORY_RECORD_LESS_EXCESS_HEADING",
@@ -693,6 +693,12 @@ final dynamic sampleInventoryFlows = {
                   "value": true,
                   "message":
                       "APPONE_MANAGESTOCK_WAREHOUSE_label_facilityToWhich_mandatory_message"
+                },
+                {
+                  "type": "pattern",
+                  "value":
+                      "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$",
+                  "message": "INVALID_USER_ID_FORMAT"
                 }
               ],
               "errorMessage": "",
@@ -852,6 +858,12 @@ final dynamic sampleInventoryFlows = {
                   "value": true,
                   "message":
                       "APPONE_MANAGESTOCK_WAREHOUSE_label_facilityFromWhich_mandatory_message"
+                },
+                {
+                  "type": "pattern",
+                  "value":
+                      "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$",
+                  "message": "INVALID_USER_ID_FORMAT"
                 }
               ],
               "errorMessage": "",
@@ -1623,6 +1635,12 @@ final dynamic sampleInventoryFlows = {
                   "value": true,
                   "message":
                       "APPONE_MANAGESTOCK_WAREHOUSE_label_facilityToWhich_mandatory_message"
+                },
+                {
+                  "type": "pattern",
+                  "value":
+                      "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$",
+                  "message": "INVALID_USER_ID_FORMAT"
                 }
               ],
               "errorMessage": "",
@@ -2217,7 +2235,7 @@ final dynamic sampleInventoryFlows = {
                   },
                   {
                     "key": "INVENTORY_WAYBILL_NUMBER_LABEL",
-                    "value": "{{item.waybillNumber}}"
+                    "value": "{{item.wayBillNumber}}"
                   },
                   {
                     "key": "INVENTORY_BATCH_NUMBER_LABEL",
@@ -2461,7 +2479,7 @@ final dynamic sampleInventoryFlows = {
                         },
                         {
                           "key": "wayBillNumber",
-                          "value": "{{item.items[0].waybillNumber}}"
+                          "value": "{{item.items[0].wayBillNumber}}"
                         },
                         {
                           "key": "productVariantId",
