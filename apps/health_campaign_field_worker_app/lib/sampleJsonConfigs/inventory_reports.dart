@@ -458,7 +458,8 @@ final dynamic inventoryReportFlows = {
                 "cellValue": "{{item.quantity}}"
               }
             ],
-            "rows": "{{contextData.0.StockModel}}"
+            "rows":
+                "{{fn:sortBy(contextData.0.StockModel, 'dateOfEntry', 'desc')}}"
           }
         }
       ]
@@ -660,7 +661,8 @@ final dynamic inventoryReportFlows = {
                 "cellValue": "{{item.calculatedCount}}"
               }
             ],
-            "rows": "{{contextData.0.StockReconciliationModel}}"
+            "rows":
+                "{{fn:sortBy(contextData.0.StockReconciliationModel, 'dateOfReconciliation', 'desc')}}"
           }
         }
       ]

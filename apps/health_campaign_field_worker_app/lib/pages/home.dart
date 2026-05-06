@@ -434,6 +434,40 @@ class _HomePageState extends LocalizedState<HomePage> {
       return senderTypes.contains(reportType) ? 'senderId' : 'receiverId';
     });
 
+    FunctionRegistry.register('sortBy', (args, stateData) {
+      if (args.isEmpty || args[0] is! List) return args.isEmpty ? [] : args[0];
+      final list = List<dynamic>.from(args[0] as List);
+      final field = args.length > 1 ? args[1]?.toString() ?? '' : '';
+      final descending =
+          args.length > 2 ? args[2]?.toString() != 'asc' : true;
+      if (field.isEmpty) return list;
+
+      dynamic getField(dynamic item) {
+        if (item is Map) return item[field];
+        if (item is EntityModel) return item.toMap()[field];
+        return null;
+      }
+
+      list.sort((a, b) {
+        final aVal = getField(a);
+        final bVal = getField(b);
+        int cmp;
+        if (aVal is num && bVal is num) {
+          cmp = aVal.compareTo(bVal);
+        } else if (aVal == null && bVal == null) {
+          cmp = 0;
+        } else if (aVal == null) {
+          cmp = -1;
+        } else if (bVal == null) {
+          cmp = 1;
+        } else {
+          cmp = aVal.toString().compareTo(bVal.toString());
+        }
+        return descending ? -cmp : cmp;
+      });
+      return list;
+    });
+
     // For received reports, filter by modifiedBy (receiver updates the transaction)
     // For other reports, filter by createdBy (sender creates the transaction)
     FunctionRegistry.register('getAuditFilterKey', (args, stateData) {
