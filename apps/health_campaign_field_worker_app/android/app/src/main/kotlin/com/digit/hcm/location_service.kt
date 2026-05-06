@@ -1,4 +1,4 @@
-package org.egov.sierraleone
+package org.egov.osun
 
 import android.annotation.TargetApi
 import android.app.NotificationChannel
