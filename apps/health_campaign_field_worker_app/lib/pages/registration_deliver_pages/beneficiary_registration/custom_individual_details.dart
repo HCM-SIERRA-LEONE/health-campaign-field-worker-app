@@ -533,7 +533,8 @@ class CustomIndividualDetailsPageState
                               errorMessage: () {
                                 final dobControl = form.control(_dobKey);
                                 if (!dobControl.hasErrors) return null;
-                                if (dobControl.hasError(_dobErrorMaxAge)) {
+                                if (dobControl.hasError(_dobErrorMaxAge) &&
+                                    !widget.isHeadOfHousehold) {
                                   // return localizations.translate(
                                   //   i18.individualDetails
                                   //       .maxBeneficiaryAgeAllowedMessage,

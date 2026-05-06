@@ -81,6 +81,7 @@ abstract class _$AppRouter extends RootStackRouter {
           individualModel: args.individualModel,
           projectBeneficiaryModel: args.projectBeneficiaryModel,
           isHeadOfHousehold: args.isHeadOfHousehold,
+          selectedClass: args.selectedClass,
         )),
       );
     },
@@ -329,6 +330,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: HouseholdOverviewPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+          selectedClass: args.selectedClass,
         ),
       );
     },
@@ -341,6 +343,7 @@ abstract class _$AppRouter extends RootStackRouter {
           key: args.key,
           appLocalizations: args.appLocalizations,
           isHeadOfHousehold: args.isHeadOfHousehold,
+          selectedClass: args.selectedClass,
         ),
       );
     },
@@ -689,6 +692,7 @@ class BednetIndividualDetailsWrapperRoute
     IndividualModel? individualModel,
     ProjectBeneficiaryModel? projectBeneficiaryModel,
     bool isHeadOfHousehold = false,
+    String? selectedClass,
     List<PageRouteInfo>? children,
   }) : super(
           BednetIndividualDetailsWrapperRoute.name,
@@ -699,6 +703,7 @@ class BednetIndividualDetailsWrapperRoute
             individualModel: individualModel,
             projectBeneficiaryModel: projectBeneficiaryModel,
             isHeadOfHousehold: isHeadOfHousehold,
+            selectedClass: selectedClass,
           ),
           initialChildren: children,
         );
@@ -717,6 +722,7 @@ class BednetIndividualDetailsWrapperRouteArgs {
     this.individualModel,
     this.projectBeneficiaryModel,
     this.isHeadOfHousehold = false,
+    this.selectedClass,
   });
 
   final Key? key;
@@ -731,9 +737,11 @@ class BednetIndividualDetailsWrapperRouteArgs {
 
   final bool isHeadOfHousehold;
 
+  final String? selectedClass;
+
   @override
   String toString() {
-    return 'BednetIndividualDetailsWrapperRouteArgs{key: $key, householdModel: $householdModel, addressModel: $addressModel, individualModel: $individualModel, projectBeneficiaryModel: $projectBeneficiaryModel, isHeadOfHousehold: $isHeadOfHousehold}';
+    return 'BednetIndividualDetailsWrapperRouteArgs{key: $key, householdModel: $householdModel, addressModel: $addressModel, individualModel: $individualModel, projectBeneficiaryModel: $projectBeneficiaryModel, isHeadOfHousehold: $isHeadOfHousehold, selectedClass: $selectedClass}';
   }
 }
 
@@ -1571,12 +1579,14 @@ class HouseholdOverviewRoute extends PageRouteInfo<HouseholdOverviewRouteArgs> {
   HouseholdOverviewRoute({
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
+    String? selectedClass,
     List<PageRouteInfo>? children,
   }) : super(
           HouseholdOverviewRoute.name,
           args: HouseholdOverviewRouteArgs(
             key: key,
             appLocalizations: appLocalizations,
+            selectedClass: selectedClass,
           ),
           initialChildren: children,
         );
@@ -1591,15 +1601,18 @@ class HouseholdOverviewRouteArgs {
   const HouseholdOverviewRouteArgs({
     this.key,
     this.appLocalizations,
+    this.selectedClass,
   });
 
   final Key? key;
 
   final RegistrationDeliveryLocalization? appLocalizations;
 
+  final String? selectedClass;
+
   @override
   String toString() {
-    return 'HouseholdOverviewRouteArgs{key: $key, appLocalizations: $appLocalizations}';
+    return 'HouseholdOverviewRouteArgs{key: $key, appLocalizations: $appLocalizations, selectedClass: $selectedClass}';
   }
 }
 
@@ -1610,6 +1623,7 @@ class IndividualDetailsRoute extends PageRouteInfo<IndividualDetailsRouteArgs> {
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
     bool isHeadOfHousehold = false,
+    String? selectedClass,
     List<PageRouteInfo>? children,
   }) : super(
           IndividualDetailsRoute.name,
@@ -1617,6 +1631,7 @@ class IndividualDetailsRoute extends PageRouteInfo<IndividualDetailsRouteArgs> {
             key: key,
             appLocalizations: appLocalizations,
             isHeadOfHousehold: isHeadOfHousehold,
+            selectedClass: selectedClass,
           ),
           initialChildren: children,
         );
@@ -1632,6 +1647,7 @@ class IndividualDetailsRouteArgs {
     this.key,
     this.appLocalizations,
     this.isHeadOfHousehold = false,
+    this.selectedClass,
   });
 
   final Key? key;
@@ -1640,9 +1656,11 @@ class IndividualDetailsRouteArgs {
 
   final bool isHeadOfHousehold;
 
+  final String? selectedClass;
+
   @override
   String toString() {
-    return 'IndividualDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations, isHeadOfHousehold: $isHeadOfHousehold}';
+    return 'IndividualDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations, isHeadOfHousehold: $isHeadOfHousehold, selectedClass: $selectedClass}';
   }
 }
 

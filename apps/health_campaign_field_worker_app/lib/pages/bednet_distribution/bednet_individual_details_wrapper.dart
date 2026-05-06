@@ -18,6 +18,7 @@ class BednetIndividualDetailsWrapperPage extends StatelessWidget
   final AddressModel addressModel;
   final IndividualModel? individualModel;
   final ProjectBeneficiaryModel? projectBeneficiaryModel;
+  final String? selectedClass;
   final bool isHeadOfHousehold;
 
   const BednetIndividualDetailsWrapperPage({
@@ -27,6 +28,7 @@ class BednetIndividualDetailsWrapperPage extends StatelessWidget
     this.individualModel,
     this.projectBeneficiaryModel,
     this.isHeadOfHousehold = false,
+    this.selectedClass,
   });
 
   @override
@@ -77,6 +79,7 @@ class BednetIndividualDetailsWrapperPage extends StatelessWidget
   Widget build(BuildContext context) {
     return IndividualDetailsPage(
       isHeadOfHousehold: isHeadOfHousehold,
+      selectedClass: selectedClass,
     );
   }
 }

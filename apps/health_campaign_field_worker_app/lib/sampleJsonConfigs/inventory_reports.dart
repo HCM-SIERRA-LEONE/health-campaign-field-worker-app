@@ -75,7 +75,7 @@ final dynamic inventoryReportFlows = {
                 "type": "TEMPLATE",
                 "name": "reportDetails",
                 "data": [
-                  {"key": "reportType", "value": "ISSUED"},
+                  {"key": "reportType", "value": "receipt"},
                   {
                     "key": "facilities",
                     "value":
@@ -358,6 +358,13 @@ final dynamic inventoryReportFlows = {
                             "{{fn:getSenderOrReceiver(navigation.reportType)}}",
                         "value": "{{selectedFacility}}",
                         "operation": "equals"
+                      },
+                      {
+                        "applyIf":
+                            "{{navigation.reportType}} == 'receipt'",
+                        "key": "additionalFields",
+                        "value": "ACCEPTED",
+                        "operation": "contains"
                       }
                     ]
                   }
@@ -401,6 +408,13 @@ final dynamic inventoryReportFlows = {
                             "{{fn:getSenderOrReceiver(navigation.reportType)}}",
                         "value": "{{selectedFacility}}",
                         "operation": "equals"
+                      },
+                      {
+                        "applyIf":
+                            "{{navigation.reportType}} == 'receipt'",
+                        "key": "additionalFields",
+                        "value": "ACCEPTED",
+                        "operation": "contains"
                       }
                     ]
                   }

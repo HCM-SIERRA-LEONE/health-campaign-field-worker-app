@@ -48,7 +48,9 @@ class SchoolDetailsPage extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       onPressed: () {
                         BednetClassSelectionSingleton().clear();
-                        context.router.push(HouseholdOverviewRoute());
+                        context.router.push(HouseholdOverviewRoute(
+                          selectedClass: selectedClass,
+                        ));
                       },
                     )
                   ],

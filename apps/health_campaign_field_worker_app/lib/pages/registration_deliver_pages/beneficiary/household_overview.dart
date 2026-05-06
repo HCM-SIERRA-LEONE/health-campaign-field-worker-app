@@ -39,8 +39,9 @@ import '../../../widgets/registartion_deliver/member_card/member_card.dart';
 
 @RoutePage()
 class HouseholdOverviewPage extends LocalizedStatefulWidget {
-  const HouseholdOverviewPage({super.key, super.appLocalizations});
-
+  const HouseholdOverviewPage(
+      {super.key, super.appLocalizations, this.selectedClass});
+  final String? selectedClass;
   @override
   State<HouseholdOverviewPage> createState() => _HouseholdOverviewPageState();
 }
@@ -726,6 +727,8 @@ class _HouseholdOverviewPageState
                                                       projectBeneficiaryModel:
                                                           projectBeneficiaryModel,
                                                       isHeadOfHousehold: isHead,
+                                                      selectedClass:
+                                                          widget.selectedClass,
                                                     ),
                                                   );
 
@@ -932,6 +935,7 @@ class _HouseholdOverviewPageState
         householdModel: household,
         addressModel: address,
         isHeadOfHousehold: isHeadOfHousehold,
+        selectedClass: widget.selectedClass,
       ),
     );
   }
@@ -1149,7 +1153,8 @@ class _HouseholdOverviewPageState
   List<IndividualModel> _membersOrderedHeadFirst(
     HouseholdMemberWrapper wrapper,
   ) {
-    final selectedClass = BednetClassSelectionSingleton().selectedClass;
+    final selectedClass =
+        BednetClassSelectionSingleton().selectedClass ?? widget.selectedClass;
     final raw = wrapper.members ?? [];
 
     // If no class selected, return all members with head first

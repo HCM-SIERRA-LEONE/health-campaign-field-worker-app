@@ -32,15 +32,18 @@ import '../../../blocs/registration_deliver/search_households/search_households.
 import '../../../router/app_router.dart';
 import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
 import '../summary_page.dart';
+import '../../../utils/bednet_class_selection_singleton.dart';
 
 @RoutePage()
 class IndividualDetailsPage extends LocalizedStatefulWidget {
   final bool isHeadOfHousehold;
+  final String? selectedClass;
 
   const IndividualDetailsPage({
     super.key,
     super.appLocalizations,
     this.isHeadOfHousehold = false,
+    this.selectedClass,
   });
 
   @override
@@ -81,6 +84,45 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
       ShowcaseItemBuilder(
     messageLocalizationKey: i18.individualDetailsShowcase.mobile,
   );
+
+  /// [BednetDistributionBloc.selectedSchool] starts null and only changes on
+  /// [BednetDistributionEvent.selectSchool] / [updateSelectedSchool]. This screen
+  /// already receives the school on [BeneficiaryRegistrationBloc.state] (`householdModel`);
+  /// without syncing, any read of `selectedSchool` during the form lifecycle stays null until
+  /// the [persisted] listener runs after save.
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncBednetSelectedSchoolFromRegistrationHousehold();
+    });
+  }
+
+  void _syncBednetSelectedSchoolFromRegistrationHousehold() {
+    if (!mounted) return;
+    HouseholdModel? household;
+    try {
+      household = context.read<BeneficiaryRegistrationBloc>().state.mapOrNull(
+            addMember: (s) => s.householdModel,
+            editIndividual: (s) => s.householdModel,
+            create: (s) => s.householdModel,
+            summary: (s) => s.householdModel,
+          );
+    } catch (_) {
+      return;
+    }
+    if (household == null || !household.isSchoolHousehold) return;
+    try {
+      final bednet = context.read<BednetDistributionBloc>();
+      final id = household.clientReferenceId;
+      if (bednet.state.selectedSchool?.clientReferenceId == id) return;
+      bednet.add(
+        BednetDistributionEvent.updateSelectedSchool(school: household),
+      );
+    } catch (_) {
+      // No [BednetDistributionBloc] above (non-bednet registration route).
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -668,6 +710,8 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
   }) {
     final dob = form.control(_dobKey).value as DateTime?;
     String? dobString;
+    final selectedClass =
+        BednetClassSelectionSingleton().selectedClass ?? widget.selectedClass;
     if (dob != null) {
       dobString = DateFormat(Constants().dateFormat).format(dob);
     }
@@ -750,6 +794,14 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
       //     identifierType: form.control(_idTypeKey).value ?? 'test',
       //   ),
       // ],
+      additionalFields: !widget.isHeadOfHousehold
+          ? IndividualAdditionalFields(
+              version: 1,
+              fields: [
+                AdditionalField('class', selectedClass),
+              ],
+            )
+          : null,
     );
 
     return individual;
