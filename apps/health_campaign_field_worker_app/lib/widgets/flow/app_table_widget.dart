@@ -49,6 +49,15 @@ class AppTableWidget extends ResolvedFlowWidget {
       final activeColumns = rawColumns
           .whereType<Map>()
           .where((col) => col['isActive'] != false)
+          .where((col) {
+            if (!col.containsKey('visible')) return true;
+            return ConditionalEvaluator.evaluate(
+                  col['visible'],
+                  evalContext,
+                  screenKey: resolved.screenKey,
+                ) !=
+                false;
+          })
           .toList();
 
       final List<String> headerLabels = activeColumns.map<String>((col) {

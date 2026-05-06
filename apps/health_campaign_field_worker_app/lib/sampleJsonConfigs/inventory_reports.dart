@@ -632,21 +632,24 @@ final dynamic inventoryReportFlows = {
                 "header": "STOCKRECON_REPORT_DETAILS_TABLE_HEADER_4_LABEL",
                 "cellValue": "{{item.additionalFields.fields.stockReturned}}"
               },
-              {
-                "header": "STOCKRECON_REPORT_DETAILS_TABLE_HEADER_5_LABEL",
-                "cellValue": "{{item.additionalFields.fields.stockLost}}"
-              },
+              // {
+              //   "header": "STOCKRECON_REPORT_DETAILS_TABLE_HEADER_5_LABEL",
+              //   "cellValue": "{{item.additionalFields.fields.stockLost}}"
+              // },
               {
                 "header": "STOCKRECON_REPORT_DETAILS_TABLE_HEADER_6_LABEL",
-                "cellValue": "{{item.additionalFields.fields.stockDamaged}}"
+                "cellValue": "{{item.additionalFields.fields.stockDamaged}}",
+                "visible": "{{fn:hasRole('DISTRIBUTOR')}} == true"
               },
               {
                 "header": "STOCKRECON_REPORT_DETAILS_TABLE_HEADER_EXCESS_LABEL",
-                "cellValue": "{{item.additionalFields.fields.stockExcess}}"
+                "cellValue": "{{item.additionalFields.fields.stockExcess}}",
+                "visible": "{{fn:hasRole('DISTRIBUTOR')}} == true"
               },
               {
                 "header": "STOCKRECON_REPORT_DETAILS_TABLE_HEADER_LESS_LABEL",
-                "cellValue": "{{item.additionalFields.fields.stockLess}}"
+                "cellValue": "{{item.additionalFields.fields.stockLess}}",
+                "visible": "{{fn:hasRole('DISTRIBUTOR')}} == true"
               },
               {
                 "header": "STOCKRECON_REPORT_DETAILS_TABLE_HEADER_7_LABEL",
