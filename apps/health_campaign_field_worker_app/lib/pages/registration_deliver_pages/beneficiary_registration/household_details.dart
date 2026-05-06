@@ -51,6 +51,10 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
   /// (normal household registration from search → location → this page).
   bool _pendingHouseholdAcknowledgementNavigation = false;
 
+  /// When true, [BlocListener] pops both this page and the location page after
+  /// persist (edit household flow from CustomHouseholdOverviewPage).
+  bool _pendingEditHouseholdNavigation = false;
+
   bool _isHouseholdDetailsViewOnly(BeneficiaryRegistrationState state) {
     return state.maybeMap(
       persisted: (p) => !p.isEdit,
@@ -80,11 +84,19 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
     return BlocListener<BeneficiaryRegistrationBloc,
         BeneficiaryRegistrationState>(
       listenWhen: (previous, current) =>
-          _pendingHouseholdAcknowledgementNavigation &&
+          (_pendingHouseholdAcknowledgementNavigation ||
+              _pendingEditHouseholdNavigation) &&
           current.mapOrNull(persisted: (_) => true) != null,
       listener: (context, state) {
         state.mapOrNull(
           persisted: (value) async {
+            if (_pendingEditHouseholdNavigation) {
+              _pendingEditHouseholdNavigation = false;
+              final nav = Navigator.of(context);
+              if (nav.canPop()) nav.pop();
+              if (nav.canPop()) nav.pop();
+              return;
+            }
             if (!_pendingHouseholdAcknowledgementNavigation) return;
             _pendingHouseholdAcknowledgementNavigation = false;
             final nav = Navigator.of(context);
@@ -233,6 +245,55 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
 
                               await registrationState.maybeWhen(
                                 orElse: () async {},
+                                editHousehold: (
+                                  addressModel,
+                                  householdModel,
+                                  individualModel,
+                                  registrationDate,
+                                  projectBeneficiaryModel,
+                                  loading,
+                                  headOfHousehold,
+                                ) async {
+                                  final existingFields =
+                                      householdModel.additionalFields?.fields ??
+                                          [];
+                                  final fieldMap = {
+                                    for (final f in existingFields) f.key: f
+                                  };
+                                  fieldMap[AdditionalFieldsType.childrenUnder14
+                                      .toValue()] = AdditionalField(
+                                    AdditionalFieldsType.childrenUnder14
+                                        .toValue(),
+                                    childrenCount.toString(),
+                                  );
+
+                                  final updatedHousehold =
+                                      householdModel.copyWith(
+                                    memberCount: memberCount,
+                                    additionalFields: HouseholdAdditionalFields(
+                                      version: householdModel
+                                              .additionalFields?.version ??
+                                          1,
+                                      fields: fieldMap.values
+                                          .where((f) =>
+                                              f.value != null &&
+                                              f.value
+                                                  .toString()
+                                                  .trim()
+                                                  .isNotEmpty)
+                                          .toList(),
+                                    ),
+                                  );
+
+                                  _pendingEditHouseholdNavigation = true;
+                                  bloc.add(
+                                    BeneficiaryRegistrationEvent
+                                        .updateHouseholdDetails(
+                                      household: updatedHousehold,
+                                      addressModel: addressModel,
+                                    ),
+                                  );
+                                },
                                 create: (
                                   addressModel,
                                   householdModel,
