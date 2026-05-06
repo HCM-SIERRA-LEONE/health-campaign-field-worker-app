@@ -1068,6 +1068,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "min",
+                  "value": 1,
+                  "message": "Quantity must be greater than 0"
                 }
               ],
               "errorMessage": "",
@@ -1112,6 +1117,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "min",
+                  "value": 1,
+                  "message": "Quantity must be greater than 0"
                 }
               ],
               "errorMessage": "",
@@ -1156,6 +1166,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "min",
+                  "value": 1,
+                  "message": "Quantity must be greater than 0"
                 }
               ],
               "errorMessage": "",
@@ -1795,6 +1810,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "min",
+                  "value": 1,
+                  "message": "Quantity must be greater than 0"
                 }
               ],
               "errorMessage": "",
@@ -2848,6 +2868,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "pattern",
                   "value": r"^[0-9]+$",
                   "message": "Please enter a valid number"
+                },
+                {
+                  "type": "min",
+                  "value": 1,
+                  "message": "Quantity must be greater than 0"
                 }
               ],
               "errorMessage": "",
