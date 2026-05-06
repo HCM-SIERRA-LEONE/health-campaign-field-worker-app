@@ -432,6 +432,18 @@
     "module": "hcm-beneficiary"
   },
   {
+    "code": "INDIVIDUAL_DETAILS_MAX_AGE_14_ALLOWED",
+    "locale": "en_MZ",
+    "message": "Maximum age 14 allowed",
+    "module": "hcm-beneficiary"
+  },
+  {
+    "code": "INDIVIDUAL_DETAILS_MAX_AGE_14_ALLOWED",
+    "locale": "pt_MZ",
+    "message": "Idade máxima permitida: 14 anos",
+    "module": "hcm-beneficiary"
+  },
+  {
     "code": "AGE_LABEL_TEXT",
     "locale": "en_MZ",
     "message": "Age",

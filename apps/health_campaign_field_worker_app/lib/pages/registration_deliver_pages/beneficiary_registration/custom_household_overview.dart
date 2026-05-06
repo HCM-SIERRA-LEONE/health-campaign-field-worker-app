@@ -1051,7 +1051,7 @@ class _CustomHouseholdOverviewPageState
       context,
       onSuccess: () async {
         await context.router.push(
-          BednetIndividualDetailsWrapperRoute(
+          CustomBednetIndividualDetailsWrapperRoute(
             householdModel: householdModel,
             addressModel: addressModel,
             individualModel: individualModel,

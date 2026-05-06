@@ -158,6 +158,22 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    CustomBednetIndividualDetailsWrapperRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<CustomBednetIndividualDetailsWrapperRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: WrappedRoute(
+            child: CustomBednetIndividualDetailsWrapperPage(
+          key: args.key,
+          householdModel: args.householdModel,
+          addressModel: args.addressModel,
+          individualModel: args.individualModel,
+          projectBeneficiaryModel: args.projectBeneficiaryModel,
+          isHeadOfHousehold: args.isHeadOfHousehold,
+        )),
+      );
+    },
     CustomHouseholdOverviewRoute.name: (routeData) {
       final args = routeData.argsAs<CustomHouseholdOverviewRouteArgs>(
           orElse: () => const CustomHouseholdOverviewRouteArgs());
@@ -166,6 +182,18 @@ abstract class _$AppRouter extends RootStackRouter {
         child: CustomHouseholdOverviewPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+        ),
+      );
+    },
+    CustomIndividualDetailsRoute.name: (routeData) {
+      final args = routeData.argsAs<CustomIndividualDetailsRouteArgs>(
+          orElse: () => const CustomIndividualDetailsRouteArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: CustomIndividualDetailsPage(
+          key: args.key,
+          appLocalizations: args.appLocalizations,
+          isHeadOfHousehold: args.isHeadOfHousehold,
         ),
       );
     },
@@ -966,6 +994,65 @@ class CurrentBoundaryRouteArgs {
 }
 
 /// generated route for
+/// [CustomBednetIndividualDetailsWrapperPage]
+class CustomBednetIndividualDetailsWrapperRoute
+    extends PageRouteInfo<CustomBednetIndividualDetailsWrapperRouteArgs> {
+  CustomBednetIndividualDetailsWrapperRoute({
+    Key? key,
+    required HouseholdModel householdModel,
+    required AddressModel addressModel,
+    IndividualModel? individualModel,
+    ProjectBeneficiaryModel? projectBeneficiaryModel,
+    bool isHeadOfHousehold = false,
+    List<PageRouteInfo>? children,
+  }) : super(
+          CustomBednetIndividualDetailsWrapperRoute.name,
+          args: CustomBednetIndividualDetailsWrapperRouteArgs(
+            key: key,
+            householdModel: householdModel,
+            addressModel: addressModel,
+            individualModel: individualModel,
+            projectBeneficiaryModel: projectBeneficiaryModel,
+            isHeadOfHousehold: isHeadOfHousehold,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'CustomBednetIndividualDetailsWrapperRoute';
+
+  static const PageInfo<CustomBednetIndividualDetailsWrapperRouteArgs> page =
+      PageInfo<CustomBednetIndividualDetailsWrapperRouteArgs>(name);
+}
+
+class CustomBednetIndividualDetailsWrapperRouteArgs {
+  const CustomBednetIndividualDetailsWrapperRouteArgs({
+    this.key,
+    required this.householdModel,
+    required this.addressModel,
+    this.individualModel,
+    this.projectBeneficiaryModel,
+    this.isHeadOfHousehold = false,
+  });
+
+  final Key? key;
+
+  final HouseholdModel householdModel;
+
+  final AddressModel addressModel;
+
+  final IndividualModel? individualModel;
+
+  final ProjectBeneficiaryModel? projectBeneficiaryModel;
+
+  final bool isHeadOfHousehold;
+
+  @override
+  String toString() {
+    return 'CustomBednetIndividualDetailsWrapperRouteArgs{key: $key, householdModel: $householdModel, addressModel: $addressModel, individualModel: $individualModel, projectBeneficiaryModel: $projectBeneficiaryModel, isHeadOfHousehold: $isHeadOfHousehold}';
+  }
+}
+
+/// generated route for
 /// [CustomHouseholdOverviewPage]
 class CustomHouseholdOverviewRoute
     extends PageRouteInfo<CustomHouseholdOverviewRouteArgs> {
@@ -1001,6 +1088,50 @@ class CustomHouseholdOverviewRouteArgs {
   @override
   String toString() {
     return 'CustomHouseholdOverviewRouteArgs{key: $key, appLocalizations: $appLocalizations}';
+  }
+}
+
+/// generated route for
+/// [CustomIndividualDetailsPage]
+class CustomIndividualDetailsRoute
+    extends PageRouteInfo<CustomIndividualDetailsRouteArgs> {
+  CustomIndividualDetailsRoute({
+    Key? key,
+    RegistrationDeliveryLocalization? appLocalizations,
+    bool isHeadOfHousehold = false,
+    List<PageRouteInfo>? children,
+  }) : super(
+          CustomIndividualDetailsRoute.name,
+          args: CustomIndividualDetailsRouteArgs(
+            key: key,
+            appLocalizations: appLocalizations,
+            isHeadOfHousehold: isHeadOfHousehold,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'CustomIndividualDetailsRoute';
+
+  static const PageInfo<CustomIndividualDetailsRouteArgs> page =
+      PageInfo<CustomIndividualDetailsRouteArgs>(name);
+}
+
+class CustomIndividualDetailsRouteArgs {
+  const CustomIndividualDetailsRouteArgs({
+    this.key,
+    this.appLocalizations,
+    this.isHeadOfHousehold = false,
+  });
+
+  final Key? key;
+
+  final RegistrationDeliveryLocalization? appLocalizations;
+
+  final bool isHeadOfHousehold;
+
+  @override
+  String toString() {
+    return 'CustomIndividualDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations, isHeadOfHousehold: $isHeadOfHousehold}';
   }
 }
 

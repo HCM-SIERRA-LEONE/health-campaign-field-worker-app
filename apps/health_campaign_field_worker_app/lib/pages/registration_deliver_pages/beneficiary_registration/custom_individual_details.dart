@@ -34,20 +34,22 @@ import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
 import '../summary_page.dart';
 
 @RoutePage()
-class IndividualDetailsPage extends LocalizedStatefulWidget {
+class CustomIndividualDetailsPage extends LocalizedStatefulWidget {
   final bool isHeadOfHousehold;
 
-  const IndividualDetailsPage({
+  const CustomIndividualDetailsPage({
     super.key,
     super.appLocalizations,
     this.isHeadOfHousehold = false,
   });
 
   @override
-  State<IndividualDetailsPage> createState() => IndividualDetailsPageState();
+  State<CustomIndividualDetailsPage> createState() =>
+      CustomIndividualDetailsPageState();
 }
 
-class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
+class CustomIndividualDetailsPageState
+    extends LocalizedState<CustomIndividualDetailsPage> {
   static const _individualNameKey = 'individualName';
   static const _dobKey = 'dob';
   static const _dobErrorMaxAge = 'maxAge';
@@ -70,7 +72,7 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
 
   /// Per-screen showcase builders (each owns a new [GlobalKey]). The singleton
   /// [individualDetailsShowcaseData] reused the same keys for every route, so
-  /// two [IndividualDetailsPage]s in the tree briefly caused duplicate GlobalKey.
+  /// two [CustomIndividualDetailsPage]s in the tree briefly caused duplicate GlobalKey.
   late final ShowcaseItemBuilder _showcaseIndividualName = ShowcaseItemBuilder(
     messageLocalizationKey: i18.individualDetailsShowcase.firstNameOfIndividual,
   );
@@ -532,10 +534,11 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                                 final dobControl = form.control(_dobKey);
                                 if (!dobControl.hasErrors) return null;
                                 if (dobControl.hasError(_dobErrorMaxAge)) {
-                                  return localizations.translate(
-                                    i18.individualDetails
-                                        .maxBeneficiaryAgeAllowedMessage,
-                                  );
+                                  // return localizations.translate(
+                                  //   i18.individualDetails
+                                  //       .maxBeneficiaryAgeAllowedMessage,
+                                  // );
+                                  return "Age cannot be greater than 14 years.";
                                 }
                                 return localizations
                                     .translate(i18.common.corecommonRequired);
@@ -551,7 +554,7 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                                   } else {
                                     DigitDOBAgeConvertor age =
                                         DigitDateUtils.calculateAge(value);
-                                    if (age.years > 150 && age.months >= 0) {
+                                    if (age.years > 14 && age.months >= 0) {
                                       dobControl.removeError('');
                                       dobControl
                                           .setErrors({_dobErrorMaxAge: true});

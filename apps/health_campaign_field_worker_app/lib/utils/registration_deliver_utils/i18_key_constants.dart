@@ -382,6 +382,9 @@ class IndividualDetails {
 
   String get yearsAndMonthsErrorText => 'ERR_YEARS_AND_MONTHS';
 
+  String get maxBeneficiaryAgeAllowedMessage =>
+      'INDIVIDUAL_DETAILS_MAX_AGE_14_ALLOWED';
+
   String get linkVoucherToIndividual => 'LINK_VOUCHER_TO_INDIVIDUAL';
 }
 
