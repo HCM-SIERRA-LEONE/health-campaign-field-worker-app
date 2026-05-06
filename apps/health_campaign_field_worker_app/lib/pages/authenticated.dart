@@ -643,7 +643,7 @@ class _AuthenticatedPageWrapperState extends State<AuthenticatedPageWrapper> {
                       size: 150.0,
                     ),
                   ),
-                  title: value.userModel.name.toString(),
+                  title: value.userModel.userName.toString(),
                   description: value.userModel.mobileNumber.toString(),
                 ),
                 orElse: () => null,
