@@ -37,7 +37,7 @@ class BednetHouseholdReviewPage extends StatelessWidget {
     this.bednetDeliveryHead,
   });
 
-  int get _itnForDelivery => max(1, (memberCount / 2).ceil());
+  int get _itnForDelivery => min(4, max(1, (memberCount / 2).ceil()));
 
   /// Same algorithm as before; used only when [householdEToken] is null/empty.
   static String syntheticEToken({
@@ -111,15 +111,22 @@ class BednetHouseholdReviewPage extends StatelessWidget {
                       ),
                       const SizedBox(height: spacer2),
                       _kv('Household Head', headName),
-                      _kv('Member Count', memberCount.toString().padLeft(2, '0')),
-                      _kv('Children Under 5', childrenCount.toString().padLeft(2, '0')),
-                      _kv('Number Of ITN For Delivery', _itnForDelivery.toString()),
+                      _kv('Member Count',
+                          memberCount.toString().padLeft(2, '0')),
+                      _kv('Children Under 14',
+                          childrenCount.toString().padLeft(2, '0')),
+                      _kv('Number Of ITN For Delivery',
+                          _itnForDelivery.toString()),
                     ],
                   ),
                   const SizedBox(height: spacer2),
                   DigitCard(
                     children: [
-                      _kv('Mobile Number', mobileNumber?.isNotEmpty == true ? mobileNumber! : '--'),
+                      _kv(
+                          'Mobile Number',
+                          mobileNumber?.isNotEmpty == true
+                              ? mobileNumber!
+                              : '--'),
                       _kv('E-Token', _effectiveToken),
                     ],
                   ),
@@ -152,7 +159,10 @@ class BednetHouseholdReviewPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(flex: 2, child: Text(key, style: const TextStyle(fontWeight: FontWeight.w700))),
+          Expanded(
+              flex: 2,
+              child: Text(key,
+                  style: const TextStyle(fontWeight: FontWeight.w700))),
           const SizedBox(width: spacer2),
           Expanded(flex: 3, child: Text(value)),
         ],
