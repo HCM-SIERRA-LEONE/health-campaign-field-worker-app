@@ -539,6 +539,12 @@ final dynamic sampleComplaintFlows = {
               "enums": [
                 {"code": "SyncNotWorking", "name": "Sync Not Working"},
                 {"code": "NotEnoughStock", "name": "Not Enough Stock"},
+                {"code": "LackOfInternet", "name": "Lack of Internet"},
+                {"code": "PerformanceIssue", "name": "Performance Issue"},
+                {"code": "SecurityIssue", "name": "Security Issue"},
+                {"code": "DataContentIssue", "name": "Data/Content Issue"},
+                {"code": "UserAccountIssue", "name": "User Account Issue"},
+                {"code": "TechnicalIssue", "name": "Technical Issue"},
                 {"code": "Other", "name": "Other"}
               ],
               "innerLabel": "",
