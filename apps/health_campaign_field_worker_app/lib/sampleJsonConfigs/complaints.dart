@@ -685,6 +685,7 @@ final dynamic sampleComplaintFlows = {
               "order": 4,
               "value": "",
               "format": "text",
+              "pattern": "^\\d+",
               "hidden": false,
               "tooltip": "",
               "helpText": "",
@@ -694,8 +695,25 @@ final dynamic sampleComplaintFlows = {
               "deleteFlag": false,
               "innerLabel": "",
               "systemDate": false,
-              "validations": [],
+              "validations": [
+                {
+                  "type": "pattern",
+                  "value": "^\\d+",
+                  "message": "PINCODE_ONLY_NUMBERS"
+                },
+                {
+                  "type": "minLength",
+                  "value": 6,
+                  "message": "LOCATION_DETAILS_pincode_LABEL_MIN_VALIDATION"
+                },
+                {
+                  "type": "maxLength",
+                  "value": 6,
+                  "message": "LOCATION_DETAILS_pincode_LABEL_MAX_VALIDATION"
+                }
+              ],
               "errorMessage": "",
+              "pattern.message": "PINCODE_ONLY_NUMBERS",
               "isMultiSelect": false
             },
             {
