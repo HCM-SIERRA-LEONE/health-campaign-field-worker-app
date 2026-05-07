@@ -132,8 +132,16 @@ class JsonSchemaScannerBuilder extends JsonSchemaBuilder<String> {
         final showQrSummary =
             !showBarcodeSummary && displayQrCodes.isNotEmpty && summaryData;
 
+        final themeData = Theme.of(context);
+        final errorTextStyle = themeData
+            .digitTextTheme(context)
+            .bodyS
+            .copyWith(color: themeData.colorTheme.alert.error);
+
+        Widget scannerWidget;
+
         // Show barcode (GS1) summary
-        return showBarcodeSummary
+        scannerWidget = showBarcodeSummary
             ? Container(
                 padding: EdgeInsets.zero,
                 width: MediaQuery.of(context).size.width,
@@ -181,8 +189,9 @@ class JsonSchemaScannerBuilder extends JsonSchemaBuilder<String> {
                               }).toList()
                             // Fall back to parsing form value using deserializer
                             : () {
-                                final parsedBarcodes = DigitScannerUtils
-                                    .deserializeGs1Barcodes(formValue!);
+                                final parsedBarcodes =
+                                    DigitScannerUtils.deserializeGs1Barcodes(
+                                        formValue!);
                                 final widgets = <Widget>[];
                                 for (int i = 0;
                                     i < parsedBarcodes.length;
@@ -220,11 +229,15 @@ class JsonSchemaScannerBuilder extends JsonSchemaBuilder<String> {
                         // Scanner page will parse and dispatch to bloc in initState
                         final provider = ScannerComparisonProvider.of(context);
                         final registry = ScannerComparisonRegistry();
-                        final dupeFn = provider != null ? provider.duplicateCheckFn : registry.duplicateCheckFn;
-                        final dupeErrFn = provider != null ? provider.duplicateErrorMessage : registry.duplicateErrorMessage;
+                        final dupeFn = provider != null
+                            ? provider.duplicateCheckFn
+                            : registry.duplicateCheckFn;
+                        final dupeErrFn = provider != null
+                            ? provider.duplicateErrorMessage
+                            : registry.duplicateErrorMessage;
                         final duplicateCheckFn = dupeFn != null
                             ? (String scannedValue) => dupeFn(
-                                  formControlName, scannedValue, form.value)
+                                formControlName, scannedValue, form.value)
                             : null;
                         final duplicateMsg = dupeErrFn?.call(formControlName);
                         context.router.push(DigitScannerRoute(
@@ -283,15 +296,21 @@ class JsonSchemaScannerBuilder extends JsonSchemaBuilder<String> {
                                   ),
                                 );
                             // Use displayQrCodes which already has the parsed data
-                            final provider2 = ScannerComparisonProvider.of(context);
+                            final provider2 =
+                                ScannerComparisonProvider.of(context);
                             final registry2 = ScannerComparisonRegistry();
-                            final dupeFn2 = provider2 != null ? provider2.duplicateCheckFn : registry2.duplicateCheckFn;
-                            final dupeErrFn2 = provider2 != null ? provider2.duplicateErrorMessage : registry2.duplicateErrorMessage;
+                            final dupeFn2 = provider2 != null
+                                ? provider2.duplicateCheckFn
+                                : registry2.duplicateCheckFn;
+                            final dupeErrFn2 = provider2 != null
+                                ? provider2.duplicateErrorMessage
+                                : registry2.duplicateErrorMessage;
                             final duplicateCheckFn2 = dupeFn2 != null
                                 ? (String scannedValue) => dupeFn2(
-                                      formControlName, scannedValue, form.value)
+                                    formControlName, scannedValue, form.value)
                                 : null;
-                            final duplicateMsg2 = dupeErrFn2?.call(formControlName);
+                            final duplicateMsg2 =
+                                dupeErrFn2?.call(formControlName);
                             context.router.push(DigitScannerRoute(
                               validations: _toScannerValidations(),
                               isEditEnabled: true,
@@ -321,11 +340,15 @@ class JsonSchemaScannerBuilder extends JsonSchemaBuilder<String> {
                           );
                       final provider3 = ScannerComparisonProvider.of(context);
                       final registry3 = ScannerComparisonRegistry();
-                      final dupeFn3 = provider3 != null ? provider3.duplicateCheckFn : registry3.duplicateCheckFn;
-                      final dupeErrFn3 = provider3 != null ? provider3.duplicateErrorMessage : registry3.duplicateErrorMessage;
+                      final dupeFn3 = provider3 != null
+                          ? provider3.duplicateCheckFn
+                          : registry3.duplicateCheckFn;
+                      final dupeErrFn3 = provider3 != null
+                          ? provider3.duplicateErrorMessage
+                          : registry3.duplicateErrorMessage;
                       final duplicateCheckFn3 = dupeFn3 != null
-                          ? (String scannedValue) => dupeFn3(
-                                formControlName, scannedValue, form.value)
+                          ? (String scannedValue) =>
+                              dupeFn3(formControlName, scannedValue, form.value)
                           : null;
                       final duplicateMsg3 = dupeErrFn3?.call(formControlName);
                       context.router.push(DigitScannerRoute(
@@ -339,6 +362,22 @@ class JsonSchemaScannerBuilder extends JsonSchemaBuilder<String> {
                     prefixIcon: Icons.qr_code,
                     mainAxisSize: MainAxisSize.max,
                   );
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            scannerWidget,
+            if (field.errorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  field.errorText!,
+                  style: errorTextStyle,
+                ),
+              ),
+          ],
+        );
       }),
     );
   }

@@ -96,8 +96,8 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
           current.error == null,
       listener: (context, state) {
         if (!context.mounted) return;
-        context.router.push(BednetHouseholdOverviewWrapperRoute(
-          children: [const SchoolDetailsRoute()],
+        context.router.push(const BednetHouseholdOverviewWrapperRoute(
+          children: [SchoolDetailsRoute()],
         ));
       },
       child: BlocBuilder<BednetDistributionBloc, BednetDistributionState>(
