@@ -339,6 +339,10 @@ class BeneficiaryDownSyncBloc
             ? null
             : existingDownSyncData.first.lastSyncedTime;
 
+        if (lastSyncedTime == null) {
+          lastSyncedTime = 0;
+        }
+
         final initialResults = await downSyncRemoteRepository.downSync(
           DownsyncSearchModel(
             locality: boundaryCode,
@@ -413,6 +417,9 @@ class BeneficiaryDownSyncBloc
           int? loopLastSyncedTime = loopDownSyncData.isEmpty
               ? null
               : loopDownSyncData.first.lastSyncedTime;
+          if (loopLastSyncedTime == null) {
+            loopLastSyncedTime = 0;
+          }
 
           if (loopDownSyncData.isEmpty) {
             await downSyncLocalRepository.create(DownsyncModel(
