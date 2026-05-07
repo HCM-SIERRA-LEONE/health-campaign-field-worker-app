@@ -132,17 +132,17 @@ class StockCalculationUtils {
         if (transactionReason == 'RETURNED' || stockEntryType == 'RETURNED') {
           stockReturned += quantity;
         } else if (stockEntryType == 'EXCESS') {
-          stockExcess += quantity;
+          stockExcess += 0;
         } else if (stockEntryType == 'LESS') {
-          stockLess += quantity;
+          stockLess += 0;
         } else if (transactionReason.isEmpty ||
             transactionReason == 'RECEIVED') {
           stockReceived += quantity;
         }
       } else if (isSender && stockEntryType == 'LOSS') {
-        stockLost += quantity;
+        stockLost += 0;
       } else if (isSender && stockEntryType == 'DAMAGED') {
-        stockDamaged += quantity;
+        stockDamaged += 0;
       } else if (isSender && transactionType == 'DISPATCHED') {
         if (status == 'REJECTED') {
           // Skip - rejected stock is not subtracted from sender's balance
