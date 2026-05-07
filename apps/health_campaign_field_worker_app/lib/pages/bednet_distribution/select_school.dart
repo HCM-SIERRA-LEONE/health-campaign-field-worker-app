@@ -109,6 +109,7 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                 value: state.selectedSchool,
               ),
               _classControl: FormControl<String>(
+                validators: [Validators.required],
                 value: _selectedClass,
               ),
             }),
@@ -127,7 +128,9 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                     builder: (context, _) {
                       final selected =
                           form.control(_schoolControl).value as HouseholdModel?;
-                      final hasSelection = selected != null;
+                      final hasSchoolSelection = selected != null;
+                      final hasClassSelection =
+                          (form.control(_classControl).value as String?) != null;
                       return DigitCard(
                         margin: const EdgeInsets.only(top: spacer2),
                         children: [
@@ -136,7 +139,9 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                             type: DigitButtonType.primary,
                             size: DigitButtonSize.large,
                             mainAxisSize: MainAxisSize.max,
-                            isDisabled: state.schools.isEmpty || !hasSelection,
+                            isDisabled: state.schools.isEmpty ||
+                                !hasSchoolSelection ||
+                                !hasClassSelection,
                             onPressed: () {
                               form.markAllAsTouched();
                               if (!form.valid) return;
@@ -238,9 +243,13 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                           const SizedBox(height: spacer2),
                           ReactiveWrapperField(
                             formControlName: _classControl,
+                            validationMessages: {
+                              'required': (_) =>
+                                  'Please select a class to proceed',
+                            },
                             builder: (field) => LabeledField(
                               label: 'Select the class',
-                              isRequired: false,
+                              isRequired: true,
                               child: DigitDropdown<String>(
                                 isSearchable: false,
                                 items: _classOptions
