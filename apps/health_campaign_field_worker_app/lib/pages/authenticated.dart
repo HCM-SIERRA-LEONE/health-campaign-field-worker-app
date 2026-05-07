@@ -659,21 +659,21 @@ class _AuthenticatedPageWrapperState extends State<AuthenticatedPageWrapper> {
                   },
                   icon: Icons.home,
                 ),
-                if (appInitializationBloc.state is AppInitialized &&
-                    !isDistributor) ...[
-                  SidebarItem(
-                    title: AppLocalizations.of(context).translate(
-                      i18.common.coreCommonlanguage,
-                    ),
-                    isSearchEnabled: false,
-                    icon: Icons.language,
-                    onPressed: () {},
-                    children: (localizationModulesList != null)
-                        ? buildLanguage(localizationModulesList, languages,
-                            context, appConfig)
-                        : null,
-                  )
-                ],
+                // if (appInitializationBloc.state is AppInitialized &&
+                //     !isDistributor) ...[
+                //   SidebarItem(
+                //     title: AppLocalizations.of(context).translate(
+                //       i18.common.coreCommonlanguage,
+                //     ),
+                //     isSearchEnabled: false,
+                //     icon: Icons.language,
+                //     onPressed: () {},
+                //     children: (localizationModulesList != null)
+                //         ? buildLanguage(localizationModulesList, languages,
+                //             context, appConfig)
+                //         : null,
+                //   )
+                // ],
                 if (!isDistributor)
                   SidebarItem(
                     title: AppLocalizations.of(context).translate(
