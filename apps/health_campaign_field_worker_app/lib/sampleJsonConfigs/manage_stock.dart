@@ -1704,7 +1704,7 @@ final dynamic sampleInventoryFlows = {
               "errorMessage": "",
               "isMultiSelect": false,
               "enums": [
-                {"code": "LESS", "name": "Less"},
+                {"code": "LESS", "name": "Loss"},
                 {"code": "EXCESS", "name": "Excess"}
               ]
             },
