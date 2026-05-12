@@ -15,6 +15,7 @@ import '../../../widgets/registartion_deliver/localized.dart';
 import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import '../../../models/bednet_distribution/bednet_distribution_models.dart';
 import '../../../models/entities/additional_fields_type.dart';
 
 import '../../../blocs/bednet_distribution/bednet_distribution.dart';
@@ -267,7 +268,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                     childrenCount.toString(),
                                   );
 
-                                  final updatedHousehold =
+                                  var updatedHousehold =
                                       householdModel.copyWith(
                                     memberCount: memberCount,
                                     additionalFields: HouseholdAdditionalFields(
@@ -284,6 +285,44 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                           .toList(),
                                     ),
                                   );
+
+                                  // Carry the edited head name into the household
+                                  // so _handleUpdateHousehold can apply it to
+                                  // the head individual record.
+                                  final trimmedHeadName = headName.trim();
+                                  if (trimmedHeadName.isNotEmpty) {
+                                    updatedHousehold =
+                                        householdWithBednetSchoolHeadName(
+                                      updatedHousehold,
+                                      trimmedHeadName,
+                                    );
+                                  }
+
+                                  // Update the head individual's name and mobile
+                                  // in the bloc state so _handleUpdateHousehold
+                                  // persists both when it iterates individualModel.
+                                  if (headOfHousehold != null &&
+                                      headOfHousehold.name != null) {
+                                    final updatedHead =
+                                        headOfHousehold.copyWith(
+                                      name: headOfHousehold.name!.copyWith(
+                                        givenName: trimmedHeadName.isNotEmpty
+                                            ? trimmedHeadName
+                                            : headOfHousehold.name!.givenName,
+                                      ),
+                                      mobileNumber:
+                                          (mobile?.trim() ?? '').isEmpty
+                                              ? null
+                                              : mobile!.trim(),
+                                    );
+                                    bloc.add(
+                                      BeneficiaryRegistrationEvent
+                                          .saveIndividualDetails(
+                                        model: updatedHead,
+                                        isHeadOfHousehold: true,
+                                      ),
+                                    );
+                                  }
 
                                   _pendingEditHouseholdNavigation = true;
                                   bloc.add(
@@ -531,6 +570,10 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   i18.householdDetails.dateOfRegistrationLabel,
                                 ),
                                 child: DigitDateFormInput(
+                                  readOnly: registrationState.mapOrNull(
+                                        editHousehold: (_) => true,
+                                      ) ??
+                                      false,
                                   controller: _dateController
                                     ..text = DateFormat(
                                             Constants().dateMonthYearFormat)
