@@ -10,7 +10,6 @@ import 'package:health_campaign_field_worker_app/models/registration_deliver_mod
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/typedefs.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 
-
 part 'beneficiary_registration.freezed.dart';
 
 typedef BeneficiaryRegistrationEmitter = Emitter<BeneficiaryRegistrationState>;
@@ -131,6 +130,18 @@ class BeneficiaryRegistrationBloc
       editIndividual: (value) {
         emit(value.copyWith(
           individualModel: event.model,
+        ));
+      },
+      editHousehold: (value) {
+        final updated = event.model;
+        final updatedMembers = value.individualModel
+            .map((m) => m.clientReferenceId == updated.clientReferenceId
+                ? updated
+                : m)
+            .toList();
+        emit(value.copyWith(
+          headOfHousehold: updated,
+          individualModel: updatedMembers,
         ));
       },
     );
@@ -259,7 +270,8 @@ class BeneficiaryRegistrationBloc
                     ? null
                     : [
                         address.copyWith(
-                          relatedClientReferenceId: individual.clientReferenceId,
+                          relatedClientReferenceId:
+                              individual.clientReferenceId,
                           auditDetails: individual.auditDetails,
                           clientAuditDetails: individual.clientAuditDetails,
                           locality: locality,
@@ -725,13 +737,14 @@ class BeneficiaryRegistrationBloc
             await householdRepository.update(
               merged.copyWith(
                 clientAuditDetails: ClientAuditDetails(
-                  createdBy: value.householdModel.clientAuditDetails?.createdBy ??
+                  createdBy: value
+                          .householdModel.clientAuditDetails?.createdBy ??
                       value.householdModel.auditDetails?.createdBy.toString() ??
                       event.userUuid,
-                  createdTime: value.householdModel.clientAuditDetails
-                          ?.createdTime ??
-                      value.householdModel.auditDetails?.createdTime ??
-                      nowMs,
+                  createdTime:
+                      value.householdModel.clientAuditDetails?.createdTime ??
+                          value.householdModel.auditDetails?.createdTime ??
+                          nowMs,
                   lastModifiedBy: event.userUuid,
                   lastModifiedTime: nowMs,
                 ),
