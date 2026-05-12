@@ -617,6 +617,11 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                       .control(_nameOfIndividualKey)
                                       .value = value,
                                   errorMessage: field.errorText,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z\s]'),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -624,7 +629,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                               formControlName: _mobileNumberKey,
                               validationMessages: {
                                 'mobilePattern': (_) => localizations.translate(
-                                      i18.common.coreCommonMobileNumber,
+                                      i18.common.coreCommonMobileNumberValidation,
                                     ),
                               },
                               builder: (field) => LabeledField(
