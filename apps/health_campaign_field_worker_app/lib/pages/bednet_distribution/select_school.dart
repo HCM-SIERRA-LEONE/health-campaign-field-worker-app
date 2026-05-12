@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:digit_data_model/data_model.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
@@ -41,6 +42,26 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
   ];
 
   String? _selectedClass;
+
+  /// Returns true if [school]'s name-related additionalFields match [dhName]
+  /// (case-insensitive).
+  bool _matchesDhBoundary(HouseholdModel school, String dhName) {
+    if (dhName.isEmpty) return false;
+
+    final fields = school.additionalFields?.fields ?? const <AdditionalField>[];
+    final fieldMap = <String, String>{};
+    for (final f in fields) {
+      final v = (f.value as Object?)?.toString().trim();
+      if (v != null && v.isNotEmpty) {
+        fieldMap[f.key.toLowerCase()] = v.toLowerCase();
+      }
+    }
+
+    final dhLower = dhName.toLowerCase();
+    return fieldMap['schoolname'] == dhLower ||
+        fieldMap['school_name'] == dhLower ||
+        fieldMap['name'] == dhLower;
+  }
 
   Future<void> _checkStockAndProceed(
     BuildContext context, {
@@ -102,11 +123,20 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
       },
       child: BlocBuilder<BednetDistributionBloc, BednetDistributionState>(
         builder: (context, state) {
+          final boundaryState = context.read<BoundaryBloc>().state;
+          final dhBoundary =
+              boundaryState.selectedBoundaryMap[Constants.dhBoundaryLevel];
+          final dhName = dhBoundary?.name?.trim() ?? '';
+          final matchedSchool = state.schools.firstWhereOrNull(
+            (s) => _matchesDhBoundary(s, dhName),
+          );
+          final isPrePopulated = matchedSchool != null;
+
           return ReactiveFormBuilder(
             form: () => fb.group({
               _schoolControl: FormControl<HouseholdModel>(
                 validators: [Validators.required],
-                value: state.selectedSchool,
+                value: isPrePopulated ? matchedSchool : state.selectedSchool,
               ),
               _classControl: FormControl<String>(
                 validators: [Validators.required],
@@ -130,7 +160,8 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                           form.control(_schoolControl).value as HouseholdModel?;
                       final hasSchoolSelection = selected != null;
                       final hasClassSelection =
-                          (form.control(_classControl).value as String?) != null;
+                          (form.control(_classControl).value as String?) !=
+                              null;
                       return DigitCard(
                         margin: const EdgeInsets.only(top: spacer2),
                         children: [
@@ -205,6 +236,7 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                               isRequired: true,
                               child: DigitDropdown<HouseholdModel>(
                                 isSearchable: false,
+                                isDisabled: isPrePopulated,
                                 items: state.schools
                                     .map(
                                       (e) => DropdownItem(
