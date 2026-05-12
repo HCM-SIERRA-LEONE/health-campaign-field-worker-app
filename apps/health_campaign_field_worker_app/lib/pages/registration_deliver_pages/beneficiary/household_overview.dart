@@ -54,7 +54,7 @@ class _HouseholdOverviewPageState
   int limit = 1000;
   bool _hasSeenLoading = false;
   bool _redirectedToAddHead = false;
-  bool isNameSearchEnabled = false;
+  bool isNameSearchEnabled = true;
   bool sortAscending = true;
 
   String? householdClientReferenceId;
@@ -473,52 +473,30 @@ class _HouseholdOverviewPageState
                                                       horizontal: spacer2,
                                                       vertical: spacer2,
                                                     ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        DigitSwitch(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          label:
-                                                              'Search by Name',
-                                                          value:
-                                                              isNameSearchEnabled,
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              isNameSearchEnabled =
-                                                                  value;
-                                                            });
-                                                            if (!value) {
-                                                              searchController
-                                                                  .clear();
-                                                            }
-                                                          },
-                                                        ),
-                                                        DigitButton(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          label: sortAscending
-                                                              ? 'Sort: A-Z'
-                                                              : 'Sort: Z-A',
-                                                          type: DigitButtonType
-                                                              .secondary,
-                                                          size: DigitButtonSize
-                                                              .small,
-                                                          prefixIcon:
-                                                              sortAscending
-                                                                  ? Icons.sort
-                                                                  : Icons.sort,
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              sortAscending =
-                                                                  !sortAscending;
-                                                            });
-                                                          },
-                                                        ),
-                                                      ],
+                                                    child: Align(
+                                                      alignment:
+                                                          Alignment.centerRight,
+                                                      child: DigitButton(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        label: sortAscending
+                                                            ? 'Sort: A-Z'
+                                                            : 'Sort: Z-A',
+                                                        type: DigitButtonType
+                                                            .secondary,
+                                                        size: DigitButtonSize
+                                                            .small,
+                                                        prefixIcon:
+                                                            sortAscending
+                                                                ? Icons.sort
+                                                                : Icons.sort,
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            sortAscending =
+                                                                !sortAscending;
+                                                          });
+                                                        },
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
@@ -625,51 +603,29 @@ class _HouseholdOverviewPageState
                                                 Padding(
                                                   padding: const EdgeInsets.all(
                                                       spacer2),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      DigitSwitch(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        label: 'Search by Name',
-                                                        value:
-                                                            isNameSearchEnabled,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            isNameSearchEnabled =
-                                                                value;
-                                                          });
-                                                          if (!value) {
-                                                            searchController
-                                                                .clear();
-                                                          }
-                                                        },
-                                                      ),
-                                                      DigitButton(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        label: sortAscending
-                                                            ? 'Sort: A-Z'
-                                                            : 'Sort: Z-A',
-                                                        type: DigitButtonType
-                                                            .secondary,
-                                                        size: DigitButtonSize
-                                                            .small,
-                                                        prefixIcon:
-                                                            sortAscending
-                                                                ? Icons.sort
-                                                                : Icons.sort,
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            sortAscending =
-                                                                !sortAscending;
-                                                          });
-                                                        },
-                                                      ),
-                                                    ],
+                                                  child: Align(
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                    child: DigitButton(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      label: sortAscending
+                                                          ? 'Sort: A-Z'
+                                                          : 'Sort: Z-A',
+                                                      type: DigitButtonType
+                                                          .secondary,
+                                                      size: DigitButtonSize
+                                                          .small,
+                                                      prefixIcon: sortAscending
+                                                          ? Icons.sort
+                                                          : Icons.sort,
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          sortAscending =
+                                                              !sortAscending;
+                                                        });
+                                                      },
+                                                    ),
                                                   ),
                                                 ),
                                               ],

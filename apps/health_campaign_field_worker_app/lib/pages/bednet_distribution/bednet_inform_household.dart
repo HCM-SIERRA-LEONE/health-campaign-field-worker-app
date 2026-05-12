@@ -298,6 +298,7 @@ class _BednetInformHouseholdPageState
       head: head,
       userUuid: userUuid,
       tenantId: tenantId,
+      memberCount: existingHh.memberCount,
     );
   }
 
@@ -317,6 +318,7 @@ class _BednetInformHouseholdPageState
     required IndividualModel head,
     required String userUuid,
     required String? tenantId,
+    int? memberCount,
   }) async {
     final projectId = RegistrationDeliverySingleton().projectId;
     final boundary = RegistrationDeliverySingleton().boundary;
@@ -364,6 +366,7 @@ class _BednetInformHouseholdPageState
       AdditionalField('itnDeliveredCount', widget.itnForDelivery),
       const AdditionalField('isSchool', false),
       AdditionalField('bednetCount', widget.itnForDelivery),
+      if (memberCount != null) AdditionalField('memberCount', memberCount),
     ];
 
     final address = (baseAddr ??
