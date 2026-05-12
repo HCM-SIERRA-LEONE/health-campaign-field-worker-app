@@ -265,7 +265,7 @@ class _TbReferBeneficiaryPageState
         final healthFacilities = facilityState.whenOrNull(
               fetched: (facilities, allFacilities) {
                 final projectFacilities = facilities
-                    .where((e) => e.usage == Constants.healthFacility)
+                    .where((e) => e.usage == Constants.dhFacility)
                     .toList();
                 return projectFacilities.isEmpty
                     ? allFacilities
