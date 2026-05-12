@@ -353,6 +353,16 @@ class MemberCard extends StatelessWidget {
                                             Navigator.of(context,
                                                     rootNavigator: true)
                                                 .pop();
+                                            final overviewState = context
+                                                .read<HouseholdOverviewBloc>()
+                                                .state;
+                                            final household = overviewState
+                                                .householdMemberWrapper
+                                                .household;
+                                            final memberCount = overviewState
+                                                .householdMemberWrapper
+                                                .members
+                                                ?.length;
                                             context
                                                 .read<DeliverInterventionBloc>()
                                                 .add(
@@ -403,6 +413,34 @@ class MemberCard extends StatelessWidget {
                                                                 .beneficiaryRefused
                                                                 .toValue(),
                                                           ),
+                                                          if (household !=
+                                                              null) ...[
+                                                            AdditionalField(
+                                                              'householdClientReferenceId',
+                                                              household
+                                                                  .clientReferenceId,
+                                                            ),
+                                                            AdditionalField(
+                                                              'schoolId',
+                                                              household
+                                                                      .additionalFields
+                                                                      ?.fields
+                                                                      .firstWhereOrNull(
+                                                                        (e) =>
+                                                                            e.key ==
+                                                                            'schoolId',
+                                                                      )
+                                                                      ?.value
+                                                                      ?.toString() ??
+                                                                  '',
+                                                            ),
+                                                          ],
+                                                          if (memberCount !=
+                                                              null)
+                                                            AdditionalField(
+                                                              'memberCount',
+                                                              memberCount,
+                                                            ),
                                                         ],
                                                       ),
                                                       address: individual
@@ -443,6 +481,16 @@ class MemberCard extends StatelessWidget {
                                             Navigator.of(context,
                                                     rootNavigator: true)
                                                 .pop();
+                                            final overviewState = context
+                                                .read<HouseholdOverviewBloc>()
+                                                .state;
+                                            final household = overviewState
+                                                .householdMemberWrapper
+                                                .household;
+                                            final memberCount = overviewState
+                                                .householdMemberWrapper
+                                                .members
+                                                ?.length;
                                             context
                                                 .read<DeliverInterventionBloc>()
                                                 .add(
@@ -493,6 +541,34 @@ class MemberCard extends StatelessWidget {
                                                                 .beneficiaryAbsent
                                                                 .toValue(),
                                                           ),
+                                                          if (household !=
+                                                              null) ...[
+                                                            AdditionalField(
+                                                              'householdClientReferenceId',
+                                                              household
+                                                                  .clientReferenceId,
+                                                            ),
+                                                            AdditionalField(
+                                                              'schoolId',
+                                                              household
+                                                                      .additionalFields
+                                                                      ?.fields
+                                                                      .firstWhereOrNull(
+                                                                        (e) =>
+                                                                            e.key ==
+                                                                            'schoolId',
+                                                                      )
+                                                                      ?.value
+                                                                      ?.toString() ??
+                                                                  '',
+                                                            ),
+                                                          ],
+                                                          if (memberCount !=
+                                                              null)
+                                                            AdditionalField(
+                                                              'memberCount',
+                                                              memberCount,
+                                                            ),
                                                         ],
                                                       ),
                                                       address: individual

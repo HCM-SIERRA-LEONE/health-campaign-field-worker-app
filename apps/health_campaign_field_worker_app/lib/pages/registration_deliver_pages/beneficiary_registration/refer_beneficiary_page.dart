@@ -35,6 +35,7 @@ class TbReferBeneficiaryPage extends LocalizedStatefulWidget {
   final String administrativeAreaCode;
   final List<String> referralReasons;
   final String tbScreeningPayload;
+  final int? memberCount;
 
   const TbReferBeneficiaryPage({
     super.key,
@@ -45,6 +46,7 @@ class TbReferBeneficiaryPage extends LocalizedStatefulWidget {
     required this.administrativeAreaCode,
     required this.referralReasons,
     required this.tbScreeningPayload,
+    this.memberCount,
   });
 
   @override
@@ -223,6 +225,8 @@ class _TbReferBeneficiaryPageState
                       'administrativeAreaCode',
                       widget.administrativeAreaCode,
                     ),
+                    if (widget.memberCount != null)
+                      AdditionalField('memberCount', widget.memberCount),
                   ],
                 ),
                 address: widget.individual.address?.firstOrNull?.copyWith(

@@ -1552,6 +1552,10 @@ class _BeneficiaryChecklistPageState
                   _resolveAdministrativeAreaCode(navigatorContext),
               referralReasons: _referralReasonCodesFromChecklist(),
               tbScreeningPayload: jsonEncode(_checklistPayloadMap(decidedFlow)),
+              memberCount: _tryHouseholdOverviewState(navigatorContext)
+                  ?.householdMemberWrapper
+                  .members
+                  ?.length,
             );
 
             return MultiBlocProvider(
@@ -1633,6 +1637,18 @@ class _BeneficiaryChecklistPageState
                         'administrativeAreaCode',
                         _resolveAdministrativeAreaCode(navigatorContext),
                       ),
+                      if (_tryHouseholdOverviewState(navigatorContext)
+                              ?.householdMemberWrapper
+                              .members
+                              ?.length !=
+                          null)
+                        AdditionalField(
+                          'memberCount',
+                          _tryHouseholdOverviewState(navigatorContext)!
+                              .householdMemberWrapper
+                              .members!
+                              .length,
+                        ),
                     ],
                   ),
                   address: individual.address?.firstOrNull?.copyWith(

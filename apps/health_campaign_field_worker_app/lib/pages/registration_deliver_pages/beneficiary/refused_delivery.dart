@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:digit_data_model/data_model.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
@@ -152,7 +153,11 @@ class RefusedDeliveryPageState extends LocalizedState<RefusedDeliveryPage> {
                                               ?.first,
                                           registrationState
                                               .householdMemberWrapper
-                                              .household),
+                                              .household,
+                                          registrationState
+                                              .householdMemberWrapper
+                                              .members
+                                              ?.length),
                                       isEditing: false,
                                       boundaryModel:
                                           RegistrationDeliverySingleton()
@@ -288,6 +293,7 @@ class RefusedDeliveryPageState extends LocalizedState<RefusedDeliveryPage> {
     String? refusalComment,
     AddressModel? address,
     HouseholdModel? household,
+    int? memberCount,
   ) {
     var task = oldTask;
     var clientReferenceId = task?.clientReferenceId ?? IdGen.i.identifier;
@@ -330,18 +336,22 @@ class RefusedDeliveryPageState extends LocalizedState<RefusedDeliveryPage> {
               refusalComment,
             ),
           AdditionalField(AdditionalFieldsType.isSchool.toValue(), true),
-          if (household != null)
+          if (household != null) ...[
             AdditionalField(
               'householdClientReferenceId',
               household.clientReferenceId,
             ),
+            if (memberCount != null)
+              AdditionalField('memberCount', memberCount),
             AdditionalField(
               'schoolId',
-              household!.additionalFields!.fields
-                  .firstWhere((e) => e.key == 'schoolId')
-                  .value
-                  .toString(),
+              household.additionalFields?.fields
+                      .firstWhereOrNull((e) => e.key == 'schoolId')
+                      ?.value
+                      ?.toString() ??
+                  '',
             ),
+          ],
         ],
       ),
     );

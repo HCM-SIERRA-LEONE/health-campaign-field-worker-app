@@ -123,7 +123,9 @@ class _CustomSummaryReportState
                               _buildSectionTitle(
                                   'Household Distribution Report'),
                               SizedBox(
-                                height: 300,
+                                height: 500,
+                                //  _gridHeight(
+                                // summaryReportState.data.entries.length),
                                 child: _ReportDetailsContent(
                                   title: 'Household Distribution Report',
                                   data: DigitGridData(
@@ -174,22 +176,24 @@ class _CustomSummaryReportState
                             children: [
                               _buildSectionTitle('School Distribution Report'),
                               SizedBox(
-                                height: 300,
+                                height: 500,
+                                // _gridHeight(
+                                //     summaryReportState.data.entries.length),
                                 child: _ReportDetailsContent(
                                   title: 'School Distribution Report',
                                   data: DigitGridData(
                                     columns: [
-                                      DigitGridColumn(
+                                      const DigitGridColumn(
                                         label: 'Date',
                                         key: _dateKey,
                                         width: 120,
                                       ),
-                                      DigitGridColumn(
+                                      const DigitGridColumn(
                                         label: 'No. of school visited',
                                         key: _schoolVisitedKey,
                                         width: 180,
                                       ),
-                                      DigitGridColumn(
+                                      const DigitGridColumn(
                                         label: 'No. of Bednet delivered',
                                         key: _schoolBednetDeliveredKey,
                                         width: 180,

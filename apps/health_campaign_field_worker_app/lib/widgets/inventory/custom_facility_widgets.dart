@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import '../../blocs/localization/app_localization.dart';
 import '../../blocs/project/project.dart';
 import '../../models/entities/roles_type.dart';
 import '../../utils/constants.dart';
@@ -88,7 +89,7 @@ class _FacilityCardContent extends StatefulWidget {
   final PropertySchema fieldSchema;
   final String pageSchema;
   final dynamic stateData;
-  final dynamic localizations;
+  final AppLocalizations localizations;
 
   const _FacilityCardContent({
     required this.formKey,
@@ -113,7 +114,7 @@ class _FacilityCardContentState extends State<_FacilityCardContent> {
   PropertySchema get fieldSchema => widget.fieldSchema;
   String get pageSchema => widget.pageSchema;
   dynamic get stateData => widget.stateData;
-  dynamic get localizations => widget.localizations;
+  AppLocalizations get localizations => widget.localizations;
 
   void _maybeLoadFacilitiesForSelectedProject() {
     if (_requestedFacilitiesLoad) return;

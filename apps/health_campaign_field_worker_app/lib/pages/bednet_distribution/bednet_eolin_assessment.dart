@@ -75,10 +75,9 @@ class _BednetEolinAssessmentPageState extends State<BednetEolinAssessmentPage> {
     return true;
   }
 
-  /// Persists returning count only when the user answered Yes, and only if
-  /// [eolinOldNetsReturningCount] already exists on the household (MDMS).
-  /// the household (MDMS-provisioned). Skips when [additionalFields] is null or
-  /// when a key is absent, so sync is not broken by unknown fields.
+  /// Persists returning count when the user answered Yes or No.
+  /// Creates the field if it doesn't exist, or updates if it does exist.
+  /// Skips when [additionalFields] is null to avoid breaking sync.
   Future<void> _persistEolinToHouseholdIfApplicable() async {
     final seed = widget.bednetDeliveryHousehold;
     if (seed == null) return;
@@ -96,24 +95,21 @@ class _BednetEolinAssessmentPageState extends State<BednetEolinAssessmentPage> {
             .firstOrNull ??
         seed;
 
-    final additional = existingHh.additionalFields;
-    if (additional == null) return;
+    // Initialize additionalFields if null
+    HouseholdAdditionalFields additional = existingHh.additionalFields ??
+        HouseholdAdditionalFields(fields: [], version: 1);
 
     final fieldList = List<AdditionalField>.from(additional.fields);
     final countKey = AdditionalFieldsType.eolinOldNetsReturningCount.toValue();
 
-    var touched = false;
+    // Always update or create the field
     if (_hasOldNetsAnswer == _yes) {
-      touched |= _setFieldIfKeyExists(
-        fieldList,
-        countKey,
-        _returningCount.toString(),
-      );
+      _setOrUpdateField(fieldList, countKey, _returningCount.toString());
     } else if (_hasOldNetsAnswer == _no) {
-      touched |= _setFieldIfKeyExists(fieldList, countKey, '0');
+      _setOrUpdateField(fieldList, countKey, '0');
+    } else {
+      return; // No answer, nothing to save
     }
-
-    if (!touched) return;
 
     await householdRepo.update(
       existingHh.copyWith(
@@ -138,16 +134,21 @@ class _BednetEolinAssessmentPageState extends State<BednetEolinAssessmentPage> {
     );
   }
 
-  /// Returns true if [key] was present and updated.
-  bool _setFieldIfKeyExists(
+  /// Sets or updates a field in the additional fields list.
+  /// Creates the field if it doesn't exist, updates if it does.
+  void _setOrUpdateField(
     List<AdditionalField> fields,
     String key,
     String value,
   ) {
     final i = fields.indexWhere((f) => f.key == key);
-    if (i < 0) return false;
-    fields[i] = AdditionalField(key, value);
-    return true;
+    if (i >= 0) {
+      // Update existing field
+      fields[i] = AdditionalField(key, value);
+    } else {
+      // Add new field
+      fields.add(AdditionalField(key, value));
+    }
   }
 
   void _navigateToInformHousehold() {
