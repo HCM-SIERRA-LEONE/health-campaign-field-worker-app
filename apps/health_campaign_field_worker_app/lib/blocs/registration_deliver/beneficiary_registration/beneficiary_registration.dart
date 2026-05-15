@@ -811,6 +811,7 @@ class BeneficiaryRegistrationBloc
           emit(BeneficiaryRegistrationPersistedState(
             navigateToRoot: true,
             householdModel: persistedHousehold,
+            individualModel: event.individualModel,
             isHeadOfHousehold: event.isHeadOfHousehold,
           ));
         }

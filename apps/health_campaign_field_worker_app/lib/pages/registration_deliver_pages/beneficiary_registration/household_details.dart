@@ -20,6 +20,7 @@ import '../../../models/entities/additional_fields_type.dart';
 
 import '../../../blocs/bednet_distribution/bednet_distribution.dart';
 import '../../../blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
+import '../../../blocs/registration_deliver/household_overview/household_overview.dart';
 import '../../../blocs/registration_deliver/search_households/search_households.dart';
 import '../../../pages/bednet_distribution/bednet_household_review.dart';
 import '../../../router/app_router.dart';
@@ -74,6 +75,20 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
   void dispose() {
     _dateController.dispose();
     super.dispose();
+  }
+
+  void _reloadHouseholdOverviewAfterItnFlow(BuildContext context) {
+    try {
+      final overviewBloc = context.read<HouseholdOverviewBloc>();
+      overviewBloc.add(
+        HouseholdOverviewEvent.reload(
+          projectId: RegistrationDeliverySingleton().projectId.toString(),
+          projectBeneficiaryType:
+              RegistrationDeliverySingleton().beneficiaryType ??
+                  BeneficiaryType.household,
+        ),
+      );
+    } catch (_) {}
   }
 
   @override
@@ -155,15 +170,80 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
 
             if (!context.mounted) return;
 
-            // General acknowledgement after registration — not [BednetSuccessPage],
-            // which is reserved for after ITN delivery ([BednetInformHouseholdPage]).
-            await context.router.root.navigate(
-              BednetHouseholdOverviewWrapperRoute(
-                children: [
-                  HouseholdAcknowledgementRoute(),
-                ],
-              ),
-            );
+            // Navigate to ITN/Bednets delivery page after household registration
+            final householdForDelivery = value.householdModel;
+            final individualModelFromState = value.individualModel;
+
+            if (householdForDelivery != null &&
+                individualModelFromState != null) {
+              final memberCount = householdForDelivery.memberCount ?? 1;
+              final childrenCount =
+                  householdForDelivery.additionalFields?.fields
+                          .firstWhereOrNull(
+                            (f) => f.key == 'children',
+                          )
+                          ?.value as int? ??
+                      0;
+
+              // Generate EToken like the original code
+              final headName =
+                  individualModelFromState.name?.givenName?.trim() ?? '';
+              final eToken = BednetHouseholdReviewPage.syntheticEToken(
+                headName: headName.isEmpty ? ' ' : headName,
+                memberCount: memberCount,
+              );
+
+              // Persist the EToken
+              await _persistBednetETokenAfterRegistration(
+                context: context,
+                householdModel: householdForDelivery,
+                projectBeneficiaryModel: value.projectBeneficiaryModel,
+                eToken: eToken,
+              );
+
+              if (!context.mounted) return;
+
+              // Copy address from household to individual model
+              // The individual from persisted state doesn't have address, but household does
+              IndividualModel headOfHousehold = individualModelFromState;
+              if (householdForDelivery.address != null) {
+                headOfHousehold = individualModelFromState.copyWith(
+                  address: [householdForDelivery.address!],
+                );
+              }
+
+              if (!context.mounted) return;
+
+              // Use Navigator with pushAndRemoveUntil to clear the stack
+              Navigator.of(context)
+                  .pushAndRemoveUntil<void>(
+                    MaterialPageRoute<void>(
+                      builder: (_) => BlocProvider.value(
+                        value: bloc,
+                        child: BednetHouseholdReviewPage(
+                          headName: headName,
+                          memberCount: memberCount < 1 ? 1 : memberCount,
+                          childrenCount: childrenCount < 0 ? 0 : childrenCount,
+                          mobileNumber: headOfHousehold.mobileNumber,
+                          householdEToken: eToken,
+                          bednetDeliveryHousehold: householdForDelivery,
+                          bednetDeliveryHead: headOfHousehold,
+                        ),
+                      ),
+                    ),
+                    (route) => route.isFirst,
+                  )
+                  .then((_) => _reloadHouseholdOverviewAfterItnFlow(context));
+            } else {
+              // Fallback to acknowledgement if data is missing
+              await context.router.root.navigate(
+                BednetHouseholdOverviewWrapperRoute(
+                  children: [
+                    HouseholdAcknowledgementRoute(),
+                  ],
+                ),
+              );
+            }
           },
         );
       },
@@ -629,7 +709,8 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                               formControlName: _mobileNumberKey,
                               validationMessages: {
                                 'mobilePattern': (_) => localizations.translate(
-                                      i18.common.coreCommonMobileNumberValidation,
+                                      i18.common
+                                          .coreCommonMobileNumberValidation,
                                     ),
                               },
                               builder: (field) => LabeledField(
