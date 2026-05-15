@@ -205,11 +205,23 @@ class CustomIndividualDetailsPageState
                   key: _pageSubtreeKey,
                   child: ScrollableContent(
                     enableFixedDigitButton: true,
-                    header: const Column(children: [
+                    header: Column(children: [
                       Padding(
                         padding: EdgeInsets.only(bottom: spacer2),
                         child: BackNavigationHelpHeaderWidget(
                           showHelp: false,
+                          handleBack: () async {
+                            // Navigate to view household page instead of default back behavior
+                            if (context.mounted) {
+                              await router.navigate(
+                                BednetHouseholdOverviewWrapperRoute(
+                                  children: [
+                                    CustomHouseholdOverviewRoute(),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ]),

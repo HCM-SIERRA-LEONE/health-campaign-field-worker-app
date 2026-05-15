@@ -145,9 +145,17 @@ class _BeneficiaryChecklistPageState
                       padding: const EdgeInsets.only(bottom: spacer2),
                       child: BackNavigationHelpHeaderWidget(
                         showHelp: false,
-                        handleBack: () {
-                          //TODO: direct go back is not working, need to check
-                          Navigator.pop(context);
+                        handleBack: () async {
+                          // Navigate to view household page instead of default back behavior
+                          if (context.mounted) {
+                            await router.navigate(
+                              BednetHouseholdOverviewWrapperRoute(
+                                children: [
+                                  CustomHouseholdOverviewRoute(),
+                                ],
+                              ),
+                            );
+                          }
                         },
                       ),
                     ),
