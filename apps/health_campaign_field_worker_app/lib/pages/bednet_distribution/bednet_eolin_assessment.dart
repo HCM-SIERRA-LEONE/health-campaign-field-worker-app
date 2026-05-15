@@ -277,7 +277,7 @@ class _BednetEolinAssessmentPageState extends State<BednetEolinAssessmentPage> {
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             minValue: 1,
-                            maxValue: 999,
+                            maxValue: 5,
                             step: 1,
                             initialValue: _returningCount.toString(),
                             onChange: (value) {
@@ -290,27 +290,20 @@ class _BednetEolinAssessmentPageState extends State<BednetEolinAssessmentPage> {
                             },
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: spacer1),
-                          child: Text(
-                            'Distributors can retrieve any valid number of old nets.',
-                            style: textTheme.bodyS.copyWith(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.65),
-                            ),
-                          ),
-                        ),
                         const SizedBox(height: spacer2),
                         DigitCard(
                           children: [
                             Container(
                               width: double.infinity,
-                              color: Colors.red[700],
+                              color: Color.fromARGB(255, 200, 76, 14),
                               padding: const EdgeInsets.all(spacer2),
                               child: const Text(
                                 'Screen the Old Nets to Confirm.\n'
                                 'Distributor should ensure all EOLINs are retrieved.',
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],

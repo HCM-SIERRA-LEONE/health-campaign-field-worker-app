@@ -135,11 +135,14 @@ class BednetHouseholdReviewPage extends StatelessWidget {
                     children: [
                       Container(
                         width: double.infinity,
-                        color: Colors.red[700],
+                        color: const Color.fromARGB(255, 200, 76, 14),
                         padding: const EdgeInsets.all(spacer2),
                         child: Text(
                           'Ensure that $_itnForDelivery Bednets are given to $headName and proper Health Talk is provided!',
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -154,19 +157,37 @@ class BednetHouseholdReviewPage extends StatelessWidget {
   }
 
   Widget _kv(String key, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: spacer2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+  return Padding(
+    padding: const EdgeInsets.only(bottom: spacer2),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+            child: Text(key,
+            style: TextStyle(
+              fontWeight: key == 'Number Of ITN For Delivery'
+                  ? FontWeight.w900
+                  : FontWeight.bold,
+              fontSize: key == 'Number Of ITN For Delivery' ? 16 : 14,
+            ),
+          ),
+        ),
+        const SizedBox(width: spacer2),
           Expanded(
-              flex: 2,
-              child: Text(key,
-                  style: const TextStyle(fontWeight: FontWeight.w700))),
-          const SizedBox(width: spacer2),
-          Expanded(flex: 3, child: Text(value)),
-        ],
-      ),
-    );
-  }
+          flex: 3,
+          child: Text(
+            value,
+            style: TextStyle(
+              fontWeight: key == 'Number Of ITN For Delivery'
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+              fontSize: key == 'Number Of ITN For Delivery' ? 18 : 14,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }
