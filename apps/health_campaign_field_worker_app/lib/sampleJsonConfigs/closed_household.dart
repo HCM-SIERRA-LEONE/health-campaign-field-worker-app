@@ -132,12 +132,12 @@ final dynamic sampleCloseHouseholdFlows = {
                 {
                   "type": "minLength",
                   "value": 11,
-                  "message": "Mobile number must be exactly 11 digits"
+                  "message": "MOBILE_NUMBER_11_DIGIT_ERROR_MESSAGE"
                 },
                 {
                   "type": "maxLength",
                   "value": 11,
-                  "message": "Mobile number must be exactly 11 digits"
+                  "message": "MOBILE_NUMBER_11_DIGIT_ERROR_MESSAGE"
                 }
               ],
               "errorMessage": "",
