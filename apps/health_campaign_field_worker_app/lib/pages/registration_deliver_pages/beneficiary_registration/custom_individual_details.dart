@@ -57,7 +57,8 @@ class CustomIndividualDetailsPage extends LocalizedStatefulWidget {
 
 class CustomIndividualDetailsPageState
     extends LocalizedState<CustomIndividualDetailsPage> {
-  static const _individualNameKey = 'individualName';
+  static const _firstNameKey = 'firstName';
+  static const _lastNameKey = 'lastName';
   static const _dobKey = 'dob';
   static const _dobErrorMaxAge = 'maxAge';
   static const _genderKey = 'gender';
@@ -70,6 +71,12 @@ class CustomIndividualDetailsPageState
 
   String _requiredLabel(String localizationKey) {
     return '${localizations.translate(localizationKey)} $_requiredIndicator';
+  }
+
+  String _fullName(FormGroup form) {
+    final first = (form.control(_firstNameKey).value as String? ?? '').trim();
+    final last = (form.control(_lastNameKey).value as String? ?? '').trim();
+    return [first, last].where((s) => s.isNotEmpty).join(' ');
   }
 
   /// New key each time this [State] is created (each navigation to this page).
@@ -529,34 +536,50 @@ class CustomIndividualDetailsPageState
                                 children: [
                                   _showcaseIndividualName.buildWith(
                                     child: ReactiveWrapperField(
-                                      formControlName: _individualNameKey,
+                                      formControlName: _firstNameKey,
                                       validationMessages: {
-                                        'required': (object) =>
-                                            localizations.translate(
+                                        'required': (object) => localizations.translate(
                                               '${i18.individualDetails.nameLabelText}_IS_REQUIRED',
                                             ),
                                         'maxLength': (object) => localizations
-                                            .translate(
-                                                i18.common.maxCharsRequired)
-                                            .replaceAll(
-                                                '{}', maxLength.toString()),
+                                            .translate(i18.common.maxCharsRequired)
+                                            .replaceAll('{}', maxLength.toString()),
                                       },
                                       builder: (field) => LabeledField(
-                                        label: localizations.translate(
-                                          i18.individualDetails.nameLabelText,
-                                        ),
+                                        label: 'First Name',   // hardcoded
                                         isRequired: true,
                                         child: DigitTextFormInput(
-                                          initialValue: form
-                                              .control(_individualNameKey)
-                                              .value,
+                                          initialValue: form.control(_firstNameKey).value,
                                           onChange: (value) {
-                                            form
-                                                .control(_individualNameKey)
-                                                .value = value;
+                                            form.control(_firstNameKey).value = value;
                                           },
                                           errorMessage: field.errorText,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                          ],
                                         ),
+                                      ),
+                                    ),
+                                  ),
+                                  ReactiveWrapperField(
+                                    formControlName: _lastNameKey,
+                                    validationMessages: {
+                                      'required': (object) => localizations.translate(
+                                            '${i18.individualDetails.nameLabelText}_IS_REQUIRED',
+                                          ),
+                                    },
+                                    builder: (field) => LabeledField(
+                                      label: 'Last Name',   // hardcoded
+                                      isRequired: true,
+                                      child: DigitTextFormInput(
+                                        initialValue: form.control(_lastNameKey).value,
+                                        onChange: (value) {
+                                          form.control(_lastNameKey).value = value;
+                                        },
+                                        errorMessage: field.errorText,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -815,10 +838,11 @@ class CustomIndividualDetailsPageState
       individualClientReferenceId: individual.clientReferenceId,
     );
 
-    String? individualName = form.control(_individualNameKey).value as String?;
+    final fullName = _fullName(form);  // combines "First Last"
+
     individual = individual.copyWith(
       name: name.copyWith(
-        givenName: individualName?.trim(),
+        givenName: fullName.isNotEmpty ? fullName : null,
       ),
       gender: form.control(_genderKey).value == null
           ? null
@@ -826,12 +850,6 @@ class CustomIndividualDetailsPageState
               .byName(form.control(_genderKey).value.toString().toLowerCase()),
       mobileNumber: form.control(_mobileNumberKey).value,
       dateOfBirth: dobString,
-      // identifiers: [
-      //   identifier.copyWith(
-      //     identifierId: form.control(_idNumberKey).value ?? 'test',
-      //     identifierType: form.control(_idTypeKey).value ?? 'test',
-      //   ),
-      // ],
     );
 
     return individual;
@@ -861,21 +879,33 @@ class CustomIndividualDetailsPageState
         return value.searchQuery;
       },
     );
-
+    
+    final rawGivenName = individual?.name?.givenName?.trim() ?? '';
+    final spaceIndex = rawGivenName.indexOf(' ');
+    final initialFirstName =
+        spaceIndex >= 0 ? rawGivenName.substring(0, spaceIndex) : rawGivenName;
+    final initialLastName =
+        spaceIndex >= 0 ? rawGivenName.substring(spaceIndex + 1) : '';
+    
     return fb.group(<String, Object>{
-      _individualNameKey: FormControl<String>(
-        validators: [
-          Validators.required,
-          Validators.delegate(
-              (validator) => CustomValidator.requiredMin(validator)),
-          Validators.maxLength(200),
-        ],
-        value: individual?.name?.givenName ??
-            ((RegistrationDeliverySingleton().householdType ==
-                    HouseholdType.community)
-                ? null
-                : searchQuery?.trim()),
-      ),
+          _firstNameKey: FormControl<String>(
+      value: initialFirstName.isNotEmpty
+          ? initialFirstName
+          : ((RegistrationDeliverySingleton().householdType ==
+                  HouseholdType.community)
+              ? null
+              : searchQuery?.trim()),
+      validators: [
+        Validators.required,
+        Validators.delegate(
+            (validator) => CustomValidator.requiredMin(validator)),
+        Validators.maxLength(200),
+      ],
+    ),
+    _lastNameKey: FormControl<String>(
+      value: initialLastName,
+      validators: [Validators.required],
+    ),
       _dobKey: FormControl<DateTime>(
           value: individual?.dateOfBirth != null
               ? DateFormat(Constants().dateFormat).parse(
