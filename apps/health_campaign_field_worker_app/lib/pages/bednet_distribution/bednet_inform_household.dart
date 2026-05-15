@@ -95,6 +95,8 @@ class _BednetInformHouseholdPageState
                     eToken: widget.eToken,
                     itnForDelivery: widget.itnForDelivery,
                     appLocalizations: localizations,
+                    householdModel: widget.existingDeliveryHousehold,
+                    addressModel: widget.existingDeliveryHousehold?.address,
                   ),
                 ),
               ),
@@ -491,6 +493,8 @@ class _BednetInformHouseholdPageState
               eToken: widget.eToken,
               itnForDelivery: widget.itnForDelivery,
               appLocalizations: localizations,
+              householdModel: widget.existingDeliveryHousehold,
+              addressModel: widget.existingDeliveryHousehold?.address,
             ),
           ),
         );

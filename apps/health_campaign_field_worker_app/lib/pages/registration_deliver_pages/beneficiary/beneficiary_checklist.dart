@@ -43,6 +43,8 @@ class BeneficiaryChecklistPage extends LocalizedStatefulWidget {
   final String? householdClientReferenceId;
   final String? administrativeAreaCode;
   final IndividualModel? screeningIndividual;
+  final bool isChildRegistrationLoop;
+  final String? householdClientRefIdForLoop;
 
   const BeneficiaryChecklistPage({
     super.key,
@@ -52,6 +54,8 @@ class BeneficiaryChecklistPage extends LocalizedStatefulWidget {
     this.administrativeAreaCode,
     this.screeningIndividual,
     super.appLocalizations,
+    this.isChildRegistrationLoop = false,
+    this.householdClientRefIdForLoop,
   });
 
   @override
@@ -88,9 +92,23 @@ class _BeneficiaryChecklistPageState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.digitTextTheme(context);
+    final router = context.router;
 
     return PopScope(
       canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        // Navigate to view household page instead of default back behavior
+        if (context.mounted) {
+          await router.navigate(
+            BednetHouseholdOverviewWrapperRoute(
+              children: [
+                CustomHouseholdOverviewRoute(),
+              ],
+            ),
+          );
+        }
+      },
       child: Scaffold(
         body: BlocBuilder<ServiceDefinitionBloc, ServiceDefinitionState>(
           builder: (context, state) {
@@ -1580,7 +1598,11 @@ class _BeneficiaryChecklistPageState
       );
       if (navigatorContext.mounted) {
         if (referred == true) {
-          router.push(HouseholdAcknowledgementRoute(enableViewHousehold: true));
+          router.push(HouseholdAcknowledgementRoute(
+            enableViewHousehold: true,
+            isChildRegistrationLoop: widget.isChildRegistrationLoop,
+            householdClientRefIdForLoop: widget.householdClientRefIdForLoop,
+          ));
         } else {
           router.maybePop();
         }
@@ -1667,7 +1689,11 @@ class _BeneficiaryChecklistPageState
                     RegistrationDeliverySingleton().beneficiaryType!,
               ),
             );
-        router.push(HouseholdAcknowledgementRoute(enableViewHousehold: true));
+        router.push(HouseholdAcknowledgementRoute(
+          enableViewHousehold: true,
+          isChildRegistrationLoop: widget.isChildRegistrationLoop,
+          householdClientRefIdForLoop: widget.householdClientRefIdForLoop,
+        ));
       }
       return;
     }
