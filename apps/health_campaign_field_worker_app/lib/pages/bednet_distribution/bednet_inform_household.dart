@@ -95,8 +95,6 @@ class _BednetInformHouseholdPageState
                     eToken: widget.eToken,
                     itnForDelivery: widget.itnForDelivery,
                     appLocalizations: localizations,
-                    householdModel: widget.existingDeliveryHousehold,
-                    addressModel: widget.existingDeliveryHousehold?.address,
                   ),
                 ),
               ),
@@ -172,9 +170,7 @@ class _BednetInformHouseholdPageState
                                 child: Text(
                                   localizations.translate(_messageKeys[idx]),
                                   style: textTheme.headingL.copyWith(
-                                    fontSize:
-                                        (textTheme.headingL.fontSize ?? 20) *
-                                            0.7,
+                                    fontSize: 25,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black87,
                                   ),
@@ -493,8 +489,6 @@ class _BednetInformHouseholdPageState
               eToken: widget.eToken,
               itnForDelivery: widget.itnForDelivery,
               appLocalizations: localizations,
-              householdModel: widget.existingDeliveryHousehold,
-              addressModel: widget.existingDeliveryHousehold?.address,
             ),
           ),
         );

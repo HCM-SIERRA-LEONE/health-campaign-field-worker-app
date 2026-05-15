@@ -20,7 +20,6 @@ import '../../../models/entities/additional_fields_type.dart';
 
 import '../../../blocs/bednet_distribution/bednet_distribution.dart';
 import '../../../blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
-import '../../../blocs/registration_deliver/household_overview/household_overview.dart';
 import '../../../blocs/registration_deliver/search_households/search_households.dart';
 import '../../../pages/bednet_distribution/bednet_household_review.dart';
 import '../../../router/app_router.dart';
@@ -43,7 +42,11 @@ class HouseHoldDetailsPage extends LocalizedStatefulWidget {
 
 class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
   static const _dateOfRegistrationKey = 'dateOfRegistration';
-  static const _nameOfIndividualKey = 'nameOfIndividual';
+
+  //  two separate keys instead of one nameOfIndividual 
+  static const _firstNameKey = 'firstName';
+  static const _lastNameKey = 'lastName';
+
   static const _mobileNumberKey = 'mobileNumber';
   static const _memberCountKey = 'memberCount';
   static const _childrenCountKey = 'childrenCount';
@@ -71,24 +74,17 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
+  //  helper that combines first + last into a full name 
+  String _fullName(FormGroup form) {
+    final first = (form.control(_firstNameKey).value as String? ?? '').trim();
+    final last = (form.control(_lastNameKey).value as String? ?? '').trim();
+    return [first, last].where((s) => s.isNotEmpty).join(' ');
+  }
+
   @override
   void dispose() {
     _dateController.dispose();
     super.dispose();
-  }
-
-  void _reloadHouseholdOverviewAfterItnFlow(BuildContext context) {
-    try {
-      final overviewBloc = context.read<HouseholdOverviewBloc>();
-      overviewBloc.add(
-        HouseholdOverviewEvent.reload(
-          projectId: RegistrationDeliverySingleton().projectId.toString(),
-          projectBeneficiaryType:
-              RegistrationDeliverySingleton().beneficiaryType ??
-                  BeneficiaryType.household,
-        ),
-      );
-    } catch (_) {}
   }
 
   @override
@@ -170,80 +166,15 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
 
             if (!context.mounted) return;
 
-            // Navigate to ITN/Bednets delivery page after household registration
-            final householdForDelivery = value.householdModel;
-            final individualModelFromState = value.individualModel;
-
-            if (householdForDelivery != null &&
-                individualModelFromState != null) {
-              final memberCount = householdForDelivery.memberCount ?? 1;
-              final childrenCount =
-                  householdForDelivery.additionalFields?.fields
-                          .firstWhereOrNull(
-                            (f) => f.key == 'children',
-                          )
-                          ?.value as int? ??
-                      0;
-
-              // Generate EToken like the original code
-              final headName =
-                  individualModelFromState.name?.givenName?.trim() ?? '';
-              final eToken = BednetHouseholdReviewPage.syntheticEToken(
-                headName: headName.isEmpty ? ' ' : headName,
-                memberCount: memberCount,
-              );
-
-              // Persist the EToken
-              await _persistBednetETokenAfterRegistration(
-                context: context,
-                householdModel: householdForDelivery,
-                projectBeneficiaryModel: value.projectBeneficiaryModel,
-                eToken: eToken,
-              );
-
-              if (!context.mounted) return;
-
-              // Copy address from household to individual model
-              // The individual from persisted state doesn't have address, but household does
-              IndividualModel headOfHousehold = individualModelFromState;
-              if (householdForDelivery.address != null) {
-                headOfHousehold = individualModelFromState.copyWith(
-                  address: [householdForDelivery.address!],
-                );
-              }
-
-              if (!context.mounted) return;
-
-              // Use Navigator with pushAndRemoveUntil to clear the stack
-              Navigator.of(context)
-                  .pushAndRemoveUntil<void>(
-                    MaterialPageRoute<void>(
-                      builder: (_) => BlocProvider.value(
-                        value: bloc,
-                        child: BednetHouseholdReviewPage(
-                          headName: headName,
-                          memberCount: memberCount < 1 ? 1 : memberCount,
-                          childrenCount: childrenCount < 0 ? 0 : childrenCount,
-                          mobileNumber: headOfHousehold.mobileNumber,
-                          householdEToken: eToken,
-                          bednetDeliveryHousehold: householdForDelivery,
-                          bednetDeliveryHead: headOfHousehold,
-                        ),
-                      ),
-                    ),
-                    (route) => route.isFirst,
-                  )
-                  .then((_) => _reloadHouseholdOverviewAfterItnFlow(context));
-            } else {
-              // Fallback to acknowledgement if data is missing
-              await context.router.root.navigate(
-                BednetHouseholdOverviewWrapperRoute(
-                  children: [
-                    HouseholdAcknowledgementRoute(),
-                  ],
-                ),
-              );
-            }
+            // General acknowledgement after registration — not [BednetSuccessPage],
+            // which is reserved for after ITN delivery ([BednetInformHouseholdPage]).
+            await context.router.root.navigate(
+              BednetHouseholdOverviewWrapperRoute(
+                children: [
+                  HouseholdAcknowledgementRoute(),
+                ],
+              ),
+            );
           },
         );
       },
@@ -317,9 +248,10 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                               final dateOfRegistration = form
                                   .control(_dateOfRegistrationKey)
                                   .value as DateTime;
-                              final headName = form
-                                  .control(_nameOfIndividualKey)
-                                  .value as String;
+
+                              //  combine first + last into one full name 
+                              final headName = _fullName(form);
+                              
                               final mobile = form
                                   .control(_mobileNumberKey)
                                   .value as String?;
@@ -541,6 +473,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                     householdType: HouseholdType.family,
                                   );
 
+                                  // headName is already the combined full name 
                                   final individual = IndividualModel(
                                     clientReferenceId: clientRefId,
                                     tenantId: RegistrationDeliverySingleton()
@@ -560,7 +493,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                       lastModifiedTime: createdAt,
                                     ),
                                     name: NameModel(
-                                      givenName: headName.trim(),
+                                      givenName: headName.trim(), // combined "First Last"
                                       individualClientReferenceId: clientRefId,
                                       tenantId: RegistrationDeliverySingleton()
                                           .tenantId,
@@ -678,23 +611,23 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                 ),
                               ),
                             ),
+
+                            // First Name field
                             ReactiveWrapperField(
-                              formControlName: _nameOfIndividualKey,
+                              formControlName: _firstNameKey,
                               validationMessages: {
                                 'required': (_) => localizations.translate(
                                       i18.common.corecommonRequired,
                                     ),
                               },
                               builder: (field) => LabeledField(
-                                label: localizations.translate(
-                                  i18.individualDetails.nameLabelText,
-                                ),
+                                label: 'First Name of the Individual',
                                 isRequired: true,
                                 child: DigitTextFormInput(
                                   initialValue:
-                                      form.control(_nameOfIndividualKey).value,
+                                      form.control(_firstNameKey).value,
                                   onChange: (value) => form
-                                      .control(_nameOfIndividualKey)
+                                      .control(_firstNameKey)
                                       .value = value,
                                   errorMessage: field.errorText,
                                   inputFormatters: [
@@ -705,12 +638,39 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                 ),
                               ),
                             ),
+
+                            // Last Name field
+                            ReactiveWrapperField(
+                              formControlName: _lastNameKey,
+                              validationMessages: {
+                                'required': (_) => localizations.translate(
+                                      i18.common.corecommonRequired,
+                                    ),
+                              },
+                              builder: (field) => LabeledField(
+                                label: 'Last Name of the Individual',
+                                isRequired: true,
+                                child: DigitTextFormInput(
+                                  initialValue:
+                                      form.control(_lastNameKey).value,
+                                  onChange: (value) => form
+                                      .control(_lastNameKey)
+                                      .value = value,
+                                  errorMessage: field.errorText,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z\s]'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
                             ReactiveWrapperField(
                               formControlName: _mobileNumberKey,
                               validationMessages: {
                                 'mobilePattern': (_) => localizations.translate(
-                                      i18.common
-                                          .coreCommonMobileNumberValidation,
+                                      i18.common.coreCommonMobileNumberValidation,
                                     ),
                               },
                               builder: (field) => LabeledField(
@@ -770,7 +730,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                     0;
                                 final maxChildrenAllowed =
                                     max(0, currentMemberCount);
-                                // Auto-clamp when member count drops or cap is exceeded
+                                    // Auto-clamp when member count drops or cap is exceeded
                                 if (currentChildrenCount > maxChildrenAllowed) {
                                   WidgetsBinding.instance
                                       .addPostFrameCallback((_) {
@@ -906,13 +866,32 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
       persisted: (value) => value.registrationDate ?? DateTime.now(),
     );
 
+    // split existing givenName into first / last
+    // givenName is stored as "First Last" (combined). On edit/view,
+    // split on the first space so First Name = everything before the
+    // first space, Last Name = everything after. If there is no space,
+    // the whole value goes into firstName and lastName is empty.
+    final rawGivenName = individual?.name?.givenName?.trim() ?? '';
+    final spaceIndex = rawGivenName.indexOf(' ');
+    final initialFirstName =
+        spaceIndex >= 0 ? rawGivenName.substring(0, spaceIndex) : rawGivenName;
+    final initialLastName =
+        spaceIndex >= 0 ? rawGivenName.substring(spaceIndex + 1) : '';
+
     return fb.group(<String, Object>{
       _dateOfRegistrationKey:
           FormControl<DateTime>(value: registrationDate, validators: []),
-      _nameOfIndividualKey: FormControl<String>(
-        value: individual?.name?.givenName ?? '',
+
+      // two controls instead of one nameOfIndividual
+      _firstNameKey: FormControl<String>(
+        value: initialFirstName,
         validators: [Validators.required],
       ),
+      _lastNameKey: FormControl<String>(
+        value: initialLastName,
+        validators: [Validators.required],
+      ),
+
       _mobileNumberKey: FormControl<String>(
         value: individual?.mobileNumber,
         validators: [
