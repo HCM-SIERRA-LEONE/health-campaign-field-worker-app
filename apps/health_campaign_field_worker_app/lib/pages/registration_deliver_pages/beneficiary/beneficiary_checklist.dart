@@ -32,8 +32,10 @@ import 'package:health_campaign_field_worker_app/widgets/registartion_deliver/ba
 import 'package:health_campaign_field_worker_app/widgets/registartion_deliver/localized.dart';
 import 'package:survey_form/survey_form.dart';
 
+import '../../../models/entities/roles_type.dart';
 import '../../../models/registration_deliver_model/entities/status.dart';
 import '../../../router/app_router.dart';
+import '../../../utils/extensions/extensions.dart';
 import '../beneficiary_registration/refer_beneficiary_page.dart';
 
 @RoutePage()
@@ -1560,6 +1562,10 @@ class _BeneficiaryChecklistPageState
     final needsPostChecklistNav =
         decidedFlow == Status.beneficiaryReferred.toValue();
 
+    final roles = context.loggedInUserRoles;
+    final isSchoolTask = roles.length == 1 &&
+        roles.first.code == RolesType.distributor.toValue();
+
     if (_canNavigateToTbRefer(navigatorContext) && needsPostChecklistNav) {
       if (!navigatorContext.mounted) return;
       final individual = _resolveScreeningIndividual(navigatorContext)!;
@@ -1679,6 +1685,7 @@ class _BeneficiaryChecklistPageState
                               .members!
                               .length,
                         ),
+                      AdditionalField('isSchoolTask', isSchoolTask),
                     ],
                   ),
                   address: individual.address?.firstOrNull?.copyWith(

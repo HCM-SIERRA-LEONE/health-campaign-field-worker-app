@@ -863,6 +863,10 @@ class DeliverInterventionPageState
       bednetCount += int.tryParse(resource.quantity.toString()) ?? 0;
     }
 
+    final roles = context.loggedInUserRoles;
+    final isSchoolTask = roles.length == 1 &&
+        roles.first.code == RolesType.distributor.toValue();
+
     task = task.copyWith(
       address: address?.copyWith(
         relatedClientReferenceId: clientReferenceId,
@@ -949,6 +953,7 @@ class DeliverInterventionPageState
             ),
           ],
           AdditionalField('bednetCount', bednetCount),
+          AdditionalField('isSchoolTask', isSchoolTask),
         ],
       ),
     );

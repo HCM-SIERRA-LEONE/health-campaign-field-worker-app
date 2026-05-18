@@ -21,8 +21,10 @@ import 'package:health_campaign_field_worker_app/utils/registration_deliver_util
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 import 'package:survey_form/blocs/service_definition.dart';
 
+import '../../../models/entities/roles_type.dart';
 import '../../../models/registration_deliver_model/entities/registration_delivery_enums.dart';
 import '../../../router/app_router.dart';
+import '../../../blocs/auth/auth.dart';
 import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
 
 class MemberCard extends StatelessWidget {
@@ -75,6 +77,14 @@ class MemberCard extends StatelessWidget {
     final theme = Theme.of(context);
     final beneficiaryType = RegistrationDeliverySingleton().beneficiaryType;
     final textTheme = theme.digitTextTheme(context);
+
+    final roles = context.read<AuthBloc>().state.whenOrNull(
+              authenticated: (_, __, userModel, ___, ____, _____) =>
+                  userModel.roles,
+            ) ??
+        const [];
+    final isSchoolTask = roles.length == 1 &&
+        roles.first.code == RolesType.distributor.toValue();
 
     return DigitCard(
         margin: const EdgeInsets.only(bottom: spacer2),
@@ -441,6 +451,9 @@ class MemberCard extends StatelessWidget {
                                                               'memberCount',
                                                               memberCount,
                                                             ),
+                                                          AdditionalField(
+                                                              'isSchoolTask',
+                                                              isSchoolTask),
                                                         ],
                                                       ),
                                                       address: individual
@@ -569,6 +582,9 @@ class MemberCard extends StatelessWidget {
                                                               'memberCount',
                                                               memberCount,
                                                             ),
+                                                          AdditionalField(
+                                                              'isSchoolTask',
+                                                              isSchoolTask),
                                                         ],
                                                       ),
                                                       address: individual
