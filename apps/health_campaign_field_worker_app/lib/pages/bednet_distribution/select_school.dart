@@ -30,23 +30,45 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
   static const _schoolControl = 'school';
   static const _classControl = 'class';
 
-  static const List<String> _classOptions = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-  ];
+  static final RegExp _classNameKeyPattern =
+      RegExp(r'^class\d+_classname$', caseSensitive: false);
 
   String? _selectedClass;
 
-  /// Returns true if [school]'s name-related additionalFields match [dhName]
-  /// (case-insensitive).
-  bool _matchesDhBoundary(HouseholdModel school, String dhName) {
-    if (dhName.isEmpty) return false;
+  /// Extracts class names from a school's additionalFields. Supports two
+  /// shapes: keys matching `class<N>_className`, or a single
+  /// `className`/`classNames` field with comma-separated values. Duplicates
+  /// (case-insensitive) are removed.
+  List<String> _extractClassNames(HouseholdModel? school) {
+    if (school == null) return const [];
+    final fields = school.additionalFields?.fields ?? const <AdditionalField>[];
+    final names = <String>[];
+    final seen = <String>{};
+    void add(String? raw) {
+      final v = raw?.trim();
+      if (v == null || v.isEmpty) return;
+      if (seen.add(v.toLowerCase())) names.add(v);
+    }
+
+    for (final f in fields) {
+      final key = f.key.toLowerCase();
+      final value = (f.value as Object?)?.toString();
+      if (_classNameKeyPattern.hasMatch(f.key)) {
+        add(value);
+      } else if (key == 'classname' || key == 'classnames') {
+        if (value == null) continue;
+        for (final part in value.split(',')) {
+          add(part);
+        }
+      }
+    }
+    return names;
+  }
+
+  /// Returns true if [school]'s name-related additionalFields match either
+  /// [dhName] or [dhCode] (case-insensitive).
+  bool _matchesDhBoundary(HouseholdModel school, String dhName, String dhCode) {
+    if (dhName.isEmpty && dhCode.isEmpty) return false;
 
     final fields = school.additionalFields?.fields ?? const <AdditionalField>[];
     final fieldMap = <String, String>{};
@@ -57,10 +79,16 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
       }
     }
 
-    final dhLower = dhName.toLowerCase();
-    return fieldMap['schoolname'] == dhLower ||
-        fieldMap['school_name'] == dhLower ||
-        fieldMap['name'] == dhLower;
+    final candidates = <String>{
+      if (dhName.isNotEmpty) dhName.toLowerCase(),
+      if (dhCode.isNotEmpty) dhCode.toLowerCase(),
+    };
+    final schoolNameFields = [
+      fieldMap['schoolname'],
+      fieldMap['school_name'],
+      fieldMap['name'],
+    ];
+    return schoolNameFields.any((v) => v != null && candidates.contains(v));
   }
 
   Future<void> _checkStockAndProceed(
@@ -127,20 +155,48 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
           final dhBoundary =
               boundaryState.selectedBoundaryMap[Constants.dhBoundaryLevel];
           final dhName = dhBoundary?.name?.trim() ?? '';
+          final dhCode = dhBoundary?.code?.trim() ?? '';
           final matchedSchool = state.schools.firstWhereOrNull(
-            (s) => _matchesDhBoundary(s, dhName),
+            (s) => _matchesDhBoundary(s, dhName, dhCode),
           );
           final isPrePopulated = matchedSchool != null;
+
+          final lastBoundary =
+              boundaryState.selectedLastLevelBoundaries.firstOrNull;
+          final lastBoundaryCode = lastBoundary?.code?.trim().toLowerCase();
+          final lastBoundaryName = lastBoundary?.name?.trim().toLowerCase();
+          final initialSchool =
+              isPrePopulated ? matchedSchool : state.selectedSchool;
+          final initialClassOptions = _extractClassNames(initialSchool);
+          final matchedClass = initialClassOptions.firstWhereOrNull(
+            (c) =>
+                c.toLowerCase() == lastBoundaryCode ||
+                c.toLowerCase() == lastBoundaryName,
+          );
+          final isPrePopulatedClass = matchedClass != null;
+          final effectiveClass =
+              isPrePopulatedClass ? matchedClass : _selectedClass;
+
+          if (isPrePopulatedClass && _selectedClass != matchedClass) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              setState(() {
+                _selectedClass = matchedClass;
+              });
+              BednetClassSelectionSingleton()
+                  .setSelectedClass(selectedClass: matchedClass);
+            });
+          }
 
           return ReactiveFormBuilder(
             form: () => fb.group({
               _schoolControl: FormControl<HouseholdModel>(
                 validators: [Validators.required],
-                value: isPrePopulated ? matchedSchool : state.selectedSchool,
+                value: initialSchool,
               ),
               _classControl: FormControl<String>(
                 validators: [Validators.required],
-                value: _selectedClass,
+                value: effectiveClass,
               ),
             }),
             builder: (context, form, _) {
@@ -265,6 +321,18 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                                     (school) =>
                                         school.bednetSchoolId == value.code,
                                   );
+                                  final previous = form
+                                      .control(_schoolControl)
+                                      .value as HouseholdModel?;
+                                  if (previous?.bednetSchoolId !=
+                                      selected.bednetSchoolId) {
+                                    form.control(_classControl).value = null;
+                                    setState(() {
+                                      _selectedClass = null;
+                                    });
+                                    BednetClassSelectionSingleton()
+                                        .setSelectedClass(selectedClass: null);
+                                  }
                                   form.control(_schoolControl).value = selected;
                                 },
                                 errorMessage: field.errorText,
@@ -273,45 +341,66 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                             ),
                           ),
                           const SizedBox(height: spacer2),
-                          ReactiveWrapperField(
-                            formControlName: _classControl,
-                            validationMessages: {
-                              'required': (_) =>
-                                  'Please select a class to proceed',
-                            },
-                            builder: (field) => LabeledField(
-                              label: 'Select the class',
-                              isRequired: true,
-                              child: DigitDropdown<String>(
-                                isSearchable: false,
-                                items: _classOptions
-                                    .map(
-                                      (e) => DropdownItem(
-                                        name: 'Class $e',
-                                        code: e,
-                                      ),
-                                    )
-                                    .toList(),
-                                selectedOption: _selectedClass != null
-                                    ? DropdownItem(
-                                        name: 'Class $_selectedClass',
-                                        code: _selectedClass!,
-                                      )
-                                    : null,
-                                onSelect: (value) {
-                                  setState(() {
-                                    _selectedClass = value.code;
-                                  });
-                                  BednetClassSelectionSingleton()
-                                      .setSelectedClass(
-                                          selectedClass: value.code);
-                                  form.control(_classControl).value =
-                                      value.code;
+                          StreamBuilder<Object?>(
+                            stream: form.control(_schoolControl).valueChanges,
+                            initialData: form.control(_schoolControl).value,
+                            builder: (context, _) {
+                              final school = form.control(_schoolControl).value
+                                  as HouseholdModel?;
+                              final hasSchool = school != null;
+                              final classOptions = _extractClassNames(school);
+                              final currentClass =
+                                  form.control(_classControl).value as String?;
+                              final showClassValue = currentClass != null &&
+                                      classOptions.contains(currentClass)
+                                  ? currentClass
+                                  : null;
+                              return ReactiveWrapperField(
+                                formControlName: _classControl,
+                                validationMessages: {
+                                  'required': (_) =>
+                                      'Please select a class to proceed',
                                 },
-                                errorMessage: field.errorText,
-                                emptyItemText: 'No classes available',
-                              ),
-                            ),
+                                builder: (field) => LabeledField(
+                                  label: 'Select the class',
+                                  isRequired: true,
+                                  child: DigitDropdown<String>(
+                                    isSearchable: false,
+                                    isDisabled: !hasSchool ||
+                                        isPrePopulatedClass ||
+                                        classOptions.isEmpty,
+                                    items: classOptions
+                                        .map(
+                                          (e) => DropdownItem(
+                                            name: e,
+                                            code: e,
+                                          ),
+                                        )
+                                        .toList(),
+                                    selectedOption: showClassValue != null
+                                        ? DropdownItem(
+                                            name: showClassValue,
+                                            code: showClassValue,
+                                          )
+                                        : null,
+                                    onSelect: (value) {
+                                      setState(() {
+                                        _selectedClass = value.code;
+                                      });
+                                      BednetClassSelectionSingleton()
+                                          .setSelectedClass(
+                                              selectedClass: value.code);
+                                      form.control(_classControl).value =
+                                          value.code;
+                                    },
+                                    errorMessage: field.errorText,
+                                    emptyItemText: hasSchool
+                                        ? 'No classes available'
+                                        : 'Select a school first',
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           if (state.error != null)
                             Padding(
