@@ -109,6 +109,9 @@ class _BoundarySelectionPageState
         .isNotEmpty;
 
     bool isHealthFacilityWorkerOnly = isHealthFacilityWorker && !isDistributor;
+    bool isDistributorOnly = isDistributor &&
+        context.loggedInUserRoles.length == 1 &&
+        context.loggedInUserRoles.first.code == RolesType.distributor.toValue();
 
     return PopScope(
       canPop: shouldPop,
@@ -617,6 +620,28 @@ class _BoundarySelectionPageState
                                                 if (context.mounted) {
                                                   if (isOnline &&
                                                       isDistributor) {
+                                                    final boundaryState =
+                                                        context
+                                                            .read<
+                                                                BoundaryBloc>()
+                                                            .state;
+                                                    List<BoundaryModel>
+                                                        downsyncBoundaries;
+                                                    if (isDistributorOnly) {
+                                                      final dhBoundary =
+                                                          boundaryState
+                                                                  .selectedBoundaryMap[
+                                                              'DH'];
+                                                      downsyncBoundaries =
+                                                          dhBoundary != null
+                                                              ? [dhBoundary]
+                                                              : boundaryState
+                                                                  .selectedLastLevelBoundaries;
+                                                    } else {
+                                                      downsyncBoundaries =
+                                                          boundaryState
+                                                              .selectedLastLevelBoundaries;
+                                                    }
                                                     context
                                                         .read<
                                                             BeneficiaryDownSyncBloc>()
@@ -627,11 +652,8 @@ class _BoundarySelectionPageState
                                                             ],
                                                             projectId: context
                                                                 .projectId,
-                                                            boundaries: context
-                                                                .read<
-                                                                    BoundaryBloc>()
-                                                                .state
-                                                                .selectedLastLevelBoundaries,
+                                                            boundaries:
+                                                                downsyncBoundaries,
                                                             pendingSyncCount:
                                                                 pendingSyncCount,
                                                           ),
