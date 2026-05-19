@@ -1043,6 +1043,7 @@ final jsonConfig = {
             "clientAuditDetails": "__generate:clientAudit",
             "auditDetails": "__generate:audit",
           },
+          "mobileNumber": "closeHouseholdDetails.mobileNumber",
           "bloodGroup": "health.bloodGroup",
           "gender": "beneficiaryDetails.gender",
           "address": "list:AddressModel",

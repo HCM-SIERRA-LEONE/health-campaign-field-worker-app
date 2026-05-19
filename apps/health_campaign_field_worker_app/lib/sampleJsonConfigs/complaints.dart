@@ -873,6 +873,11 @@ final dynamic sampleComplaintFlows = {
                   "type": "maxLength",
                   "value": 11,
                   "message": "MOBILE_LENGTH_11_DIGIT"
+                },
+                {
+                  "type": "pattern",
+                  "value": "^\\d+",
+                  "message": "MB_ONLY_NUMBERS"
                 }
               ],
               "errorMessage": "",
@@ -935,12 +940,17 @@ final dynamic sampleComplaintFlows = {
                 {
                   "type": "minLength",
                   "value": 11,
-                  "message": "MOBILE_LENGTH_11_DIGITS"
+                  "message": "MOBILE_LENGTH_11_DIGIT"
                 },
                 {
                   "type": "maxLength",
                   "value": 11,
-                  "message": "MOBILE_LENGTH_11_DIGITS"
+                  "message": "MOBILE_LENGTH_11_DIGIT"
+                },
+                {
+                  "type": "pattern",
+                  "value": "^\\d+",
+                  "message": "MB_ONLY_NUMBERS"
                 }
               ],
               "errorMessage": "",

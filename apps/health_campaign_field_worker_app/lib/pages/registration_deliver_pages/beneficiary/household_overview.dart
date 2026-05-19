@@ -11,6 +11,7 @@ import 'package:digit_ui_components/widgets/atoms/digit_action_card.dart';
 import 'package:digit_ui_components/widgets/atoms/digit_button.dart';
 import 'package:digit_ui_components/widgets/atoms/digit_chip.dart';
 import 'package:digit_ui_components/widgets/atoms/digit_search_bar.dart';
+import 'package:digit_ui_components/widgets/atoms/switch.dart';
 import 'package:digit_ui_components/widgets/atoms/pop_up_card.dart';
 import 'package:digit_ui_components/widgets/molecules/digit_card.dart';
 import 'package:digit_ui_components/widgets/molecules/show_pop_up.dart';
@@ -53,6 +54,8 @@ class _HouseholdOverviewPageState
   int limit = 1000;
   bool _hasSeenLoading = false;
   bool _redirectedToAddHead = false;
+  bool isNameSearchEnabled = true;
+  bool sortAscending = true;
 
   String? householdClientReferenceId;
 
@@ -452,6 +455,50 @@ class _HouseholdOverviewPageState
                                                         i18.common
                                                             .coreCommonNA),
                                                   }),
+                                                  DigitSearchBar(
+                                                    controller:
+                                                        searchController,
+                                                    hintText:
+                                                        'To start, enter the Student Name',
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .words,
+                                                    onChanged: (value) {
+                                                      setState(() {});
+                                                    },
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: spacer2,
+                                                      vertical: spacer2,
+                                                    ),
+                                                    child: Align(
+                                                      alignment:
+                                                          Alignment.centerRight,
+                                                      child: DigitButton(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        label: sortAscending
+                                                            ? 'Sort: A-Z'
+                                                            : 'Sort: Z-A',
+                                                        type: DigitButtonType
+                                                            .secondary,
+                                                        size: DigitButtonSize
+                                                            .small,
+                                                        prefixIcon:
+                                                            sortAscending
+                                                                ? Icons.sort
+                                                                : Icons.sort,
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            sortAscending =
+                                                                !sortAscending;
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ],
                                               );
                                             }
@@ -542,6 +589,44 @@ class _HouseholdOverviewPageState
                                                             'textLabel'],
                                                       )
                                                   },
+                                                ),
+                                                DigitSearchBar(
+                                                  controller: searchController,
+                                                  hintText:
+                                                      'To start, enter the Student Name',
+                                                  textCapitalization:
+                                                      TextCapitalization.words,
+                                                  onChanged: (value) {
+                                                    setState(() {});
+                                                  },
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      spacer2),
+                                                  child: Align(
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                    child: DigitButton(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      label: sortAscending
+                                                          ? 'Sort: A-Z'
+                                                          : 'Sort: Z-A',
+                                                      type: DigitButtonType
+                                                          .secondary,
+                                                      size: DigitButtonSize
+                                                          .small,
+                                                      prefixIcon: sortAscending
+                                                          ? Icons.sort
+                                                          : Icons.sort,
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          sortAscending =
+                                                              !sortAscending;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
                                                 ),
                                               ],
                                             );
@@ -1157,18 +1242,42 @@ class _HouseholdOverviewPageState
         BednetClassSelectionSingleton().selectedClass ?? widget.selectedClass;
     final raw = wrapper.members ?? [];
 
+    // Apply search filter if enabled
+    List<IndividualModel> filteredMembers = raw;
+    if (isNameSearchEnabled && searchController.text.trim().isNotEmpty) {
+      final searchQuery = searchController.text.trim().toLowerCase();
+      filteredMembers = raw.where((member) {
+        final name = member.name?.givenName?.toLowerCase() ?? '';
+        return name.contains(searchQuery);
+      }).toList();
+    }
+
     // If no class selected, return all members with head first
     if (selectedClass == null) {
-      return [
-        ...raw.where((e) => _isHouseholdHeadMember(e, wrapper)),
-        ...raw.where((e) => !_isHouseholdHeadMember(e, wrapper)),
-      ];
+      final head = filteredMembers
+          .where((e) => _isHouseholdHeadMember(e, wrapper))
+          .toList();
+      final nonHead = filteredMembers
+          .where((e) => !_isHouseholdHeadMember(e, wrapper))
+          .toList();
+
+      // Sort non-head members by name
+      nonHead.sort((a, b) {
+        final nameA = a.name?.givenName?.toLowerCase() ?? '';
+        final nameB = b.name?.givenName?.toLowerCase() ?? '';
+        return sortAscending ? nameA.compareTo(nameB) : nameB.compareTo(nameA);
+      });
+
+      return [...head, ...nonHead];
     }
 
     // Filter members by class, always include head (never filter the head)
-    final head = raw.where((e) => _isHouseholdHeadMember(e, wrapper)).toList();
-    final nonHead =
-        raw.where((e) => !_isHouseholdHeadMember(e, wrapper)).toList();
+    final head = filteredMembers
+        .where((e) => _isHouseholdHeadMember(e, wrapper))
+        .toList();
+    final nonHead = filteredMembers
+        .where((e) => !_isHouseholdHeadMember(e, wrapper))
+        .toList();
 
     // Filter non-head members by class
     // Show students if: they have no class field OR their class matches selected class
@@ -1195,6 +1304,13 @@ class _HouseholdOverviewPageState
       // Only filter if class field exists and doesn't match
       return memberClass == selectedClass;
     }).toList();
+
+    // Sort non-head members by name
+    filteredNonHead.sort((a, b) {
+      final nameA = a.name?.givenName?.toLowerCase() ?? '';
+      final nameB = b.name?.givenName?.toLowerCase() ?? '';
+      return sortAscending ? nameA.compareTo(nameB) : nameB.compareTo(nameA);
+    });
 
     // Always return head first, then filtered non-head
     return [...head, ...filteredNonHead];

@@ -105,6 +105,45 @@ final dynamic sampleCloseHouseholdFlows = {
               "isMultiSelect": false,
               "enums": []
             },
+            {
+              "type": "string",
+              "label": "Mobile Number",
+              "order": 4,
+              "value": "",
+              "format": "mobileNumber",
+              "hidden": false,
+              "pattern": "^\\d+",
+              "tooltip": "",
+              "helpText": "",
+              "infoText": "",
+              "readOnly": false,
+              "fieldName": "mobileNumber",
+              "deleteFlag": false,
+              "innerLabel": "",
+              "systemDate": false,
+              "includeInForm": true,
+              "keyboardType": "TextInputType.number",
+              "validations": [
+                {
+                  "type": "pattern",
+                  "value": "^\\d+",
+                  "message": "MB_ONLY_NUMBERS"
+                },
+                {
+                  "type": "minLength",
+                  "value": 11,
+                  "message": "MOBILE_NUMBER_11_DIGIT_ERROR_MESSAGE"
+                },
+                {
+                  "type": "maxLength",
+                  "value": 11,
+                  "message": "MOBILE_NUMBER_11_DIGIT_ERROR_MESSAGE"
+                }
+              ],
+              "errorMessage": "",
+              "isMultiSelect": false,
+              "enums": []
+            },
             // {
             //   "type": "string",
             //   "label": "CLOSEHOUSEHOLD_CLOSEHOUSEHOLDDETAILS_scanner_LABEL",

@@ -116,6 +116,8 @@ abstract class _$AppRouter extends RootStackRouter {
           administrativeAreaCode: args.administrativeAreaCode,
           screeningIndividual: args.screeningIndividual,
           appLocalizations: args.appLocalizations,
+          isChildRegistrationLoop: args.isChildRegistrationLoop,
+          householdClientRefIdForLoop: args.householdClientRefIdForLoop,
         ),
       );
     },
@@ -193,8 +195,8 @@ abstract class _$AppRouter extends RootStackRouter {
         routeData: routeData,
         child: CustomIndividualDetailsPage(
           key: args.key,
-          appLocalizations: args.appLocalizations,
           isHeadOfHousehold: args.isHeadOfHousehold,
+          appLocalizations: args.appLocalizations,
         ),
       );
     },
@@ -312,6 +314,8 @@ abstract class _$AppRouter extends RootStackRouter {
           key: args.key,
           appLocalizations: args.appLocalizations,
           enableViewHousehold: args.enableViewHousehold,
+          isChildRegistrationLoop: args.isChildRegistrationLoop,
+          householdClientRefIdForLoop: args.householdClientRefIdForLoop,
         ),
       );
     },
@@ -815,6 +819,8 @@ class BeneficiaryChecklistRoute
     String? administrativeAreaCode,
     IndividualModel? screeningIndividual,
     RegistrationDeliveryLocalization? appLocalizations,
+    bool isChildRegistrationLoop = false,
+    String? householdClientRefIdForLoop,
     List<PageRouteInfo>? children,
   }) : super(
           BeneficiaryChecklistRoute.name,
@@ -826,6 +832,8 @@ class BeneficiaryChecklistRoute
             administrativeAreaCode: administrativeAreaCode,
             screeningIndividual: screeningIndividual,
             appLocalizations: appLocalizations,
+            isChildRegistrationLoop: isChildRegistrationLoop,
+            householdClientRefIdForLoop: householdClientRefIdForLoop,
           ),
           initialChildren: children,
         );
@@ -845,6 +853,8 @@ class BeneficiaryChecklistRouteArgs {
     this.administrativeAreaCode,
     this.screeningIndividual,
     this.appLocalizations,
+    this.isChildRegistrationLoop = false,
+    this.householdClientRefIdForLoop,
   });
 
   final Key? key;
@@ -861,9 +871,13 @@ class BeneficiaryChecklistRouteArgs {
 
   final RegistrationDeliveryLocalization? appLocalizations;
 
+  final bool isChildRegistrationLoop;
+
+  final String? householdClientRefIdForLoop;
+
   @override
   String toString() {
-    return 'BeneficiaryChecklistRouteArgs{key: $key, beneficiaryClientRefId: $beneficiaryClientRefId, projectBeneficiaryClientRefId: $projectBeneficiaryClientRefId, householdClientReferenceId: $householdClientReferenceId, administrativeAreaCode: $administrativeAreaCode, screeningIndividual: $screeningIndividual, appLocalizations: $appLocalizations}';
+    return 'BeneficiaryChecklistRouteArgs{key: $key, beneficiaryClientRefId: $beneficiaryClientRefId, projectBeneficiaryClientRefId: $projectBeneficiaryClientRefId, householdClientReferenceId: $householdClientReferenceId, administrativeAreaCode: $administrativeAreaCode, screeningIndividual: $screeningIndividual, appLocalizations: $appLocalizations, isChildRegistrationLoop: $isChildRegistrationLoop, householdClientRefIdForLoop: $householdClientRefIdForLoop}';
   }
 }
 
@@ -1105,15 +1119,15 @@ class CustomIndividualDetailsRoute
     extends PageRouteInfo<CustomIndividualDetailsRouteArgs> {
   CustomIndividualDetailsRoute({
     Key? key,
-    RegistrationDeliveryLocalization? appLocalizations,
     bool isHeadOfHousehold = false,
+    RegistrationDeliveryLocalization? appLocalizations,
     List<PageRouteInfo>? children,
   }) : super(
           CustomIndividualDetailsRoute.name,
           args: CustomIndividualDetailsRouteArgs(
             key: key,
-            appLocalizations: appLocalizations,
             isHeadOfHousehold: isHeadOfHousehold,
+            appLocalizations: appLocalizations,
           ),
           initialChildren: children,
         );
@@ -1127,19 +1141,19 @@ class CustomIndividualDetailsRoute
 class CustomIndividualDetailsRouteArgs {
   const CustomIndividualDetailsRouteArgs({
     this.key,
-    this.appLocalizations,
     this.isHeadOfHousehold = false,
+    this.appLocalizations,
   });
 
   final Key? key;
 
-  final RegistrationDeliveryLocalization? appLocalizations;
-
   final bool isHeadOfHousehold;
+
+  final RegistrationDeliveryLocalization? appLocalizations;
 
   @override
   String toString() {
-    return 'CustomIndividualDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations, isHeadOfHousehold: $isHeadOfHousehold}';
+    return 'CustomIndividualDetailsRouteArgs{key: $key, isHeadOfHousehold: $isHeadOfHousehold, appLocalizations: $appLocalizations}';
   }
 }
 
@@ -1523,6 +1537,8 @@ class HouseholdAcknowledgementRoute
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
     bool? enableViewHousehold,
+    bool isChildRegistrationLoop = false,
+    String? householdClientRefIdForLoop,
     List<PageRouteInfo>? children,
   }) : super(
           HouseholdAcknowledgementRoute.name,
@@ -1530,6 +1546,8 @@ class HouseholdAcknowledgementRoute
             key: key,
             appLocalizations: appLocalizations,
             enableViewHousehold: enableViewHousehold,
+            isChildRegistrationLoop: isChildRegistrationLoop,
+            householdClientRefIdForLoop: householdClientRefIdForLoop,
           ),
           initialChildren: children,
         );
@@ -1545,6 +1563,8 @@ class HouseholdAcknowledgementRouteArgs {
     this.key,
     this.appLocalizations,
     this.enableViewHousehold,
+    this.isChildRegistrationLoop = false,
+    this.householdClientRefIdForLoop,
   });
 
   final Key? key;
@@ -1553,9 +1573,13 @@ class HouseholdAcknowledgementRouteArgs {
 
   final bool? enableViewHousehold;
 
+  final bool isChildRegistrationLoop;
+
+  final String? householdClientRefIdForLoop;
+
   @override
   String toString() {
-    return 'HouseholdAcknowledgementRouteArgs{key: $key, appLocalizations: $appLocalizations, enableViewHousehold: $enableViewHousehold}';
+    return 'HouseholdAcknowledgementRouteArgs{key: $key, appLocalizations: $appLocalizations, enableViewHousehold: $enableViewHousehold, isChildRegistrationLoop: $isChildRegistrationLoop, householdClientRefIdForLoop: $householdClientRefIdForLoop}';
   }
 }
 

@@ -95,6 +95,8 @@ class _BednetInformHouseholdPageState
                     eToken: widget.eToken,
                     itnForDelivery: widget.itnForDelivery,
                     appLocalizations: localizations,
+                    householdModel: widget.existingDeliveryHousehold,
+                    addressModel: widget.existingDeliveryHousehold?.address,
                   ),
                 ),
               ),
@@ -170,9 +172,7 @@ class _BednetInformHouseholdPageState
                                 child: Text(
                                   localizations.translate(_messageKeys[idx]),
                                   style: textTheme.headingL.copyWith(
-                                    fontSize:
-                                        (textTheme.headingL.fontSize ?? 20) *
-                                            0.7,
+                                    fontSize: 25,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black87,
                                   ),
@@ -298,6 +298,7 @@ class _BednetInformHouseholdPageState
       head: head,
       userUuid: userUuid,
       tenantId: tenantId,
+      memberCount: existingHh.memberCount,
     );
   }
 
@@ -317,6 +318,7 @@ class _BednetInformHouseholdPageState
     required IndividualModel head,
     required String userUuid,
     required String? tenantId,
+    int? memberCount,
   }) async {
     final projectId = RegistrationDeliverySingleton().projectId;
     final boundary = RegistrationDeliverySingleton().boundary;
@@ -364,6 +366,7 @@ class _BednetInformHouseholdPageState
       AdditionalField('itnDeliveredCount', widget.itnForDelivery),
       const AdditionalField('isSchool', false),
       AdditionalField('bednetCount', widget.itnForDelivery),
+      if (memberCount != null) AdditionalField('memberCount', memberCount),
     ];
 
     final address = (baseAddr ??
@@ -488,6 +491,8 @@ class _BednetInformHouseholdPageState
               eToken: widget.eToken,
               itnForDelivery: widget.itnForDelivery,
               appLocalizations: localizations,
+              householdModel: widget.existingDeliveryHousehold,
+              addressModel: widget.existingDeliveryHousehold?.address,
             ),
           ),
         );

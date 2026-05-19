@@ -106,6 +106,7 @@ class DeliverInterventionPageState
             latitude: lat,
             longitude: long,
             household: householdMember.household,
+            memberCount: householdMember.members?.length,
           ),
           isEditing: (deliverInterventionState.tasks ?? []).isNotEmpty &&
                   RegistrationDeliverySingleton().beneficiaryType ==
@@ -798,6 +799,7 @@ class DeliverInterventionPageState
     String? projectBeneficiaryClientReferenceId,
     AddressModel? address,
     HouseholdModel? household,
+    int? memberCount,
     double? latitude,
     double? longitude,
   }) {
@@ -931,6 +933,8 @@ class DeliverInterventionPageState
               'householdClientReferenceId',
               household.clientReferenceId,
             ),
+            if (memberCount != null)
+              AdditionalField('memberCount', memberCount),
             AdditionalField(
               'schoolId',
               household.additionalFields?.fields

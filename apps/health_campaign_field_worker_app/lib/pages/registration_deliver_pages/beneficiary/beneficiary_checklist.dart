@@ -43,6 +43,8 @@ class BeneficiaryChecklistPage extends LocalizedStatefulWidget {
   final String? householdClientReferenceId;
   final String? administrativeAreaCode;
   final IndividualModel? screeningIndividual;
+  final bool isChildRegistrationLoop;
+  final String? householdClientRefIdForLoop;
 
   const BeneficiaryChecklistPage({
     super.key,
@@ -52,6 +54,8 @@ class BeneficiaryChecklistPage extends LocalizedStatefulWidget {
     this.administrativeAreaCode,
     this.screeningIndividual,
     super.appLocalizations,
+    this.isChildRegistrationLoop = false,
+    this.householdClientRefIdForLoop,
   });
 
   @override
@@ -88,9 +92,23 @@ class _BeneficiaryChecklistPageState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.digitTextTheme(context);
+    final router = context.router;
 
     return PopScope(
       canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        // Navigate to view household page instead of default back behavior
+        if (context.mounted) {
+          await router.navigate(
+            BednetHouseholdOverviewWrapperRoute(
+              children: [
+                CustomHouseholdOverviewRoute(),
+              ],
+            ),
+          );
+        }
+      },
       child: Scaffold(
         body: BlocBuilder<ServiceDefinitionBloc, ServiceDefinitionState>(
           builder: (context, state) {
@@ -127,9 +145,17 @@ class _BeneficiaryChecklistPageState
                       padding: const EdgeInsets.only(bottom: spacer2),
                       child: BackNavigationHelpHeaderWidget(
                         showHelp: false,
-                        handleBack: () {
-                          //TODO: direct go back is not working, need to check
-                          Navigator.pop(context);
+                        handleBack: () async {
+                          // Navigate to view household page instead of default back behavior
+                          if (context.mounted) {
+                            await router.navigate(
+                              BednetHouseholdOverviewWrapperRoute(
+                                children: [
+                                  CustomHouseholdOverviewRoute(),
+                                ],
+                              ),
+                            );
+                          }
                         },
                       ),
                     ),
@@ -1552,6 +1578,10 @@ class _BeneficiaryChecklistPageState
                   _resolveAdministrativeAreaCode(navigatorContext),
               referralReasons: _referralReasonCodesFromChecklist(),
               tbScreeningPayload: jsonEncode(_checklistPayloadMap(decidedFlow)),
+              memberCount: _tryHouseholdOverviewState(navigatorContext)
+                  ?.householdMemberWrapper
+                  .members
+                  ?.length,
             );
 
             return MultiBlocProvider(
@@ -1576,7 +1606,11 @@ class _BeneficiaryChecklistPageState
       );
       if (navigatorContext.mounted) {
         if (referred == true) {
-          router.push(HouseholdAcknowledgementRoute(enableViewHousehold: true));
+          router.push(HouseholdAcknowledgementRoute(
+            enableViewHousehold: true,
+            isChildRegistrationLoop: widget.isChildRegistrationLoop,
+            householdClientRefIdForLoop: widget.householdClientRefIdForLoop,
+          ));
         } else {
           router.maybePop();
         }
@@ -1633,6 +1667,18 @@ class _BeneficiaryChecklistPageState
                         'administrativeAreaCode',
                         _resolveAdministrativeAreaCode(navigatorContext),
                       ),
+                      if (_tryHouseholdOverviewState(navigatorContext)
+                              ?.householdMemberWrapper
+                              .members
+                              ?.length !=
+                          null)
+                        AdditionalField(
+                          'memberCount',
+                          _tryHouseholdOverviewState(navigatorContext)!
+                              .householdMemberWrapper
+                              .members!
+                              .length,
+                        ),
                     ],
                   ),
                   address: individual.address?.firstOrNull?.copyWith(
@@ -1651,7 +1697,11 @@ class _BeneficiaryChecklistPageState
                     RegistrationDeliverySingleton().beneficiaryType!,
               ),
             );
-        router.push(HouseholdAcknowledgementRoute(enableViewHousehold: true));
+        router.push(HouseholdAcknowledgementRoute(
+          enableViewHousehold: true,
+          isChildRegistrationLoop: widget.isChildRegistrationLoop,
+          householdClientRefIdForLoop: widget.householdClientRefIdForLoop,
+        ));
       }
       return;
     }
