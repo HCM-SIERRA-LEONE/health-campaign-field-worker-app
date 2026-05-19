@@ -537,8 +537,6 @@ final dynamic sampleComplaintFlows = {
               "mandatory": true,
               "deleteFlag": false,
               "enums": [
-                {"code": "SyncNotWorking", "name": "Sync Not Working"},
-                {"code": "NotEnoughStock", "name": "Not Enough Stock"},
                 {"code": "LackOfInternet", "name": "Lack of Internet"},
                 {"code": "PerformanceIssue", "name": "Performance Issue"},
                 {"code": "SecurityIssues", "name": "Security Issues"},
@@ -915,6 +913,11 @@ final dynamic sampleComplaintFlows = {
                   "type": "maxLength",
                   "value": 50,
                   "message": "SUPERVISOR_DETAILS_name_LABEL_MAX_VALIDATION"
+                },
+                {
+                  "type": "pattern",
+                  "value": "^[a-zA-Z0-9 ]+\$",
+                  "message": "SUPERVISOR_name_LABEL_PATTERN_VALIDATION"
                 }
               ],
               "errorMessage": "",

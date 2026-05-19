@@ -559,9 +559,9 @@ class _AuthenticatedPageWrapperState extends State<AuthenticatedPageWrapper> {
                                     onNavigated: () {
                                       bool shouldShowDrawer;
                                       switch (context.router.topRoute.name) {
+                                        case PermissionsRoute.name:
                                         case ProjectSelectionRoute.name:
                                         case BoundarySelectionRoute.name:
-                                        case PermissionsRoute.name:
                                           shouldShowDrawer = false;
                                           break;
                                         default:

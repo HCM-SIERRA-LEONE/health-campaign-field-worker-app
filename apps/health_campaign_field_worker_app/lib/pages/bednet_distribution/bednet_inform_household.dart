@@ -172,7 +172,7 @@ class _BednetInformHouseholdPageState
                                 child: Text(
                                   localizations.translate(_messageKeys[idx]),
                                   style: textTheme.headingL.copyWith(
-                                    fontSize: 25,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black87,
                                   ),
