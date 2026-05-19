@@ -372,6 +372,8 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     if (assignedBoundaryType != null) {
       final configs = await isar.appConfigurations.where().findAll();
       final boundaryRelationships = configs.firstOrNull?.boundaryRelationship;
+      String parentBoundaryType = "";
+      String childBoundaryType = "";
 
       if (boundaryRelationships != null) {
         final match = boundaryRelationships
@@ -379,12 +381,42 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
             .firstOrNull;
 
         if (match != null) {
+          parentBoundaryType = (match.parentBoundaryType.isNotEmpty)
+              ? match.parentBoundaryType
+              : "";
+          childBoundaryType = (match.childBoundaryTypes.isNotEmpty)
+              ? match.childBoundaryTypes.first
+              : "";
           boundaryTypes = [
             if (match.parentBoundaryType.isNotEmpty) match.parentBoundaryType,
             match.boundaryType,
             if (match.childBoundaryTypes.isNotEmpty)
               match.childBoundaryTypes.first,
           ];
+        }
+
+// Adding this to get two levels up and 2 levels down
+        boundaryTypes ??= [];
+
+        final match1 = boundaryRelationships
+            .where((e) => e.boundaryType == parentBoundaryType)
+            .firstOrNull;
+
+        final match2 = boundaryRelationships
+            .where((e) => e.boundaryType == childBoundaryType)
+            .firstOrNull;
+
+        if (match1 != null) {
+          boundaryTypes.addAll([
+            if (match1.parentBoundaryType.isNotEmpty) match1.parentBoundaryType,
+          ]);
+        }
+
+        if (match2 != null) {
+          boundaryTypes.addAll([
+            if (match2.childBoundaryTypes.isNotEmpty)
+              match2.childBoundaryTypes.first,
+          ]);
         }
       }
 

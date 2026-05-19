@@ -193,7 +193,10 @@ class _FacilityCardContentState extends State<_FacilityCardContent> {
           .where((f) => f.key == 'facilityLevel')
           .firstOrNull
           ?.value;
-      return facilityLevel == null || facilityLevel == 'current';
+      return facilityLevel == null ||
+          facilityLevel == 'current' ||
+          facilityLevel == 'parent' ||
+          facilityLevel == 'child';
     }).toList();
 
     final currentLevelFacilityIds =
