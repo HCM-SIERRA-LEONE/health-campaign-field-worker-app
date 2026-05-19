@@ -67,28 +67,13 @@ class _PermissionsScreenState extends LocalizedState<PermissionsPage> {
         // Skip if disabled
         if (_isDisabled) return;
 
-        // Check permissions to update UI status, but don't auto-navigate
-        // User must explicitly click Continue after granting all permissions
+        // Refresh permission status for UI; auto-skip only if already granted
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          // Skip if disabled
           if (_isDisabled) return;
 
-          bool granted = await _checkPermissions();
-          if (!granted) {
-            if (mounted) {
-              Toast.showToast(
-                context,
-                message: localizations.translate(
-                  i18.common.permissionsAlert,
-                ),
-                type: ToastType.error,
-              );
-            }
-            return;
-          }
-
-          if (mounted) {
-            context.router.replace(BoundarySelectionRoute());
+          final granted = await _checkPermissions();
+          if (granted && mounted) {
+            context.router.replace(ProjectSelectionRoute());
           }
         });
       });
@@ -106,7 +91,7 @@ class _PermissionsScreenState extends LocalizedState<PermissionsPage> {
         if (data?['data']?['disabled'] == true) {
           _isDisabled = true;
           if (mounted) {
-            context.router.replace(BoundarySelectionRoute());
+            context.router.replace(ProjectSelectionRoute());
           }
           return; // Skip loading config when disabled
         } else {
@@ -125,7 +110,7 @@ class _PermissionsScreenState extends LocalizedState<PermissionsPage> {
         if (permission_handler_config?['disabled'] == true) {
           _isDisabled = true;
           if (mounted) {
-            context.router.replace(BoundarySelectionRoute());
+            context.router.replace(ProjectSelectionRoute());
           }
           return; // Skip loading config when disabled
         } else {
@@ -551,7 +536,7 @@ class _PermissionsScreenState extends LocalizedState<PermissionsPage> {
             }
 
             if (mounted) {
-              context.router.replace(BoundarySelectionRoute());
+              context.router.replace(ProjectSelectionRoute());
             }
           },
         )

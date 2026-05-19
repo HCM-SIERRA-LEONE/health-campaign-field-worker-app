@@ -82,6 +82,26 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
     return [first, last].where((s) => s.isNotEmpty).join(' ');
   }
 
+  int _childrenUnder14FromHousehold(HouseholdModel household) {
+    final fields = household.additionalFields?.fields;
+    if (fields == null) return 0;
+    return int.tryParse(
+          fields
+              .firstWhere(
+                (f) =>
+                    f.key ==
+                    AdditionalFieldsType.childrenUnder14.toValue(),
+                orElse: () => AdditionalField(
+                  AdditionalFieldsType.childrenUnder14.toValue(),
+                  '0',
+                ),
+              )
+              .value
+              .toString(),
+        ) ??
+        0;
+  }
+
   @override
   void dispose() {
     _dateController.dispose();
@@ -189,12 +209,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                 individualModelFromState != null) {
               final memberCount = householdForDelivery.memberCount ?? 1;
               final childrenCount =
-                  householdForDelivery.additionalFields?.fields
-                          .firstWhereOrNull(
-                            (f) => f.key == 'children',
-                          )
-                          ?.value as int? ??
-                      0;
+                  _childrenUnder14FromHousehold(householdForDelivery);
 
               // Generate EToken like the original code
               final headName =
