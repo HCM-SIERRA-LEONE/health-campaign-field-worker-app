@@ -20,7 +20,8 @@ import 'package:health_campaign_field_worker_app/widgets/registartion_deliver/sh
 import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
-import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
+import '../../../models/entities/roles_type.dart';
+import '../../../utils/extensions/extensions.dart';
 import 'package:collection/collection.dart';
 
 @RoutePage()
@@ -152,8 +153,7 @@ class RefusedDeliveryPageState extends LocalizedState<RefusedDeliveryPage> {
                                               .address
                                               ?.first,
                                           registrationState
-                                              .householdMemberWrapper
-                                              .household,
+                                              .householdMemberWrapper.household,
                                           registrationState
                                               .householdMemberWrapper
                                               .members
@@ -318,6 +318,10 @@ class RefusedDeliveryPageState extends LocalizedState<RefusedDeliveryPage> {
       ),
     );
 
+    final roles = context.loggedInUserRoles;
+    final isSchoolTask = roles.length == 1 &&
+        roles.first.code == RolesType.distributor.toValue();
+
     task = task.copyWith(
       status: status,
       address: address?.copyWith(
@@ -352,6 +356,7 @@ class RefusedDeliveryPageState extends LocalizedState<RefusedDeliveryPage> {
                   '',
             ),
           ],
+          AdditionalField('isSchoolTask', isSchoolTask),
         ],
       ),
     );

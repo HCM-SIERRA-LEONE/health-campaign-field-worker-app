@@ -325,6 +325,10 @@ class _BednetInformHouseholdPageState
     // Submit dialog already requires boundary; keep guard if singleton changes.
     if (projectId == null || boundary == null) return;
 
+    final roles = context.loggedInUserRoles;
+    final isSchoolTask = roles.length == 1 &&
+        roles.first.code == RolesType.distributor.toValue();
+
     final tasks = await taskRepo.search(
       TaskSearchModel(
         projectId: projectId,
@@ -365,6 +369,7 @@ class _BednetInformHouseholdPageState
       AdditionalField('eToken', widget.eToken),
       AdditionalField('itnDeliveredCount', widget.itnForDelivery),
       const AdditionalField('isSchool', false),
+      AdditionalField('isSchoolTask', isSchoolTask),
       AdditionalField('bednetCount', widget.itnForDelivery),
       if (memberCount != null) AdditionalField('memberCount', memberCount),
     ];

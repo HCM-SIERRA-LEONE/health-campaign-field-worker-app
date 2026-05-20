@@ -125,6 +125,10 @@ class _TbReferBeneficiaryPageState
     _busy.value = true;
     final facility = _selected!;
 
+    final roles = context.loggedInUserRoles;
+    final isSchoolTask = roles.length == 1 &&
+        roles.first.code == RolesType.distributor.toValue();
+
     try {
       await context
           .read<LocalRepository<ReferralModel, ReferralSearchModel>>()
@@ -227,6 +231,7 @@ class _TbReferBeneficiaryPageState
                     ),
                     if (widget.memberCount != null)
                       AdditionalField('memberCount', widget.memberCount),
+                    AdditionalField('isSchoolTask', isSchoolTask),
                   ],
                 ),
                 address: widget.individual.address?.firstOrNull?.copyWith(

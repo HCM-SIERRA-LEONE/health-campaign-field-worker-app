@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:digit_data_model/data_model.dart'
     hide ReferralModel, ReferralSearchModel;
 
+import '../../../models/entities/roles_type.dart';
 import '../../../models/registration_deliver_model/entities/referral.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/enum/app_enums.dart';
@@ -21,8 +22,11 @@ import '../../../blocs/registration_deliver/search_households/search_households.
 import '../../../models/registration_deliver_model/entities/status.dart';
 import '../../../router/app_router.dart';
 import '../../../utils/environment_config.dart';
-import '../../../utils/registration_deliver_utils/i18_key_constants.dart' as i18;
-import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
+import '../../../utils/extensions/extensions.dart';
+import '../../../utils/registration_deliver_utils/extensions/extensions.dart'
+    as rd_ext;
+import '../../../utils/registration_deliver_utils/i18_key_constants.dart'
+    as i18;
 import '../../../utils/registration_deliver_utils/utils.dart';
 import '../../../widgets/custom_back_navigation.dart';
 import '../../../widgets/registartion_deliver/localized.dart';
@@ -59,8 +63,7 @@ class _TbEligibilityAssessmentPageState
   bool _showAdditionalSymptoms = false;
   final Set<String> _additionalSymptoms = {};
 
-  bool get _allAnswered =>
-      _answers.every((e) => e != null && e.isNotEmpty);
+  bool get _allAnswered => _answers.every((e) => e != null && e.isNotEmpty);
 
   int get _yesCount => _answers.where((e) => e == _yes).length;
 
@@ -97,7 +100,8 @@ class _TbEligibilityAssessmentPageState
     };
   }
 
-  Future<void> _showReadyToSubmitModal({required VoidCallback onProceed}) async {
+  Future<void> _showReadyToSubmitModal(
+      {required VoidCallback onProceed}) async {
     final go = await showDialog<bool>(
       context: context,
       builder: (ctx) => Popup(
@@ -130,6 +134,10 @@ class _TbEligibilityAssessmentPageState
     final taskRef = IdGen.i.identifier;
     final payload = jsonEncode(_payloadMap());
 
+    final roles = context.loggedInUserRoles;
+    final isSchoolTask = roles.length == 1 &&
+        roles.first.code == RolesType.distributor.toValue();
+
     context.read<DeliverInterventionBloc>().add(
           DeliverInterventionSubmitEvent(
             task: TaskModel(
@@ -147,7 +155,8 @@ class _TbEligibilityAssessmentPageState
               clientAuditDetails: ClientAuditDetails(
                 createdBy: RegistrationDeliverySingleton().loggedInUserUuid!,
                 createdTime: DateTime.now().millisecondsSinceEpoch,
-                lastModifiedBy: RegistrationDeliverySingleton().loggedInUserUuid!,
+                lastModifiedBy:
+                    RegistrationDeliverySingleton().loggedInUserUuid!,
                 lastModifiedTime: DateTime.now().millisecondsSinceEpoch,
               ),
               additionalFields: TaskAdditionalFields(
@@ -168,6 +177,7 @@ class _TbEligibilityAssessmentPageState
                     'administrativeAreaCode',
                     widget.administrativeAreaCode,
                   ),
+                  AdditionalField('isSchoolTask', isSchoolTask),
                 ],
               ),
               address: widget.child.address?.first.copyWith(
@@ -180,11 +190,14 @@ class _TbEligibilityAssessmentPageState
           ),
         );
 
-    context.read<SearchHouseholdsBloc>().add(const SearchHouseholdsEvent.clear());
+    context
+        .read<SearchHouseholdsBloc>()
+        .add(const SearchHouseholdsEvent.clear());
     context.read<HouseholdOverviewBloc>().add(
           HouseholdOverviewReloadEvent(
             projectId: RegistrationDeliverySingleton().projectId!,
-            projectBeneficiaryType: RegistrationDeliverySingleton().beneficiaryType!,
+            projectBeneficiaryType:
+                RegistrationDeliverySingleton().beneficiaryType!,
           ),
         );
 
@@ -222,7 +235,8 @@ class _TbEligibilityAssessmentPageState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              localizations.translate(i18.tbScreening.additionalSymptomsRequired),
+              localizations
+                  .translate(i18.tbScreening.additionalSymptomsRequired),
             ),
           ),
         );
@@ -239,7 +253,8 @@ class _TbEligibilityAssessmentPageState
               create: (c) => ReferralBloc(
                 const ReferralState(),
                 referralRepository:
-                    c.repository<ReferralModel, ReferralSearchModel>(c),
+                    rd_ext.ContextUtilityExtensions(c)
+                        .repository<ReferralModel, ReferralSearchModel>(c),
               ),
               child: TbReferBeneficiaryPage(
                 appLocalizations: localizations,
