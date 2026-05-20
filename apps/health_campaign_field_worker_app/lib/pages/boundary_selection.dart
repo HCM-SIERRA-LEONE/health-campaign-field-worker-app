@@ -637,6 +637,24 @@ class _BoundarySelectionPageState
                                                               ? [dhBoundary]
                                                               : boundaryState
                                                                   .selectedLastLevelBoundaries;
+                                                      final lastLabel =
+                                                          boundaryState
+                                                              .selectedBoundaryMap
+                                                              .keys
+                                                              .lastOrNull;
+                                                      if (lastLabel != null) {
+                                                        context
+                                                            .read<
+                                                                BoundaryBloc>()
+                                                            .add(
+                                                              BoundaryMultiSelectEvent(
+                                                                label:
+                                                                    lastLabel,
+                                                                selectedBoundaries:
+                                                                    downsyncBoundaries,
+                                                              ),
+                                                            );
+                                                      }
                                                     } else {
                                                       downsyncBoundaries =
                                                           boundaryState
