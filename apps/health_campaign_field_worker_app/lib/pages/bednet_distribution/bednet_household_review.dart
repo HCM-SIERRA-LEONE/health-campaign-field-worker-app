@@ -3,11 +3,18 @@ import 'dart:math';
 import 'package:digit_data_model/data_model.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
+import 'package:digit_ui_components/widgets/atoms/pop_up_card.dart';
 import 'package:digit_ui_components/widgets/molecules/digit_card.dart';
+import 'package:digit_ui_components/widgets/molecules/show_pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/beneficiary_registration/beneficiary_registration.dart';
 
+import '../../blocs/localization/app_localization.dart';
+import '../../router/app_router.dart';
+import '../../utils/registration_deliver_utils/i18_key_constants.dart' as i18;
+// import '../../utils/registration_deliver_utils/utils.dart';
+import '../../utils/utils.dart';
 import '../../widgets/header/back_navigation_help_header.dart';
 import 'bednet_eolin_assessment.dart';
 
@@ -56,6 +63,67 @@ class BednetHouseholdReviewPage extends StatelessWidget {
     return syntheticEToken(headName: headName, memberCount: memberCount);
   }
 
+  /// Returns false when the distributor cannot deliver [bednetsRequired] ITNs.
+  Future<bool> _checkStockForItnDelivery(BuildContext context) async {
+    final localizations = AppLocalizations.of(context);
+    final stockCount = RegistrationDeliverySingleton().stockCount;
+
+    if (stockCount == null || stockCount >= _itnForDelivery) {
+      return true;
+    }
+
+    showCustomPopup(
+      context: context,
+      builder: (popupContext) => Popup(
+        title: localizations.translate(
+          i18.beneficiaryDetails.insufficientStockHeading,
+        ),
+        onOutsideTap: () {
+          Navigator.of(popupContext).pop();
+        },
+        description: localizations.translate(
+          i18.beneficiaryDetails.insufficientStockDescription,
+        ),
+        type: PopUpType.simple,
+        actions: [
+          DigitButton(
+            label: localizations.translate(i18.beneficiaryDetails.goToHome),
+            onPressed: () {
+              Navigator.of(popupContext, rootNavigator: true).pop();
+              context.router.replaceAll([HomeRoute()]);
+            },
+            type: DigitButtonType.primary,
+            size: DigitButtonSize.large,
+          ),
+        ],
+      ),
+    );
+    return false;
+  }
+
+  Future<void> _onNextPressed(BuildContext context) async {
+    if (!await _checkStockForItnDelivery(context)) return;
+    if (!context.mounted) return;
+
+    final registrationBloc = context.read<BeneficiaryRegistrationBloc>();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: registrationBloc,
+          child: BednetEolinAssessmentPage(
+            headName: headName,
+            memberCount: memberCount,
+            childrenCount: childrenCount,
+            mobileNumber: mobileNumber,
+            householdEToken: householdEToken,
+            bednetDeliveryHousehold: bednetDeliveryHousehold,
+            bednetDeliveryHead: bednetDeliveryHead,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -72,26 +140,7 @@ class BednetHouseholdReviewPage extends StatelessWidget {
               type: DigitButtonType.primary,
               size: DigitButtonSize.large,
               mainAxisSize: MainAxisSize.max,
-              onPressed: () {
-                final registrationBloc =
-                    context.read<BeneficiaryRegistrationBloc>();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider.value(
-                      value: registrationBloc,
-                      child: BednetEolinAssessmentPage(
-                        headName: headName,
-                        memberCount: memberCount,
-                        childrenCount: childrenCount,
-                        mobileNumber: mobileNumber,
-                        householdEToken: householdEToken,
-                        bednetDeliveryHousehold: bednetDeliveryHousehold,
-                        bednetDeliveryHead: bednetDeliveryHead,
-                      ),
-                    ),
-                  ),
-                );
-              },
+              onPressed: () => _onNextPressed(context),
             ),
           ],
         ),
@@ -157,37 +206,38 @@ class BednetHouseholdReviewPage extends StatelessWidget {
   }
 
   Widget _kv(String key, String value) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: spacer2),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 2,
-            child: Text(key,
-            style: TextStyle(
-              fontWeight: key == 'Number Of ITN For Delivery'
-                  ? FontWeight.w900
-                  : FontWeight.bold,
-              fontSize: key == 'Number Of ITN For Delivery' ? 16 : 14,
-            ),
-          ),
-        ),
-        const SizedBox(width: spacer2),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: spacer2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Expanded(
-          flex: 3,
-          child: Text(
-            value,
-            style: TextStyle(
-              fontWeight: key == 'Number Of ITN For Delivery'
-                  ? FontWeight.bold
-                  : FontWeight.normal,
-              fontSize: key == 'Number Of ITN For Delivery' ? 18 : 14,
+            flex: 2,
+            child: Text(
+              key,
+              style: TextStyle(
+                fontWeight: key == 'Number Of ITN For Delivery'
+                    ? FontWeight.w900
+                    : FontWeight.bold,
+                fontSize: key == 'Number Of ITN For Delivery' ? 16 : 14,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(width: spacer2),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontWeight: key == 'Number Of ITN For Delivery'
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                fontSize: key == 'Number Of ITN For Delivery' ? 18 : 14,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

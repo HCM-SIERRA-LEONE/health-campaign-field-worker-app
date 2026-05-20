@@ -1,9 +1,7 @@
 import 'package:digit_data_model/data_model.dart';
 import 'package:digit_ui_components/digit_components.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
-import 'package:digit_ui_components/widgets/atoms/pop_up_card.dart';
 import 'package:digit_ui_components/widgets/molecules/digit_card.dart';
-import 'package:digit_ui_components/widgets/molecules/show_pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +12,6 @@ import '../../models/entities/additional_fields_type.dart';
 import '../../router/app_router.dart';
 import '../../utils/registration_deliver_utils/i18_key_constants.dart' as i18;
 import '../../utils/registration_deliver_utils/utils.dart';
-import '../../utils/utils.dart' as stock_utils;
 import '../../widgets/registartion_deliver/localized.dart';
 
 /// Shown as a Material route on top of the ITN chain (review → EOLIN → inform →
@@ -55,67 +52,22 @@ class _BednetSuccessPageState extends LocalizedState<BednetSuccessPage> {
     return int.tryParse(raw ?? '0') ?? 0;
   }
 
-  /// Open add child screen
+  /// Open add child screen (stock is checked before ITN delivery on review page).
   Future<void> _openAddChildScreen(
     BuildContext context,
     HouseholdModel household,
     AddressModel addressModel,
   ) async {
-    await _checkStockAndProceed(
-      context,
-      onSuccess: () async {
-        if (context.mounted) {
-          await context.router.push(
-            CustomBednetIndividualDetailsWrapperRoute(
-              householdModel: household,
-              addressModel: addressModel,
-              individualModel: null,
-              projectBeneficiaryModel: null,
-              isHeadOfHousehold: false,
-            ),
-          );
-        }
-      },
+    if (!context.mounted) return;
+    await context.router.push(
+      CustomBednetIndividualDetailsWrapperRoute(
+        householdModel: household,
+        addressModel: addressModel,
+        individualModel: null,
+        projectBeneficiaryModel: null,
+        isHeadOfHousehold: false,
+      ),
     );
-  }
-
-  /// Check stock before proceeding
-  Future<void> _checkStockAndProceed(
-    BuildContext context, {
-    required VoidCallback onSuccess,
-  }) async {
-    final localizations = AppLocalizations.of(context);
-    final stockCount = stock_utils.RegistrationDeliverySingleton().stockCount;
-
-    if (stockCount != null && stockCount <= 0) {
-      showCustomPopup(
-        context: context,
-        builder: (popupContext) => Popup(
-          title: localizations.translate(
-            i18.beneficiaryDetails.insufficientStockHeading,
-          ),
-          onOutsideTap: () {
-            Navigator.of(popupContext).pop(false);
-          },
-          description: localizations.translate(
-            i18.beneficiaryDetails.insufficientStockDescription,
-          ),
-          type: PopUpType.simple,
-          actions: [
-            DigitButton(
-              label: localizations.translate(i18.common.coreCommonOk),
-              onPressed: () {
-                Navigator.of(popupContext).pop();
-              },
-              type: DigitButtonType.primary,
-              size: DigitButtonSize.large,
-            ),
-          ],
-        ),
-      );
-    } else {
-      onSuccess();
-    }
   }
 
   void _dispatchHouseholdOverviewReload() {

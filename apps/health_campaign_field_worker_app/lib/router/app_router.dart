@@ -111,6 +111,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: PermissionsRoute.page,
           path: 'permissions-page',
+          initial: true,
         ),
         AutoRoute(page: HomeRoute.page, path: 'home'),
         AutoRoute(
@@ -302,7 +303,6 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: ProjectSelectionRoute.page,
           path: 'select-project',
-          initial: true,
         ),
 
         /// Boundary Selection
