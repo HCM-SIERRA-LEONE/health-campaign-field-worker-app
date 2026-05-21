@@ -538,24 +538,30 @@ class CustomIndividualDetailsPageState
                                     child: ReactiveWrapperField(
                                       formControlName: _firstNameKey,
                                       validationMessages: {
-                                        'required': (object) => localizations.translate(
+                                        'required': (object) =>
+                                            localizations.translate(
                                               '${i18.individualDetails.nameLabelText}_IS_REQUIRED',
                                             ),
                                         'maxLength': (object) => localizations
-                                            .translate(i18.common.maxCharsRequired)
-                                            .replaceAll('{}', maxLength.toString()),
+                                            .translate(
+                                                i18.common.maxCharsRequired)
+                                            .replaceAll(
+                                                '{}', maxLength.toString()),
                                       },
                                       builder: (field) => LabeledField(
-                                        label: 'First Name',   // hardcoded
+                                        label: 'First Name', // hardcoded
                                         isRequired: true,
                                         child: DigitTextFormInput(
-                                          initialValue: form.control(_firstNameKey).value,
+                                          initialValue:
+                                              form.control(_firstNameKey).value,
                                           onChange: (value) {
-                                            form.control(_firstNameKey).value = value;
+                                            form.control(_firstNameKey).value =
+                                                value;
                                           },
                                           errorMessage: field.errorText,
                                           inputFormatters: [
-                                            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(r'[a-zA-Z\s]')),
                                           ],
                                         ),
                                       ),
@@ -564,21 +570,25 @@ class CustomIndividualDetailsPageState
                                   ReactiveWrapperField(
                                     formControlName: _lastNameKey,
                                     validationMessages: {
-                                      'required': (object) => localizations.translate(
+                                      'required': (object) =>
+                                          localizations.translate(
                                             '${i18.individualDetails.nameLabelText}_IS_REQUIRED',
                                           ),
                                     },
                                     builder: (field) => LabeledField(
-                                      label: 'Last Name',   // hardcoded
+                                      label: 'Last Name', // hardcoded
                                       isRequired: true,
                                       child: DigitTextFormInput(
-                                        initialValue: form.control(_lastNameKey).value,
+                                        initialValue:
+                                            form.control(_lastNameKey).value,
                                         onChange: (value) {
-                                          form.control(_lastNameKey).value = value;
+                                          form.control(_lastNameKey).value =
+                                              value;
                                         },
                                         errorMessage: field.errorText,
                                         inputFormatters: [
-                                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                          FilteringTextInputFormatter.allow(
+                                              RegExp(r'[a-zA-Z\s]')),
                                         ],
                                       ),
                                     ),
@@ -838,11 +848,15 @@ class CustomIndividualDetailsPageState
       individualClientReferenceId: individual.clientReferenceId,
     );
 
-    final fullName = _fullName(form);  // combines "First Last"
+    // final fullName = _fullName(form);  // combines "First Last"
+
+    final firstName = form.control(_firstNameKey).value as String?;
+    final lastName = form.control(_lastNameKey).value as String?;
 
     individual = individual.copyWith(
       name: name.copyWith(
-        givenName: fullName.isNotEmpty ? fullName : null,
+        givenName: firstName?.trim().isNotEmpty == true ? firstName?.trim() : null,
+        familyName: lastName?.trim().isNotEmpty == true ? lastName?.trim() : null,
       ),
       gender: form.control(_genderKey).value == null
           ? null
@@ -879,33 +893,33 @@ class CustomIndividualDetailsPageState
         return value.searchQuery;
       },
     );
-    
+
     final rawGivenName = individual?.name?.givenName?.trim() ?? '';
     final spaceIndex = rawGivenName.indexOf(' ');
     final initialFirstName =
         spaceIndex >= 0 ? rawGivenName.substring(0, spaceIndex) : rawGivenName;
     final initialLastName =
         spaceIndex >= 0 ? rawGivenName.substring(spaceIndex + 1) : '';
-    
+
     return fb.group(<String, Object>{
-          _firstNameKey: FormControl<String>(
-      value: initialFirstName.isNotEmpty
-          ? initialFirstName
-          : ((RegistrationDeliverySingleton().householdType ==
-                  HouseholdType.community)
-              ? null
-              : searchQuery?.trim()),
-      validators: [
-        Validators.required,
-        Validators.delegate(
-            (validator) => CustomValidator.requiredMin(validator)),
-        Validators.maxLength(200),
-      ],
-    ),
-    _lastNameKey: FormControl<String>(
-      value: initialLastName,
-      validators: [Validators.required],
-    ),
+      _firstNameKey: FormControl<String>(
+        value: initialFirstName.isNotEmpty
+            ? initialFirstName
+            : ((RegistrationDeliverySingleton().householdType ==
+                    HouseholdType.community)
+                ? null
+                : searchQuery?.trim()),
+        validators: [
+          Validators.required,
+          Validators.delegate(
+              (validator) => CustomValidator.requiredMin(validator)),
+          Validators.maxLength(200),
+        ],
+      ),
+      _lastNameKey: FormControl<String>(
+        value: initialLastName,
+        validators: [Validators.required],
+      ),
       _dobKey: FormControl<DateTime>(
           value: individual?.dateOfBirth != null
               ? DateFormat(Constants().dateFormat).parse(
