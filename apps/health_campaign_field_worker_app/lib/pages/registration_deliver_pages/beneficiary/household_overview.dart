@@ -438,10 +438,10 @@ class _HouseholdOverviewPageState
                                                     localizations.translate(
                                                       i18.deliverIntervention
                                                           .memberCountText,
-                                                    ): state
-                                                        .householdMemberWrapper
-                                                        .household
-                                                        ?.memberCount,
+                                                    ): _displayedStudentCount(
+                                                      state
+                                                          .householdMemberWrapper,
+                                                    ),
                                                     localizations.translate(
                                                       i18.householdLocation
                                                           .administrationAreaFormLabel,
@@ -571,12 +571,10 @@ class _HouseholdOverviewPageState
                                                     localizations.translate(
                                                       i18.deliverIntervention
                                                           .memberCountText,
-                                                    ): state.householdMemberWrapper
-                                                            .members?.length ??
-                                                        state
-                                                            .householdMemberWrapper
-                                                            .household
-                                                            ?.bednetPupilCount,
+                                                    ): _displayedStudentCount(
+                                                      state
+                                                          .householdMemberWrapper,
+                                                    ),
                                                     if (shouldShowStatus)
                                                       localizations.translate(i18
                                                               .beneficiaryDetails
@@ -614,8 +612,8 @@ class _HouseholdOverviewPageState
                                                           : 'Sort: Z-A',
                                                       type: DigitButtonType
                                                           .secondary,
-                                                      size: DigitButtonSize
-                                                          .small,
+                                                      size:
+                                                          DigitButtonSize.small,
                                                       prefixIcon: sortAscending
                                                           ? Icons.sort
                                                           : Icons.sort,
@@ -1235,6 +1233,14 @@ class _HouseholdOverviewPageState
     return firstNameMatch?.clientReferenceId == e.clientReferenceId;
   }
 
+  /// Student count for the summary card: same filters as the member list,
+  /// excluding the household/school head.
+  int _displayedStudentCount(HouseholdMemberWrapper wrapper) {
+    return _membersOrderedHeadFirst(wrapper)
+        .where((e) => !_isHouseholdHeadMember(e, wrapper))
+        .length;
+  }
+
   List<IndividualModel> _membersOrderedHeadFirst(
     HouseholdMemberWrapper wrapper,
   ) {
@@ -1279,15 +1285,13 @@ class _HouseholdOverviewPageState
         .where((e) => !_isHouseholdHeadMember(e, wrapper))
         .toList();
 
-    // Filter non-head members by class
-    // Show students if: they have no class field OR their class matches selected class
+    // Filter non-head members by class (strict when a class is selected).
     final filteredNonHead = nonHead.where((member) {
       final fields =
           member.additionalFields?.fields ?? const <AdditionalField>[];
 
-      // If no additional fields or no class field, show the student (default behavior)
       if (fields.isEmpty) {
-        return true;
+        return false;
       }
 
       final map = <String, Object?>{
@@ -1296,12 +1300,10 @@ class _HouseholdOverviewPageState
       };
       final memberClass = map['class']?.toString();
 
-      // If no class field, show the student (default behavior)
       if (memberClass == null || memberClass.isEmpty) {
-        return true;
+        return false;
       }
 
-      // Only filter if class field exists and doesn't match
       return memberClass == selectedClass;
     }).toList();
 

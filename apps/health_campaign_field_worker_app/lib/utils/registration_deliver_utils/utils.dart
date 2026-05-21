@@ -209,7 +209,11 @@ DeliveryDoseCriteria? fetchProductVariant(ProjectCycleDelivery? currentDelivery,
     if (individualModel != null) {
       final individualAge = DigitDateUtils.calculateAge(
         DigitDateUtils.getFormattedDateToDateTime(
-              individualModel.dateOfBirth!,
+              individualModel.additionalFields!.fields
+                  .where((e) => e.key == AdditionalFieldsType.age.toValue())
+                  .first
+                  .value
+                  .toString(),
             ) ??
             DateTime.now(),
       );
