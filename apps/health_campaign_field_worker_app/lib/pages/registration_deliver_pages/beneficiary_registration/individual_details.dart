@@ -169,8 +169,23 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                       element.loading == false &&
                       element.householdMemberWrapper.household != null);
                   if (!context.mounted) return;
+                  
+                  // Set the newly created individual as selected
+                  final newIndividual = value.individualModel;
+                  if (newIndividual != null) {
+                    overviewBloc.add(
+                      HouseholdOverviewEvent.selectedIndividual(
+                        individualModel: newIndividual,
+                      ),
+                    );
+                  }
+                  
                   if (value.householdModel.isSchoolHousehold) {
-                    await router.push(BeneficiaryAcknowledgementRoute());
+                    await router.replace(BeneficiaryDetailsRoute(
+                      selectedClass:
+                          BednetClassSelectionSingleton().selectedClass ??
+                              widget.selectedClass,
+                    ));
                   } else {
                     await router.push(HouseholdAcknowledgementRoute());
                   }

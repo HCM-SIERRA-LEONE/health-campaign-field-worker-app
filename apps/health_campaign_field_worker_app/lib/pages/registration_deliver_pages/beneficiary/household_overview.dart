@@ -153,6 +153,71 @@ class _HouseholdOverviewPageState
                             ),
                             type: DigitButtonType.primary,
                             size: DigitButtonSize.large,
+                            isDisabled: () {
+                              final selectedClass =
+                                  BednetClassSelectionSingleton()
+                                          .selectedClass ??
+                                      widget.selectedClass;
+
+                              int totalStudents;
+                              int currentStudentsCount;
+
+                              if (selectedClass != null) {
+                                // When class is selected, check against class-specific boys+girls
+                                // Get class-specific boys+girls count from household additional fields
+                                final fields = state.householdMemberWrapper
+                                        .household?.additionalFields?.fields ??
+                                    [];
+
+                                // Try to find class-specific boys+girls count
+                                // Format: class{index}_boys, class{index}_girls
+                                final classIndex =
+                                    _getClassIndex(selectedClass);
+                                final totalStudentsKey =
+                                    'class${classIndex}_totalStudents';
+
+                                totalStudents = fields
+                                            .firstWhereOrNull(
+                                              (f) =>
+                                                  f.key.toLowerCase() ==
+                                                  totalStudentsKey
+                                                      .toLowerCase(),
+                                            )
+                                            ?.value !=
+                                        null
+                                    ? int.tryParse(
+                                          fields
+                                                  .firstWhereOrNull(
+                                                    (f) =>
+                                                        f.key.toLowerCase() ==
+                                                        totalStudentsKey
+                                                            .toLowerCase(),
+                                                  )
+                                                  ?.value
+                                                  .toString() ??
+                                              '0',
+                                        ) ??
+                                        0
+                                    : 0;
+
+                                // Count students in the selected class
+                                currentStudentsCount = _displayedStudentCount(
+                                  state.householdMemberWrapper,
+                                );
+                              } else {
+                                // When no class is selected, use household's total boys+girls count
+                                totalStudents = state.householdMemberWrapper
+                                        .household?.bednetPupilCount ??
+                                    0;
+
+                                currentStudentsCount = _displayedStudentCount(
+                                  state.householdMemberWrapper,
+                                );
+                              }
+
+                              return currentStudentsCount >= totalStudents &&
+                                  totalStudents > 0;
+                            }(),
                           )
                         ],
                       ),
@@ -763,6 +828,10 @@ class _HouseholdOverviewPageState
                                               return MemberCard(
                                                 isHead: isHead,
                                                 individual: e,
+                                                selectedClass:
+                                                    BednetClassSelectionSingleton()
+                                                            .selectedClass ??
+                                                        widget.selectedClass,
                                                 projectBeneficiaries:
                                                     projectBeneficiary ?? [],
                                                 tasks: taskData,
@@ -1239,6 +1308,15 @@ class _HouseholdOverviewPageState
     return _membersOrderedHeadFirst(wrapper)
         .where((e) => !_isHouseholdHeadMember(e, wrapper))
         .length;
+  }
+
+  /// Extract class index from class name (e.g., "Class 1" -> 1)
+  int _getClassIndex(String className) {
+    final match = RegExp(r'Class (\d+)').firstMatch(className);
+    if (match != null) {
+      return int.tryParse(match.group(1) ?? '1') ?? 1;
+    }
+    return 1;
   }
 
   List<IndividualModel> _membersOrderedHeadFirst(

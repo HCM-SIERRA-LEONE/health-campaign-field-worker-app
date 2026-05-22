@@ -31,17 +31,20 @@ import 'package:reactive_forms/reactive_forms.dart';
 import '../../../blocs/registration_deliver/household_overview/household_overview.dart';
 import '../../../models/entities/roles_type.dart';
 import '../../../models/registration_deliver_model/entities/registration_delivery_enums.dart';
+import '../../../utils/bednet_class_selection_singleton.dart';
 import '../../../utils/extensions/extensions.dart';
 import '../../../widgets/registartion_deliver/component_wrapper/product_variant_bloc_wrapper.dart';
 
 @RoutePage()
 class DeliverInterventionPage extends LocalizedStatefulWidget {
   final bool isEditing;
+  final String? selectedClass;
 
   const DeliverInterventionPage({
     super.key,
     super.appLocalizations,
     this.isEditing = false,
+    this.selectedClass,
   });
 
   @override
@@ -123,7 +126,10 @@ class DeliverInterventionPageState
     if (!context.mounted) return;
     final household = householdMember.household;
     if (household?.isSchoolHousehold ?? false) {
-      context.router.push(BeneficiaryAcknowledgementRoute());
+      context.router.push(BeneficiaryAcknowledgementRoute(
+        selectedClass: widget.selectedClass ??
+            BednetClassSelectionSingleton().selectedClass,
+      ));
     } else {
       context.router.push(
         HouseholdAcknowledgementRoute(enableViewHousehold: false),

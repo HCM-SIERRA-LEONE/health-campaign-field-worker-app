@@ -320,6 +320,21 @@ class HouseholdOverviewBloc
         // on top of a previous full load (duplicate members after navigation).
         final isFirstPage = (event.offset ?? 0) == 0;
 
+        // Deduplicate members when appending during pagination
+        final List<IndividualModel> mergedMembers;
+        if (isFirstPage) {
+          mergedMembers = displayMembers;
+        } else {
+          final existingMembers = state.householdMemberWrapper.members ?? [];
+          final uniqueMembers = <String, IndividualModel>{};
+          for (final member in [...existingMembers, ...displayMembers]) {
+            if (member.clientReferenceId != null) {
+              uniqueMembers[member.clientReferenceId!] = member;
+            }
+          }
+          mergedMembers = uniqueMembers.values.toList();
+        }
+
         emit(state.copyWith(
           loading: false,
           offset: members.isNotEmpty && members.length == (event.limit ?? 10)
@@ -327,29 +342,23 @@ class HouseholdOverviewBloc
               : null,
           householdMemberWrapper: state.householdMemberWrapper.copyWith(
             household: resultHousehold,
-            headOfHousehold: null,
+            // Preserve existing head if new head resolution fails
+            headOfHousehold: state.householdMemberWrapper.headOfHousehold,
             members: (event.projectBeneficiaryType == BeneficiaryType.individual)
                 ? (isFirstPage
                     ? _orderedHouseholdMembersForDisplay(
-                        members: displayMembers,
-                        resolvedHead: null,
+                        members: mergedMembers,
+                        resolvedHead: state.householdMemberWrapper.headOfHousehold,
                         householdMemberList: householdMemberList,
                       )
-                    : [ 
-                      // ...[]
-                        ...state.householdMemberWrapper.members ?? [],
-                        ...displayMembers,
-                      ])
+                    : mergedMembers)
                 : (isFirstPage
                     ? _orderedHouseholdMembersForDisplay(
-                        members: individuals,
-                        resolvedHead: null,
+                        members: mergedMembers,
+                        resolvedHead: state.householdMemberWrapper.headOfHousehold,
                         householdMemberList: householdMemberList,
                       )
-                    : [
-                        ...state.householdMemberWrapper.members ?? [],
-                        ...individuals,
-                      ]),
+                    : mergedMembers),
             projectBeneficiaries: isFirstPage
                 ? projectBeneficiaries
                 : [
