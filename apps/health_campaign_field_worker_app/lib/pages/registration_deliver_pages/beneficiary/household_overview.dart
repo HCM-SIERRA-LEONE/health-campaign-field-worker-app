@@ -501,11 +501,19 @@ class _HouseholdOverviewPageState
                                                             i18.common
                                                                 .coreCommonNA),
                                                     localizations.translate(
+                                                      i18.householdOverView
+                                                          .householdOverViewHouseholdHeadNameLabel,
+                                                    ): _overviewHouseholdHeadDisplayName(
+                                                      state.householdMemberWrapper,
+                                                    ).isNotEmpty
+                                                        ? _overviewHouseholdHeadDisplayName(
+                                                            state.householdMemberWrapper)
+                                                        : localizations.translate(i18.common.coreCommonNA),
+                                                    localizations.translate(
                                                       i18.deliverIntervention
                                                           .memberCountText,
-                                                    ): _displayedStudentCount(
-                                                      state
-                                                          .householdMemberWrapper,
+                                                    ): _displayedStudentCount(    
+                                                      state.householdMemberWrapper,
                                                     ),
                                                     localizations.translate(
                                                       i18.householdLocation
