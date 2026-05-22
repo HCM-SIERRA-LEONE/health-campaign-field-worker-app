@@ -48,6 +48,7 @@ class MemberCard extends StatelessWidget {
   final bool isBeneficiaryAbsent;
   final String? projectBeneficiaryClientReferenceId;
   final VoidCallback? tbAssessmentAction;
+  final String? selectedClass;
 
   const MemberCard({
     super.key,
@@ -70,6 +71,7 @@ class MemberCard extends StatelessWidget {
     this.isBeneficiaryAbsent = false,
     this.sideEffects,
     this.tbAssessmentAction,
+    this.selectedClass,
   });
 
   @override
@@ -315,8 +317,9 @@ class MemberCard extends StatelessWidget {
                                                 BeneficiaryType.individual,
                                       ));
 
-                                      context.router
-                                          .push(BeneficiaryDetailsRoute());
+                                      context.router.push(
+                                          BeneficiaryDetailsRoute(
+                                              selectedClass: selectedClass));
                                     },
                                   )
                                 : const Offstage(),

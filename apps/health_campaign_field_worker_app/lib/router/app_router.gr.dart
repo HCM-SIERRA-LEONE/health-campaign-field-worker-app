@@ -100,6 +100,7 @@ abstract class _$AppRouter extends RootStackRouter {
           key: args.key,
           appLocalizations: args.appLocalizations,
           enableViewHousehold: args.enableViewHousehold,
+          selectedClass: args.selectedClass,
         ),
       );
     },
@@ -129,6 +130,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: BeneficiaryDetailsPage(
           key: args.key,
           appLocalizations: args.appLocalizations,
+          selectedClass: args.selectedClass,
         ),
       );
     },
@@ -248,6 +250,7 @@ abstract class _$AppRouter extends RootStackRouter {
           key: args.key,
           appLocalizations: args.appLocalizations,
           isEditing: args.isEditing,
+          selectedClass: args.selectedClass,
         ),
       );
     },
@@ -771,6 +774,7 @@ class BeneficiaryAcknowledgementRoute
     Key? key,
     AppLocalizations? appLocalizations,
     bool? enableViewHousehold,
+    String? selectedClass,
     List<PageRouteInfo>? children,
   }) : super(
           BeneficiaryAcknowledgementRoute.name,
@@ -778,6 +782,7 @@ class BeneficiaryAcknowledgementRoute
             key: key,
             appLocalizations: appLocalizations,
             enableViewHousehold: enableViewHousehold,
+            selectedClass: selectedClass,
           ),
           initialChildren: children,
         );
@@ -793,6 +798,7 @@ class BeneficiaryAcknowledgementRouteArgs {
     this.key,
     this.appLocalizations,
     this.enableViewHousehold,
+    this.selectedClass,
   });
 
   final Key? key;
@@ -801,9 +807,11 @@ class BeneficiaryAcknowledgementRouteArgs {
 
   final bool? enableViewHousehold;
 
+  final String? selectedClass;
+
   @override
   String toString() {
-    return 'BeneficiaryAcknowledgementRouteArgs{key: $key, appLocalizations: $appLocalizations, enableViewHousehold: $enableViewHousehold}';
+    return 'BeneficiaryAcknowledgementRouteArgs{key: $key, appLocalizations: $appLocalizations, enableViewHousehold: $enableViewHousehold, selectedClass: $selectedClass}';
   }
 }
 
@@ -888,12 +896,14 @@ class BeneficiaryDetailsRoute
   BeneficiaryDetailsRoute({
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
+    String? selectedClass,
     List<PageRouteInfo>? children,
   }) : super(
           BeneficiaryDetailsRoute.name,
           args: BeneficiaryDetailsRouteArgs(
             key: key,
             appLocalizations: appLocalizations,
+            selectedClass: selectedClass,
           ),
           initialChildren: children,
         );
@@ -908,15 +918,18 @@ class BeneficiaryDetailsRouteArgs {
   const BeneficiaryDetailsRouteArgs({
     this.key,
     this.appLocalizations,
+    this.selectedClass,
   });
 
   final Key? key;
 
   final RegistrationDeliveryLocalization? appLocalizations;
 
+  final String? selectedClass;
+
   @override
   String toString() {
-    return 'BeneficiaryDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations}';
+    return 'BeneficiaryDetailsRouteArgs{key: $key, appLocalizations: $appLocalizations, selectedClass: $selectedClass}';
   }
 }
 
@@ -1304,6 +1317,7 @@ class DeliverInterventionRoute
     Key? key,
     RegistrationDeliveryLocalization? appLocalizations,
     bool isEditing = false,
+    String? selectedClass,
     List<PageRouteInfo>? children,
   }) : super(
           DeliverInterventionRoute.name,
@@ -1311,6 +1325,7 @@ class DeliverInterventionRoute
             key: key,
             appLocalizations: appLocalizations,
             isEditing: isEditing,
+            selectedClass: selectedClass,
           ),
           initialChildren: children,
         );
@@ -1326,6 +1341,7 @@ class DeliverInterventionRouteArgs {
     this.key,
     this.appLocalizations,
     this.isEditing = false,
+    this.selectedClass,
   });
 
   final Key? key;
@@ -1334,9 +1350,11 @@ class DeliverInterventionRouteArgs {
 
   final bool isEditing;
 
+  final String? selectedClass;
+
   @override
   String toString() {
-    return 'DeliverInterventionRouteArgs{key: $key, appLocalizations: $appLocalizations, isEditing: $isEditing}';
+    return 'DeliverInterventionRouteArgs{key: $key, appLocalizations: $appLocalizations, isEditing: $isEditing, selectedClass: $selectedClass}';
   }
 }
 

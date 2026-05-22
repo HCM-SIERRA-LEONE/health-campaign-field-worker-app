@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/household_overview/household_overview.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/search_households/search_households.dart';
+import 'package:health_campaign_field_worker_app/utils/bednet_class_selection_singleton.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/i18_key_constants.dart'
     as i18;
 
@@ -16,11 +17,13 @@ import '../../../widgets/localized.dart';
 @RoutePage()
 class BeneficiaryAcknowledgementPage extends LocalizedStatefulWidget {
   final bool? enableViewHousehold;
+  final String? selectedClass;
 
   const BeneficiaryAcknowledgementPage({
     super.key,
     super.appLocalizations,
     this.enableViewHousehold,
+    this.selectedClass,
   });
 
   @override
@@ -30,7 +33,6 @@ class BeneficiaryAcknowledgementPage extends LocalizedStatefulWidget {
 
 class BeneficiaryAcknowledgementPageState
     extends LocalizedState<BeneficiaryAcknowledgementPage> {
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -42,8 +44,8 @@ class BeneficiaryAcknowledgementPageState
               padding: const EdgeInsets.all(spacer2),
               child: PanelCard(
                 type: PanelType.success,
-                title: localizations
-                    .translate(i18.acknowledgementSuccess.acknowledgementLabelText),
+                title: localizations.translate(
+                    i18.acknowledgementSuccess.acknowledgementLabelText),
                 description: localizations.translate(
                   i18.acknowledgementSuccess.acknowledgementDescriptionText,
                 ),
@@ -51,13 +53,18 @@ class BeneficiaryAcknowledgementPageState
                   DigitButton(
                     label: 'View School Details',
                     onPressed: () async {
+                      final selectedClass =
+                          BednetClassSelectionSingleton().selectedClass ??
+                              widget.selectedClass;
                       context
                           .read<SearchHouseholdsBloc>()
                           .add(const SearchHouseholdsEvent.clear());
                       await context.router.navigate(
                         BednetHouseholdOverviewWrapperRoute(
                           children: [
-                            const SchoolDetailsRoute(),
+                            HouseholdOverviewRoute(
+                              selectedClass: selectedClass,
+                            ),
                           ],
                         ),
                       );

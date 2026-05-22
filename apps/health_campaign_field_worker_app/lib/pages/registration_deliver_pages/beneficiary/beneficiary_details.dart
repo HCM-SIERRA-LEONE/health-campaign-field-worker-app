@@ -37,9 +37,12 @@ import 'widgets/record_delivery_cycle.dart';
 
 @RoutePage()
 class BeneficiaryDetailsPage extends LocalizedStatefulWidget {
+  final String? selectedClass;
+
   const BeneficiaryDetailsPage({
     super.key,
     super.appLocalizations,
+    this.selectedClass,
   });
 
   @override
@@ -246,7 +249,11 @@ class BeneficiaryDetailsPageState
                                                                   true,
                                                             ).pop();
                                                             router.push(
-                                                              DeliverInterventionRoute(),
+                                                              DeliverInterventionRoute(
+                                                                selectedClass:
+                                                                    widget
+                                                                        .selectedClass,
+                                                              ),
                                                             );
                                                           },
                                                           type: DigitButtonType
