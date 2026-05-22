@@ -825,6 +825,8 @@ class ReferBeneficiary {
 
   String get referredToLabel => 'REFERRED_TO_FORM_LABEL';
 
+  String get facilityReferralMessage => 'REFER_CHILD_NEAREST_FACILITY_MSG';
+
   String get reasonForReferral => 'REASON_FOR_REFERRAL';
 
   String get referralComments => 'REFERRAL_COMMENTS';

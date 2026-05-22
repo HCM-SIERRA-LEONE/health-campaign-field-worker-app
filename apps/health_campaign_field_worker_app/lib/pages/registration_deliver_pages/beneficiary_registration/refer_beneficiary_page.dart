@@ -425,6 +425,24 @@ class _TbReferBeneficiaryPageState
                         ),
                       ),
                     ),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 0, 90, 122),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      padding: const EdgeInsets.all(spacer2),
+                      child: Text(
+                        localizations.translate(
+                          i18_local.referBeneficiary.facilityReferralMessage,
+                        ),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
                   ],
                 ),
               ),
