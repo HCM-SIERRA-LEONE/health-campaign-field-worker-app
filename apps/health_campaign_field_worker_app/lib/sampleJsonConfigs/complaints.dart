@@ -17,17 +17,6 @@ final dynamic sampleComplaintFlows = {
                 "type": "tertiary",
                 "suffixIcon": "Search",
                 "popupConfig": {
-                  "onOpenAction": [
-                    {
-                      "actionType": "CLEAR_STATE",
-                      "properties": {
-                        "name": "pgrService",
-                        "filterKeys": ["serviceRequestId", "mobileNumber"],
-                        "widgetKeys": ["complaintNumber", "mobileNumber"],
-                        "triggerSearch": true
-                      }
-                    }
-                  ],
                   "body": [
                     {
                       "type": "template",
@@ -39,7 +28,9 @@ final dynamic sampleComplaintFlows = {
                       "type": "template",
                       "label": "COMPLAINT_INBOX_SEARCH_MOBILE_NUMBER_LABEL",
                       "format": "textInput",
-                      "fieldName": "mobileNumber"
+                      "fieldName": "mobileNumber",
+                      "inputType": "phone",
+                      "maxLength": 11
                     }
                   ],
                   "type": "default",
@@ -59,6 +50,10 @@ final dynamic sampleComplaintFlows = {
                             "widgetKeys": ["complaintNumber", "mobileNumber"],
                             "triggerSearch": true
                           }
+                        },
+                        {
+                          "actionType": "CLOSE_POPUP",
+                          "properties": {"parentScreenKey": "complaintInbox"}
                         }
                       ],
                       "fieldName": "cancel",
@@ -81,13 +76,15 @@ final dynamic sampleComplaintFlows = {
                           }
                         },
                         {
-                          "actionType": "CLOSE_POPUP",
-                          "properties": {"parentScreenKey": "complaintInbox"}
-                        },
-                        {
                           "actionType": "SEARCH_EVENT",
                           "properties": {
                             "data": [
+                              {
+                                "key": "tenantId",
+                                "value":
+                                    "{{singleton.selectedProject.tenantId}}",
+                                "operation": "equals"
+                              },
                               {
                                 "key": "serviceRequestId",
                                 "root": "pgrService",
@@ -101,8 +98,13 @@ final dynamic sampleComplaintFlows = {
                                 "operation": "contains"
                               }
                             ],
-                            "name": "pgrService"
+                            "name": "pgrService",
+                            "mergeFilters": true
                           }
+                        },
+                        {
+                          "actionType": "CLOSE_POPUP",
+                          "properties": {"parentScreenKey": "complaintInbox"}
                         }
                       ],
                       "fieldName": "search",
@@ -132,21 +134,6 @@ final dynamic sampleComplaintFlows = {
                 "type": "tertiary",
                 "suffixIcon": "FilterAlt",
                 "popupConfig": {
-                  "onOpenAction": [
-                    {
-                      "actionType": "CLEAR_STATE",
-                      "properties": {
-                        "name": "pgrService",
-                        "filterKeys": [
-                          "name",
-                          "serviceCode",
-                          "localityBoundaryCode"
-                        ],
-                        "widgetKeys": ["assignTo", "complaintType", "locality"],
-                        "triggerSearch": true
-                      }
-                    }
-                  ],
                   "body": [
                     {
                       "data": [
@@ -159,7 +146,7 @@ final dynamic sampleComplaintFlows = {
                     },
                     {
                       "type": "template",
-                      "enums": "{{fn:getUniqueComplaintTypes(contextData)}}",
+                      "enums": "{{fn:getUniqueComplaintTypes(contextData, singleton)}}",
                       "label": "COMPLAINT_INBOX_FILTER_COMPLAINT_TYPE_LABEL",
                       "format": "dropdownTemplate",
                       "valueKey": "code",
@@ -199,7 +186,8 @@ final dynamic sampleComplaintFlows = {
                             ],
                             "triggerSearch": true
                           }
-                        }
+                        },
+                        {"actionType": "CLOSE_POPUP", "properties": {}}
                       ],
                       "fieldName": "cancel",
                       "properties": {
@@ -224,11 +212,16 @@ final dynamic sampleComplaintFlows = {
                             ]
                           }
                         },
-                        {"actionType": "CLOSE_POPUP", "properties": {}},
                         {
                           "actionType": "SEARCH_EVENT",
                           "properties": {
                             "data": [
+                              {
+                                "key": "tenantId",
+                                "value":
+                                    "{{singleton.selectedProject.tenantId}}",
+                                "operation": "equals"
+                              },
                               {
                                 "key": "name",
                                 "root": "pgrComplainant",
@@ -239,22 +232,22 @@ final dynamic sampleComplaintFlows = {
                               {
                                 "key": "serviceCode",
                                 "value": "{{complaintType }}",
-                                "applyIf":
-                                    "{{complaintType }} !=null && {{complaintType }} !=null",
+                                "applyIf": "{{complaintType }} !=null",
                                 "operation": "equals"
                               },
                               {
                                 "key": "localityBoundaryCode",
                                 "root": "address",
                                 "value": "{{ locality }}",
-                                "applyIf":
-                                    "{{locality }} !=null && {{locality }} !=null",
+                                "applyIf": "{{locality }} !=null",
                                 "operation": "equals"
                               }
                             ],
-                            "name": "pgrService"
+                            "name": "pgrService",
+                            "mergeFilters": true
                           }
-                        }
+                        },
+                        {"actionType": "CLOSE_POPUP", "properties": {}}
                       ],
                       "fieldName": "filter",
                       "properties": {
@@ -313,9 +306,11 @@ final dynamic sampleComplaintFlows = {
                           "properties": {
                             "name": "pgrService",
                             "widgetKeys": ["sortBy"],
+                            "clearOrderBy": true,
                             "triggerSearch": true
                           }
-                        }
+                        },
+                        {"actionType": "CLOSE_POPUP", "properties": {}}
                       ],
                       "fieldName": "cancel",
                       "properties": {
@@ -329,18 +324,10 @@ final dynamic sampleComplaintFlows = {
                       "label": "COMPLAINT_INBOX_SORT_PRIMARY_ACTION_LABEL",
                       "format": "button",
                       "onAction": [
-                        {"actionType": "CLOSE_POPUP", "properties": {}},
                         {
                           "actionType": "SEARCH_EVENT",
                           "properties": {
-                            "data": [
-                              {
-                                "key": "tenantId",
-                                "value":
-                                    "{{singleton.selectedProject.tenantId}}",
-                                "operation": "equals"
-                              }
-                            ],
+                            "data": [],
                             "name": "pgrService",
                             "orderBy": {
                               "field": "auditCreatedTime",
@@ -348,7 +335,8 @@ final dynamic sampleComplaintFlows = {
                                   "{{ sortBy }} == LATEST_FIRST ? desc : asc"
                             }
                           }
-                        }
+                        },
+                        {"actionType": "CLOSE_POPUP", "properties": {}}
                       ],
                       "fieldName": "sort",
                       "properties": {
@@ -392,7 +380,7 @@ final dynamic sampleComplaintFlows = {
                   {
                     "key": "COMPLAINT_INBOX_COMPLAINT_DATE",
                     "value":
-                        "{{fn:formatDate(item.PgrServiceModel.auditDetails.createdTime, 'date', dd MMM yyyy)}}"
+                        "{{fn:formatDate(item.PgrServiceModel.auditDetails.createdTime, 'date', dd MMM yyyy, context, item)}}"
                   },
                   {
                     "key": "COMPLAINT_INBOX_COMPLAINT_AREA",
@@ -525,7 +513,6 @@ final dynamic sampleComplaintFlows = {
           "properties": [
             {
               "type": "string",
-              "enums": [],
               "label": "COMPLAINT_TYPE_complaintType_LABEL",
               "order": 1,
               "value": "",

@@ -163,42 +163,11 @@ class _HouseholdOverviewPageState
                               int currentStudentsCount;
 
                               if (selectedClass != null) {
-                                // When class is selected, check against class-specific boys+girls
-                                // Get class-specific boys+girls count from household additional fields
-                                final fields = state.householdMemberWrapper
-                                        .household?.additionalFields?.fields ??
-                                    [];
-
-                                // Try to find class-specific boys+girls count
-                                // Format: class{index}_boys, class{index}_girls
-                                final classIndex =
-                                    _getClassIndex(selectedClass);
-                                final totalStudentsKey =
-                                    'class${classIndex}_totalStudents';
-
-                                totalStudents = fields
-                                            .firstWhereOrNull(
-                                              (f) =>
-                                                  f.key.toLowerCase() ==
-                                                  totalStudentsKey
-                                                      .toLowerCase(),
-                                            )
-                                            ?.value !=
-                                        null
-                                    ? int.tryParse(
-                                          fields
-                                                  .firstWhereOrNull(
-                                                    (f) =>
-                                                        f.key.toLowerCase() ==
-                                                        totalStudentsKey
-                                                            .toLowerCase(),
-                                                  )
-                                                  ?.value
-                                                  .toString() ??
-                                              '0',
-                                        ) ??
-                                        0
-                                    : 0;
+                                // When class is selected, check against class-specific totalStudents
+                                totalStudents = _getClassTotalStudents(
+                                  state.householdMemberWrapper,
+                                  selectedClass,
+                                );
 
                                 // Count students in the selected class
                                 currentStudentsCount = _displayedStudentCount(
@@ -503,17 +472,27 @@ class _HouseholdOverviewPageState
                                                     localizations.translate(
                                                       i18.householdOverView
                                                           .householdOverViewHouseholdHeadNameLabel,
-                                                    ): _overviewHouseholdHeadDisplayName(
-                                                      state.householdMemberWrapper,
+                                                    ):
+                                                        _overviewHouseholdHeadDisplayName(
+                                                      state
+                                                          .householdMemberWrapper,
                                                     ).isNotEmpty
-                                                        ? _overviewHouseholdHeadDisplayName(
-                                                            state.householdMemberWrapper)
-                                                        : localizations.translate(i18.common.coreCommonNA),
+                                                            ? _overviewHouseholdHeadDisplayName(
+                                                                state
+                                                                    .householdMemberWrapper)
+                                                            : localizations
+                                                                .translate(i18
+                                                                    .common
+                                                                    .coreCommonNA),
                                                     localizations.translate(
                                                       i18.deliverIntervention
                                                           .memberCountText,
-                                                    ): _displayedStudentCount(    
-                                                      state.householdMemberWrapper,
+                                                    ): _displayTotalStudents(
+                                                      state
+                                                          .householdMemberWrapper,
+                                                      BednetClassSelectionSingleton()
+                                                              .selectedClass ??
+                                                          widget.selectedClass,
                                                     ),
                                                     localizations.translate(
                                                       i18.householdLocation
@@ -644,9 +623,12 @@ class _HouseholdOverviewPageState
                                                     localizations.translate(
                                                       i18.deliverIntervention
                                                           .memberCountText,
-                                                    ): _displayedStudentCount(
+                                                    ): _displayTotalStudents(
                                                       state
                                                           .householdMemberWrapper,
+                                                      BednetClassSelectionSingleton()
+                                                              .selectedClass ??
+                                                          widget.selectedClass,
                                                     ),
                                                     if (shouldShowStatus)
                                                       localizations.translate(i18
@@ -1316,6 +1298,63 @@ class _HouseholdOverviewPageState
     return _membersOrderedHeadFirst(wrapper)
         .where((e) => !_isHouseholdHeadMember(e, wrapper))
         .length;
+  }
+
+  /// Get class-specific totalStudents from additional fields
+  int _getClassTotalStudents(HouseholdMemberWrapper wrapper, String className) {
+    final fields = wrapper.household?.additionalFields?.fields ?? [];
+
+    // Find the field where key ends with _className and value matches the className
+    final classNameField = fields.firstWhereOrNull(
+      (f) =>
+          f.key.toLowerCase().endsWith('_classname') &&
+          f.value?.toString().toLowerCase() == className.toLowerCase(),
+    );
+
+    if (classNameField == null) {
+      return 0;
+    }
+
+    // Extract index from the key (e.g., class1_className -> 1)
+    final keyParts = classNameField.key.toLowerCase().split('_');
+    if (keyParts.isEmpty || !keyParts[0].startsWith('class')) {
+      return 0;
+    }
+
+    final classIndexStr = keyParts[0].replaceFirst('class', '');
+    final classIndex = int.tryParse(classIndexStr) ?? 1;
+
+    final totalStudentsKey = 'class${classIndex}_totalStudents';
+
+    return fields
+                .firstWhereOrNull(
+                  (f) => f.key.toLowerCase() == totalStudentsKey.toLowerCase(),
+                )
+                ?.value !=
+            null
+        ? int.tryParse(
+              fields
+                      .firstWhereOrNull(
+                        (f) =>
+                            f.key.toLowerCase() ==
+                            totalStudentsKey.toLowerCase(),
+                      )
+                      ?.value
+                      .toString() ??
+                  '0',
+            ) ??
+            0
+        : 0;
+  }
+
+  int _displayTotalStudents(
+      HouseholdMemberWrapper wrapper, String? selectedClass) {
+    if (selectedClass != null) {
+      return _getClassTotalStudents(wrapper, selectedClass);
+    } else {
+      // When no class is selected, use household's total bednetPupilCount
+      return wrapper.household?.bednetPupilCount ?? 0;
+    }
   }
 
   /// Extract class index from class name (e.g., "Class 1" -> 1)
