@@ -11,7 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import '../../data/registration_deliver_repo/local/task.dart';
 import '../../utils/stock_calculation_utils.dart';
+import '../../utils/extensions/extensions.dart';
+import '../../models/bednet_distribution/bednet_distribution_models.dart';
+import '../../models/entities/roles_type.dart';
 import '../localized.dart';
 
 class ProductSelectionCard extends LocalizedStatefulWidget {
@@ -65,9 +69,10 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
     final isIssue =
         transactionType == 'DISPATCHED' || transactionType == 'ISSUED';
     final isReturn = transactionType == 'RETURNED';
+    final isReceived = transactionType == 'RECEIVED';
 
     // For issue, use current user's facility directly
-    if (isIssue || isReturn) {
+    if (isIssue || isReturn || isReceived) {
       final stateData = widget.stateData is CrudStateData
           ? widget.stateData as CrudStateData
           : CrudStateData({}, []);
@@ -176,14 +181,38 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
       if (!mounted) return;
 
       // Calculate stock in hand for selected products
-      final loggedInUserUuid = FlowBuilderSingleton().loggedInUserUuid;
+      final loggedInUserUuid = FlowBuilderSingleton().loggedInUserUuid ?? '';
       final productIds = _selectedProducts.map((p) => p.id).toList();
+      final projectId = FlowBuilderSingleton().projectId;
 
-      _stockInHandMap = StockCalculationUtils.calculateStockInHandForProducts(
+      if (loggedInUserUuid.isEmpty) {
+        debugPrint('ProductSelectionCard: loggedInUserUuid is empty');
+        return;
+      }
+
+      // Fetch tasks for effective stock calculation
+      final taskRepo =
+          context.read<LocalRepository<TaskModel, TaskSearchModel>>()
+              as TaskLocalRepository;
+      final tasks = await taskRepo.search(
+        TaskSearchModel(projectId: projectId),
+        loggedInUserUuid,
+      );
+
+      // Check if user is a distributor
+      final isDistributor = context.loggedInUserRoles
+          .any((role) => role.code == RolesType.distributor.toValue());
+
+      _stockInHandMap =
+          StockCalculationUtils.calculateEffectiveStockInHandForProducts(
         stockList: stockList,
+        tasks: tasks,
         facilityId: facilityId,
         productIds: productIds,
         loggedInUserUuid: loggedInUserUuid,
+        bednetStatusKey: kBednetTaskAdministrationStatusKey,
+        bednetSuccessStatus: kBednetTaskAdministrationSuccessStatus,
+        isDistributor: isDistributor,
       );
 
       debugPrint(
@@ -241,6 +270,158 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
         'ProductSelectionCard: Updated FormsBloc with stockInHandMap and products with stockInHand');
   }
 
+  /// Converts schema validations to reactive form validators
+  List<Validator<dynamic>> _buildValidatorsFromSchema(List<ValidationRule>? validations) {
+    final validators = <Validator<dynamic>>[];
+
+    if (validations == null) return validators;
+
+    for (final validation in validations) {
+      switch (validation.type) {
+        case 'required':
+          validators.add(Validators.required);
+          break;
+        case 'min':
+          if (validation.value is num) {
+            validators.add(Validators.min(validation.value.toInt()));
+          }
+          break;
+        case 'max':
+        case 'maxValue':
+          if (validation.value is num) {
+            validators.add(Validators.max(validation.value.toInt()));
+          }
+          break;
+        case 'pattern':
+        case 'regex':
+          if (validation.value is String) {
+            validators.add(Validators.pattern(RegExp(validation.value)));
+          }
+          break;
+        case 'email':
+          validators.add(Validators.email);
+          break;
+        case 'minLength':
+          if (validation.value is num) {
+            validators.add(Validators.minLength(validation.value.toInt()));
+          }
+          break;
+        case 'maxLength':
+          if (validation.value is num) {
+            validators.add(Validators.maxLength(validation.value.toInt()));
+          }
+          break;
+      }
+    }
+
+    return validators;
+  }
+
+  /// Updates validations for simple pages (without multiEntityConfig)
+  /// Directly updates the quantity field with max validation based on stockInHand
+  void _updateSimplePageValidations(dynamic schema) {
+    // Quantity fields that need max validation
+    final quantityFields = [
+      'quantity',
+    ];
+
+    // Find the first page that has any of the quantity fields
+    String? targetPageKey;
+    PropertySchema? targetPage;
+
+    for (final entry in schema.pages.entries) {
+      if (entry.value.properties != null) {
+        for (final fieldName in quantityFields) {
+          if (entry.value.properties!.containsKey(fieldName)) {
+            targetPageKey = entry.key;
+            targetPage = entry.value;
+            break;
+          }
+        }
+        if (targetPage != null) break;
+      }
+    }
+
+    if (targetPage == null || targetPageKey == null) {
+      debugPrint('ProductSelectionCard: No simple page with quantity fields found');
+      return;
+    }
+
+    debugPrint(
+        'ProductSelectionCard: Found simple page with quantity fields: $targetPageKey');
+
+    // Get the first selected product's stock in hand
+    if (_selectedProducts.isEmpty) {
+      debugPrint('ProductSelectionCard: No selected products');
+      return;
+    }
+
+    final firstProduct = _selectedProducts.first;
+    final stockInHand = _stockInHandMap[firstProduct.id] ?? 0.0;
+    final maxValue = stockInHand.toInt();
+
+    debugPrint(
+        'ProductSelectionCard: Simple page - product=${firstProduct.id}, stockInHand=$stockInHand, maxValue=$maxValue');
+
+    // Update each quantity field with max validation
+    final updatedProperties =
+        Map<String, PropertySchema>.from(targetPage.properties!);
+
+    // Get the reactive form to update form control validators
+    final form = ReactiveForm.of(context) as FormGroup?;
+
+    for (final fieldName in quantityFields) {
+      final fieldSchema = updatedProperties[fieldName];
+      if (fieldSchema == null) continue;
+
+      final existingValidations = fieldSchema.validations ?? [];
+      final filteredValidations = existingValidations
+          .where((v) => v.type != 'max' && v.type != 'maxValue')
+          .toList();
+
+      final newValidations = [
+        ...filteredValidations,
+        ValidationRule(
+          type: 'max',
+          value: maxValue,
+          message: maxValue > 0
+              ? 'Quantity cannot exceed stock in hand ($maxValue)'
+              : 'No stock available',
+        ),
+      ];
+
+      updatedProperties[fieldName] =
+          fieldSchema.copyWith(validations: newValidations);
+      debugPrint('ProductSelectionCard: Updated field $fieldName with max=$maxValue');
+
+      // Update the form control validators directly
+      if (form != null && form.contains(fieldName)) {
+        final control = form.control(fieldName);
+        // Build validators from the updated schema validations
+        final validators = _buildValidatorsFromSchema(newValidations);
+        control.setValidators(validators);
+        control.updateValue(control.value, emitEvent: true);
+        debugPrint('ProductSelectionCard: Updated form control validators for $fieldName');
+      }
+    }
+
+    // Update the page with the modified properties
+    final updatedPage = targetPage.copyWith(properties: updatedProperties);
+    final updatedPages = Map<String, PropertySchema>.from(schema.pages);
+    updatedPages[targetPageKey] = updatedPage;
+
+    final updatedSchema = schema.copyWith(pages: updatedPages);
+    context.read<FormsBloc>().add(
+          FormsEvent.update(
+            schemaKey: widget.pageSchema,
+            schema: updatedSchema,
+          ),
+        );
+
+    debugPrint(
+        'ProductSelectionCard: Updated simple page $targetPageKey with stockInHand validations');
+  }
+
   /// Updates the schema to add max validations for quantity fields based on stockInHand.
   /// Creates entity-specific fields (e.g., quantitySent_item_0, quantitySent_item_1)
   /// with their respective stockInHand as max validation, and removes base fields
@@ -267,7 +448,8 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
 
     if (multiEntityPageKey == null || multiEntityPage?.properties == null) {
       debugPrint(
-          'ProductSelectionCard: ERROR - No page with multiEntityConfig found');
+          'ProductSelectionCard: No page with multiEntityConfig found, checking for simple pages');
+      _updateSimplePageValidations(schema);
       return;
     }
 
