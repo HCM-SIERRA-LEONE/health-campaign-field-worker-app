@@ -38,6 +38,7 @@ import '../data/local_store/app_shared_preferences.dart';
 import '../data/local_store/no_sql/schema/app_configuration.dart';
 import '../data/remote_client.dart';
 import '../data/repositories/remote/bandwidth_check.dart';
+import '../models/auth/auth_model.dart';
 import '../models/downsync/downsync.dart';
 import '../models/entities/notification_data.dart';
 import '../models/entities/roles_type.dart';
@@ -154,14 +155,14 @@ class _AuthenticatedPageWrapperState extends State<AuthenticatedPageWrapper> {
                       if (showDrawer)
                         BlocBuilder<BoundaryBloc, BoundaryState>(
                           builder: (context, state) {
-                            bool isDistributor = context.loggedInUserRoles
-                                .where(
-                                  (role) =>
-                                      role.code ==
-                                      RolesType.distributor.toValue(),
-                                )
-                                .toList()
-                                .isNotEmpty;
+                            final roles = context.read<AuthBloc>().state.maybeMap(
+                            authenticated: (s) => s.userModel.roles,
+                            orElse: () => <UserRoleModel>[],
+                          );
+
+                          bool isDistributor = roles
+                              .where((role) => role.code == RolesType.distributor.toValue())
+                              .isNotEmpty;
 
                             final selectedBoundary = isDistributor
                                 ? (state.selectedBoundaryMap.values.lastOrNull
@@ -634,6 +635,9 @@ class _AuthenticatedPageWrapperState extends State<AuthenticatedPageWrapper> {
             : false;
 
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is! AuthAuthenticatedState) {
+        return Container();
+      }
       return BlocListener<LocalizationBloc, LocalizationState>(
         listener: (context, state) {
           if (state.loading == false) {

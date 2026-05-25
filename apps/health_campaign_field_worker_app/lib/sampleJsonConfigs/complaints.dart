@@ -814,6 +814,11 @@ final dynamic sampleComplaintFlows = {
                   "type": "maxLength",
                   "value": 50,
                   "message": "COMPLAINT_DETAILS_name_LABEL_MAX_VALIDATION"
+                },
+                {
+                  "type": "pattern",
+                  "value": "^[a-zA-Z\\s'-]+",
+                  "message": "COMPLAINTS_NAME_ONLY_LETTERS_ALLOWED"
                 }
               ],
               "errorMessage": "",
@@ -905,6 +910,11 @@ final dynamic sampleComplaintFlows = {
                   "type": "pattern",
                   "value": "^[a-zA-Z0-9 ]+\$",
                   "message": "SUPERVISOR_name_LABEL_PATTERN_VALIDATION"
+                },
+                {
+                  "type": "pattern",
+                  "value": "^[a-zA-Z\\s'-]+",
+                  "message": "COMPLAINTS_NAME_ONLY_LETTERS_ALLOWED"
                 }
               ],
               "errorMessage": "",

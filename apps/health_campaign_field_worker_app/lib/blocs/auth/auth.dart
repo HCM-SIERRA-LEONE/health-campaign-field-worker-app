@@ -172,15 +172,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await localSecureStore.deleteAll();
         await localSecureStore.setBoundaryRefetch(true);
 
-        emit(const AuthUnauthenticatedState());
+        // emit(const AuthUnauthenticatedState());
       }
     } catch (error) {
       await localSecureStore.deleteAll();
       await localSecureStore.setBoundaryRefetch(true);
-      emit(const AuthUnauthenticatedState());
-    }
+      // emit(const AuthUnauthenticatedState());
+    } finally {
 
     emit(const AuthUnauthenticatedState());
+    }
   }
 
   FutureOr<void> _onAddProductCounts(

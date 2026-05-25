@@ -201,6 +201,22 @@ extension ContextUtilityExtensions on BuildContext {
     return userRequestObject;
   }
 
+  UserRequestModel? get loggedInUserOrNull {
+    try {
+      return loggedInUser;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? get loggedInUserUuidOrNull {
+    try {
+      return loggedInUserUuid;
+    } catch (_) {
+      return null;
+    }
+  }
+
   bool get showProgressBar {
     UserRequestModel loggedInUser;
 
