@@ -99,7 +99,12 @@ final dynamic sampleCloseHouseholdFlows = {
                   "value": 3,
                   "message":
                       "CLOSEHOUSEHOLD_CLOSEHOUSEHOLDDETAILS_headName_MIN_LENGTH_ERROR"
-                }
+                },
+                {
+                  "type": "pattern",
+                  "value": "^[a-zA-Z\\s'-]+",
+                  "message": "CLOSEHOUSEHOLD_NAME_ONLY_LETTERS_ALLOWED"
+                },
               ],
               "errorMessage": "",
               "isMultiSelect": false,

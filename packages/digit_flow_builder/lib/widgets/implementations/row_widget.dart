@@ -26,6 +26,12 @@ class RowWidget extends ResolvedFlowWidget {
         mainAxisSize: WidgetParsers.parseMainAxisSize(props['mainAxisSize']),
         mainAxisAlignment: WidgetParsers.parseMainAxisAlignment(props['mainAxisAlignment']),
         children: (json['children'] as List).map<Widget>((childJson) {
+          final childFormat = childJson['format']?.toString() ?? '';
+          final isFixedSize = childFormat == 'actionPopup' ||
+            childFormat == 'button' ||
+            childFormat == 'digitButton' ||
+            childFormat == 'tag' ||
+            childFormat == 'textTemplate';
           final processedChild = stateData != null
               ? preprocessConfigWithState(
                   Map<String, dynamic>.from(childJson),
@@ -35,16 +41,24 @@ class RowWidget extends ResolvedFlowWidget {
                 )
               : Map<String, dynamic>.from(childJson);
 
-          return CrudItemContext(
+          final builtChild = CrudItemContext(
             stateData: stateData,
             listIndex: resolved.state.listIndex,
             item: resolved.state.itemData,
             screenKey: resolved.screenKey,
             compositeKey: resolved.compositeKey,
-            child: LayoutMapper.map(processedChild, stateData, context, onAction,
-                item: resolved.state.itemData, listIndex: resolved.state.listIndex,
-                compositeKey: resolved.compositeKey),
+            child: LayoutMapper.map(
+              processedChild,
+              stateData,
+              context,
+              onAction,
+              item: resolved.state.itemData,
+              listIndex: resolved.state.listIndex,
+              compositeKey: resolved.compositeKey,
+            ),
           );
+
+          return isFixedSize ? builtChild : Flexible(child: builtChild); // 👈
         }).toList(),
       ),
       props,

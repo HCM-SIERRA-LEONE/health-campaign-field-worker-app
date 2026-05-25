@@ -327,7 +327,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   form.control(_memberCountKey).value as int;
                               final childrenCount =
                                   form.control(_childrenCountKey).value as int;
-                              if (childrenCount > memberCount) {
+                              if (childrenCount >= memberCount) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
@@ -824,7 +824,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                         .value as int?) ??
                                     0;
                                 final maxChildrenAllowed =
-                                    max(0, currentMemberCount);
+                                    max(0, currentMemberCount-1);
                                     // Auto-clamp when member count drops or cap is exceeded
                                 if (currentChildrenCount > maxChildrenAllowed) {
                                   WidgetsBinding.instance
