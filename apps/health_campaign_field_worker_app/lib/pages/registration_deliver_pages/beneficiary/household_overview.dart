@@ -559,6 +559,34 @@ class _HouseholdOverviewPageState
                                               children: [
                                                 DigitTableCard(
                                                   element: {
+                                                    // Add class teacher name before school head name
+                                                    if (BednetClassSelectionSingleton()
+                                                                .selectedClass !=
+                                                            null ||
+                                                        widget.selectedClass !=
+                                                            null)
+                                                      localizations.translate(
+                                                        i18.householdOverView
+                                                            .classTeacherNameLabel,
+                                                      ): () {
+                                                        final teacherName =
+                                                            _getClassTeacherName(
+                                                          state
+                                                              .householdMemberWrapper,
+                                                          BednetClassSelectionSingleton()
+                                                                  .selectedClass ??
+                                                              widget
+                                                                  .selectedClass!,
+                                                        );
+                                                        return teacherName
+                                                                .isNotEmpty
+                                                            ? teacherName
+                                                            : localizations
+                                                                .translate(
+                                                                i18.common
+                                                                    .coreCommonNA,
+                                                              );
+                                                      }(),
                                                     localizations.translate(
                                                       state
                                                                   .householdMemberWrapper
@@ -1300,8 +1328,8 @@ class _HouseholdOverviewPageState
         .length;
   }
 
-  /// Get class-specific totalStudents from additional fields
-  int _getClassTotalStudents(HouseholdMemberWrapper wrapper, String className) {
+  /// Get the class index by searching for the className field that matches the selected class
+  int? _getClassIndex(HouseholdMemberWrapper wrapper, String className) {
     final fields = wrapper.household?.additionalFields?.fields ?? [];
 
     // Find the field where key ends with _className and value matches the className
@@ -1312,18 +1340,47 @@ class _HouseholdOverviewPageState
     );
 
     if (classNameField == null) {
-      return 0;
+      return null;
     }
 
     // Extract index from the key (e.g., class1_className -> 1)
     final keyParts = classNameField.key.toLowerCase().split('_');
     if (keyParts.isEmpty || !keyParts[0].startsWith('class')) {
-      return 0;
+      return null;
     }
 
     final classIndexStr = keyParts[0].replaceFirst('class', '');
-    final classIndex = int.tryParse(classIndexStr) ?? 1;
+    return int.tryParse(classIndexStr);
+  }
 
+  /// Get class-specific teacher name from additional fields
+  String _getClassTeacherName(
+      HouseholdMemberWrapper wrapper, String className) {
+    final classIndex = _getClassIndex(wrapper, className);
+    if (classIndex == null) {
+      return '';
+    }
+
+    final fields = wrapper.household?.additionalFields?.fields ?? [];
+    final classTeacherNameKey = 'class${classIndex}_classTeacherName';
+
+    return fields
+            .firstWhereOrNull(
+              (f) => f.key.toLowerCase() == classTeacherNameKey.toLowerCase(),
+            )
+            ?.value
+            ?.toString() ??
+        '';
+  }
+
+  /// Get class-specific totalStudents from additional fields
+  int _getClassTotalStudents(HouseholdMemberWrapper wrapper, String className) {
+    final classIndex = _getClassIndex(wrapper, className);
+    if (classIndex == null) {
+      return 0;
+    }
+
+    final fields = wrapper.household?.additionalFields?.fields ?? [];
     final totalStudentsKey = 'class${classIndex}_totalStudents';
 
     return fields
@@ -1355,15 +1412,6 @@ class _HouseholdOverviewPageState
       // When no class is selected, use household's total bednetPupilCount
       return wrapper.household?.bednetPupilCount ?? 0;
     }
-  }
-
-  /// Extract class index from class name (e.g., "Class 1" -> 1)
-  int _getClassIndex(String className) {
-    final match = RegExp(r'Class (\d+)').firstMatch(className);
-    if (match != null) {
-      return int.tryParse(match.group(1) ?? '1') ?? 1;
-    }
-    return 1;
   }
 
   List<IndividualModel> _membersOrderedHeadFirst(
