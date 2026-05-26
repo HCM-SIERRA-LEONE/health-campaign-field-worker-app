@@ -954,6 +954,10 @@ class DeliverInterventionPageState
                   '',
             ),
             AdditionalField(
+              'className',
+              widget.selectedClass ?? BednetClassSelectionSingleton().selectedClass,
+            ),
+            AdditionalField(
               'schoolName',
               household.bednetDisplayName,
             ),

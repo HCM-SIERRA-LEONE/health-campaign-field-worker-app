@@ -34,6 +34,7 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
       RegExp(r'^class\d+_classname$', caseSensitive: false);
 
   String? _selectedClass;
+  var _schoolItems = <DropdownItem>[];
 
   /// Extracts class names from a school's additionalFields. Supports two
   /// shapes: keys matching `class<N>_className`, or a single
@@ -188,6 +189,36 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
             });
           }
 
+          // Update school items cache when schools change or on first build
+          if (_schoolItems.isEmpty || _schoolItems.length != state.schools.length) {
+            _schoolItems = state.schools
+                .map(
+                  (e) => DropdownItem(
+                    name: e.bednetDisplayName,
+                    code: e.bednetSchoolId,
+                  ),
+                )
+                .toList();
+          }
+
+          // Show loading indicator only while schools are being loaded
+          if (state.loading || state.schools.isEmpty) {
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: spacer2),
+                    Text(
+                      'Loading schools...',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           return ReactiveFormBuilder(
             form: () => fb.group({
               _schoolControl: FormControl<HouseholdModel>(
@@ -293,14 +324,7 @@ class _SelectSchoolPageState extends State<SelectSchoolPage> {
                               child: DigitDropdown<HouseholdModel>(
                                 isSearchable: false,
                                 isDisabled: isPrePopulated,
-                                items: state.schools
-                                    .map(
-                                      (e) => DropdownItem(
-                                        name: e.bednetDisplayName,
-                                        code: e.bednetSchoolId,
-                                      ),
-                                    )
-                                    .toList(),
+                                items: _schoolItems,
                                 selectedOption: (form
                                             .control(_schoolControl)
                                             .value as HouseholdModel?) !=

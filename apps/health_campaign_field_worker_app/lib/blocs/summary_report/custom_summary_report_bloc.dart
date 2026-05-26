@@ -95,7 +95,7 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
       ),
     );
 
-    final schoolsVisitedByDate = <String, Set<String>>{};
+    final classesVisitedByDate = <String, Set<String>>{};
     final schoolBednetDeliveredByDate = <String, int>{};
 
     final householdsVisitedByDate = <String, Set<String>>{};
@@ -145,17 +145,27 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
 
       if (isSchool) {
         final schoolId = _schoolVisitedIdentityFromTask(task);
-        if (schoolId != null) {
-          schoolsVisitedByDate
-              .putIfAbsent(dateKey, () => <String>{})
-              .add(schoolId);
-        }
+        // Extract className from task additional fields
+        final className = fields
+                .firstWhereOrNull((f) => f.key == 'className')
+                ?.value
+                ?.toString() ??
+            '';
 
-        schoolBednetDeliveredByDate.update(
-          dateKey,
-          (v) => v + delivered,
-          ifAbsent: () => delivered,
-        );
+        // Only count tasks that have both schoolId and className
+        if (schoolId != null && className.isNotEmpty) {
+          // Combine schoolId and className to create unique class visit identifier
+          final classVisitKey = '$schoolId|$className';
+          classesVisitedByDate
+              .putIfAbsent(dateKey, () => <String>{})
+              .add(classVisitKey);
+
+          schoolBednetDeliveredByDate.update(
+            dateKey,
+            (v) => v + delivered,
+            ifAbsent: () => delivered,
+          );
+        }
       } else {
         // Household flow: only count SUCCESS
         if (task.status == Status.administeredSuccess.toValue()) {
@@ -182,14 +192,14 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
     }
 
     final allDates = <String>{
-      ...schoolsVisitedByDate.keys,
+      ...classesVisitedByDate.keys,
       ...schoolBednetDeliveredByDate.keys,
       ...householdsVisitedByDate.keys,
       ...householdBednetDeliveredByDate.keys,
     };
 
-    // Keys for Schools
-    const schoolVisitedKey = 'schoolVisitedKey';
+    // Keys for Schools/Classes
+    const classVisitedKey = 'classVisitedKey';
     const schoolBednetDeliveredKey = 'schoolBednetDeliveredKey';
     // Keys for Households
     const householdVisitedKey = 'householdVisitedKey';
@@ -198,7 +208,7 @@ class SummaryReportBloc extends Bloc<SummaryReportEvent, SummaryReportState> {
     final data = <String, Map<String, int>>{
       for (final d in allDates)
         d: {
-          schoolVisitedKey: schoolsVisitedByDate[d]?.length ?? 0,
+          classVisitedKey: classesVisitedByDate[d]?.length ?? 0,
           schoolBednetDeliveredKey: schoolBednetDeliveredByDate[d] ?? 0,
           householdVisitedKey: householdsVisitedByDate[d]?.length ?? 0,
           householdBednetDeliveredKey: householdBednetDeliveredByDate[d] ?? 0,

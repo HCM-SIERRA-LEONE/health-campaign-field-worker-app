@@ -8,6 +8,7 @@ import 'package:health_campaign_field_worker_app/blocs/registration_deliver/sear
 import 'package:health_campaign_field_worker_app/utils/bednet_class_selection_singleton.dart';
 import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/i18_key_constants.dart'
     as i18;
+import 'package:health_campaign_field_worker_app/utils/registration_deliver_utils/utils.dart';
 
 import '../../../router/app_router.dart';
 import '../../../widgets/localized.dart';
@@ -33,6 +34,22 @@ class BeneficiaryAcknowledgementPage extends LocalizedStatefulWidget {
 
 class BeneficiaryAcknowledgementPageState
     extends LocalizedState<BeneficiaryAcknowledgementPage> {
+  void _dispatchHouseholdOverviewReload() {
+    final projectId = RegistrationDeliverySingleton().projectId;
+    final beneficiaryType = RegistrationDeliverySingleton().beneficiaryType;
+    if (projectId == null || beneficiaryType == null) return;
+    try {
+      context.read<HouseholdOverviewBloc>().add(
+            HouseholdOverviewReloadEvent(
+              projectId: projectId,
+              projectBeneficiaryType: beneficiaryType,
+              offset: 0,
+              limit: 1000,
+            ),
+          );
+    } catch (_) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -56,6 +73,7 @@ class BeneficiaryAcknowledgementPageState
                       final selectedClass =
                           BednetClassSelectionSingleton().selectedClass ??
                               widget.selectedClass;
+                      _dispatchHouseholdOverviewReload();
                       context
                           .read<SearchHouseholdsBloc>()
                           .add(const SearchHouseholdsEvent.clear());

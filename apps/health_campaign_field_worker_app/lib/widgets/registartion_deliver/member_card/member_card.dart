@@ -26,6 +26,7 @@ import '../../../models/registration_deliver_model/entities/registration_deliver
 import '../../../router/app_router.dart';
 import '../../../blocs/auth/auth.dart';
 import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
+import '../../../utils/bednet_class_selection_singleton.dart';
 
 class MemberCard extends StatelessWidget {
   final String name;
@@ -447,6 +448,12 @@ class MemberCard extends StatelessWidget {
                                                                       ?.toString() ??
                                                                   '',
                                                             ),
+                                                            AdditionalField(
+                                                              'className',
+                                                              selectedClass ??
+                                                                  BednetClassSelectionSingleton()
+                                                                      .selectedClass,
+                                                            ),
                                                           ],
                                                           if (memberCount !=
                                                               null)
@@ -577,6 +584,12 @@ class MemberCard extends StatelessWidget {
                                                                       ?.value
                                                                       ?.toString() ??
                                                                   '',
+                                                            ),
+                                                            AdditionalField(
+                                                              'className',
+                                                              selectedClass ??
+                                                                  BednetClassSelectionSingleton()
+                                                                      .selectedClass,
                                                             ),
                                                           ],
                                                           if (memberCount !=

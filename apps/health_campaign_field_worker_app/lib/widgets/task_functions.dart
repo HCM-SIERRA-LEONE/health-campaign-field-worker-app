@@ -1,3 +1,4 @@
+import 'package:digit_data_model/data_model.dart';
 import 'package:digit_flow_builder/flow_builder.dart';
 import 'package:digit_flow_builder/utils/function_registry.dart';
 
@@ -61,6 +62,22 @@ void registerTaskFunctions() {
     return null;
   }
 
+  String? _additionalFieldValueFromProjectFacility(
+      ProjectFacilityModel pf, String key) {
+    final additionalFields = pf.additionalFields;
+    if (additionalFields == null) return null;
+
+    final fields = additionalFields.fields;
+    if (fields == null) return null;
+
+    for (final f in fields) {
+      if (f.key == key) {
+        return f.value?.toString();
+      }
+    }
+    return null;
+  }
+
   /// Filters `ProjectFacilityModel` list to the current level and only those
   /// whose corresponding `FacilityModel.usage` matches the current user's usage.
   ///
@@ -79,9 +96,14 @@ void registerTaskFunctions() {
 
     // Keep only "current" level project facilities (matches StockBalanceCard)
     final currentLevelPfs = projectFacilities.where((pf) {
-      if (pf is! Map) return false;
-      final level = _additionalFieldValue(Map<String, dynamic>.from(pf), 'facilityLevel');
-      return level == null || level == 'current';
+      if (pf is Map) {
+        final level = _additionalFieldValue(Map<String, dynamic>.from(pf), 'facilityLevel');
+        return level == null || level == 'current';
+      } else if (pf is ProjectFacilityModel) {
+        final level = _additionalFieldValueFromProjectFacility(pf, 'facilityLevel');
+        return level == null || level == 'current';
+      }
+      return false;
     }).toList();
 
     if (usageTrimmed.isEmpty) return currentLevelPfs;
@@ -89,20 +111,32 @@ void registerTaskFunctions() {
     // Build allowed facility IDs by usage from FacilityModel list
     final allowedFacilityIds = <String>{};
     for (final f in facilities) {
-      if (f is! Map) continue;
-      final id = f['id']?.toString();
-      final currentUsage = (f['usage'] ?? '').toString().trim();
-      if (id != null && id.isNotEmpty && currentUsage == usageTrimmed) {
-        allowedFacilityIds.add(id);
+      if (f is Map) {
+        final id = f['id']?.toString();
+        final currentUsage = (f['usage'] ?? '').toString().trim();
+        if (id != null && id.isNotEmpty && currentUsage == usageTrimmed) {
+          allowedFacilityIds.add(id);
+        }
+      } else if (f is FacilityModel) {
+        final id = f.id;
+        final currentUsage = (f.usage ?? '').trim();
+        if (id.isNotEmpty && currentUsage == usageTrimmed) {
+          allowedFacilityIds.add(id);
+        }
       }
     }
 
     if (allowedFacilityIds.isEmpty) return <dynamic>[];
 
     return currentLevelPfs.where((pf) {
-      if (pf is! Map) return false;
-      final facilityId = pf['facilityId']?.toString();
-      return facilityId != null && allowedFacilityIds.contains(facilityId);
+      if (pf is Map) {
+        final facilityId = pf['facilityId']?.toString();
+        return facilityId != null && allowedFacilityIds.contains(facilityId);
+      } else if (pf is ProjectFacilityModel) {
+        final facilityId = pf.facilityId;
+        return facilityId != null && allowedFacilityIds.contains(facilityId);
+      }
+      return false;
     }).toList();
   });
 

@@ -84,7 +84,7 @@ final dynamic sampleInventoryFlows = {
         ],
         "searchConfig": {
           "primary": "projectFacility",
-          "select": ["projectFacility", "productVariant", "stock"]
+          "select": ["projectFacility", "productVariant", "stock", "facility"]
         }
       },
       "body": [

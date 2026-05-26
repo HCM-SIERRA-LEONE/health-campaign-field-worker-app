@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:digit_crud_bloc/digit_crud_bloc.dart';
 import 'package:digit_data_model/data_model.dart';
 import 'package:digit_flow_builder/flow_builder.dart';
@@ -47,11 +49,19 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
   Map<String, double> _stockInHandMap = {};
   bool _stockSearchTriggered = false;
 
+  StreamSubscription? _recordTypeSubscription;
+
   @override
   void initState() {
     super.initState();
     // Don't call _initializeFromFormData here - localizations is not available yet
     // It will be called in build() when localizations is ready
+  }
+
+  @override
+  void dispose() {
+    _recordTypeSubscription?.cancel();
+    super.dispose();
   }
 
   /// Gets the facility ID from the previous page's form data (warehouseDetails.facilityToWhich)
@@ -350,6 +360,28 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
     debugPrint(
         'ProductSelectionCard: Found simple page with quantity fields: $targetPageKey');
 
+    // Get the reactive form to check recordType
+    final form = ReactiveForm.of(context) as FormGroup?;
+    if (form == null) {
+      debugPrint('ProductSelectionCard: Form not available');
+      return;
+    }
+
+    // Check if recordType.code is "LESS"
+    final recordTypeControl = form.control('recordType');
+    final recordTypeValue = recordTypeControl.value;
+    String? recordTypeCode;
+
+    if (recordTypeValue is Map) {
+      recordTypeCode = recordTypeValue['code']?.toString();
+    } else if (recordTypeValue != null) {
+      recordTypeCode = recordTypeValue.toString();
+    }
+
+    final isLessRecord = recordTypeCode == 'LESS';
+    debugPrint(
+        'ProductSelectionCard: recordType.code=$recordTypeCode, isLessRecord=$isLessRecord');
+
     // Get the first selected product's stock in hand
     if (_selectedProducts.isEmpty) {
       debugPrint('ProductSelectionCard: No selected products');
@@ -367,9 +399,6 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
     final updatedProperties =
         Map<String, PropertySchema>.from(targetPage.properties!);
 
-    // Get the reactive form to update form control validators
-    final form = ReactiveForm.of(context) as FormGroup?;
-
     for (final fieldName in quantityFields) {
       final fieldSchema = updatedProperties[fieldName];
       if (fieldSchema == null) continue;
@@ -379,23 +408,27 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
           .where((v) => v.type != 'max' && v.type != 'maxValue')
           .toList();
 
-      final newValidations = [
-        ...filteredValidations,
-        ValidationRule(
-          type: 'max',
-          value: maxValue,
-          message: maxValue > 0
-              ? 'Quantity cannot exceed stock in hand ($maxValue)'
-              : 'No stock available',
-        ),
-      ];
+      // Only add max validation if recordType.code is "LESS"
+      final newValidations = isLessRecord
+          ? [
+              ...filteredValidations,
+              ValidationRule(
+                type: 'max',
+                value: maxValue,
+                message: maxValue > 0
+                    ? 'Quantity cannot exceed stock in hand ($maxValue)'
+                    : 'No stock available',
+              ),
+            ]
+          : filteredValidations;
 
       updatedProperties[fieldName] =
           fieldSchema.copyWith(validations: newValidations);
-      debugPrint('ProductSelectionCard: Updated field $fieldName with max=$maxValue');
+      debugPrint(
+          'ProductSelectionCard: ${isLessRecord ? "Added" : "Removed"} max validation for $fieldName');
 
       // Update the form control validators directly
-      if (form != null && form.contains(fieldName)) {
+      if (form.contains(fieldName)) {
         final control = form.control(fieldName);
         // Build validators from the updated schema validations
         final validators = _buildValidatorsFromSchema(newValidations);
@@ -794,6 +827,17 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
     // Initialize from formData on first build (localizations and productVariants are now available)
     if (!_initialized) {
       _initializeFromFormData(productVariants);
+    }
+
+    // Set up listener for recordType changes to dynamically update validations
+    final form = ReactiveForm.of(context);
+    if (form is FormGroup) {
+      _recordTypeSubscription?.cancel();
+      _recordTypeSubscription = form.control('recordType').valueChanges.listen((_) {
+        if (_selectedProducts.isNotEmpty) {
+          _updateQuantityFieldValidations();
+        }
+      });
     }
 
     final labelFromSchema = fieldSchema!.label ?? fieldSchema!.innerLabel;

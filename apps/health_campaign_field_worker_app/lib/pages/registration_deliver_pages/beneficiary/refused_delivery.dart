@@ -22,6 +22,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import '../../../models/entities/roles_type.dart';
 import '../../../utils/extensions/extensions.dart';
+import '../../../utils/bednet_class_selection_singleton.dart';
 import 'package:collection/collection.dart';
 
 @RoutePage()
@@ -354,6 +355,10 @@ class RefusedDeliveryPageState extends LocalizedState<RefusedDeliveryPage> {
                       ?.value
                       ?.toString() ??
                   '',
+            ),
+            AdditionalField(
+              'className',
+              BednetClassSelectionSingleton().selectedClass,
             ),
           ],
           AdditionalField('isSchoolTask', isSchoolTask),

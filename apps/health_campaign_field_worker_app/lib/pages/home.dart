@@ -1655,49 +1655,62 @@ class _HomePageState extends LocalizedState<HomePage> {
       // For warehouse managers and other roles, get facility from wrapper data
       try {
         // Get facility list from stateData - CrudStateData has modelMap property
-        List<Map<String, dynamic>>? projectFacilities;
+        List<dynamic>? projectFacilities;
+        List<dynamic>? facilities;
 
         // stateData is CrudStateData which has modelMap: Map<String, List<Map<String, dynamic>>>
         if (stateData?.modelMap != null) {
           projectFacilities = stateData!.modelMap['ProjectFacilityModel'];
+          facilities = stateData.modelMap['FacilityModel'];
         }
 
         // Fallback: read from manageStock page's state
-        if (projectFacilities == null || projectFacilities.isEmpty) {
+        if (projectFacilities == null || facilities == null) {
           final manageStockState = FlowCrudStateRegistry().get('manageStock');
           final base = manageStockState?.base;
           if (base is CrudStateLoaded) {
             final pfModels = base.results['projectFacility'];
-            if (pfModels != null && pfModels.isNotEmpty) {
-              projectFacilities = pfModels
-                  .whereType<ProjectFacilityModel>()
-                  .map((pf) => <String, dynamic>{
-                        'facilityId': pf.facilityId,
-                      })
-                  .toList();
+            final facModels = base.results['facility'];
+            if (pfModels != null && facModels != null) {
+              projectFacilities = pfModels;
+              facilities = facModels;
             }
           }
         }
 
-        if (projectFacilities == null || projectFacilities.isEmpty) {
-          return '';
-        }
+        // Call filterProjectFacilitiesByUsage to get filtered facilities
+        if (projectFacilities != null && facilities != null) {
+          final filteredFacilities = FunctionRegistry.call(
+            'filterProjectFacilitiesByUsage',
+            [projectFacilities, facilities],
+            stateData,
+          );
 
-        final isHFS = context.loggedInUserRoles
-            .where((role) =>
-                role.code == RolesType.healthFacilitySupervisor.toValue())
-            .toList()
-            .isNotEmpty;
+          if (filteredFacilities is List && filteredFacilities.isNotEmpty) {
+            final isHFS = context.loggedInUserRoles
+                .where((role) =>
+                    role.code == RolesType.healthFacilitySupervisor.toValue())
+                .toList()
+                .isNotEmpty;
 
-        if (isHFS) {
-          return RegistrationDeliverySingleton().facilityId;
-        }
+            if (isHFS) {
+              return RegistrationDeliverySingleton().facilityId;
+            }
 
-        // Return first facility ID (user's assigned facility)
-        for (var facility in projectFacilities) {
-          final facilityId = facility['facilityId']?.toString() ?? '';
-          if (facilityId.isNotEmpty) {
-            return facilityId;
+            // Return first facility ID from filtered results
+            for (var facility in filteredFacilities) {
+              if (facility is Map) {
+                final facilityId = facility['facilityId']?.toString() ?? '';
+                if (facilityId.isNotEmpty) {
+                  return facilityId;
+                }
+              } else if (facility is ProjectFacilityModel) {
+                final facilityId = facility.facilityId;
+                if (facilityId.isNotEmpty) {
+                  return facilityId;
+                }
+              }
+            }
           }
         }
 
