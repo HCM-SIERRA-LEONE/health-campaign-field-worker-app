@@ -49,7 +49,7 @@ class _CustomSummaryReportState
   }
 
   static const _dateKey = 'dateKey';
-  static const _schoolVisitedKey = 'schoolVisitedKey';
+  static const _classVisitedKey = 'classVisitedKey';
   static const _schoolBednetDeliveredKey = 'schoolBednetDeliveredKey';
   static const _householdVisitedKey = 'householdVisitedKey';
   static const _householdBednetDeliveredKey = 'householdBednetDeliveredKey';
@@ -189,8 +189,8 @@ class _CustomSummaryReportState
                                         width: 120,
                                       ),
                                       const DigitGridColumn(
-                                        label: 'No. of school visited',
-                                        key: _schoolVisitedKey,
+                                        label: 'No. of class visited',
+                                        key: _classVisitedKey,
                                         width: 180,
                                       ),
                                       const DigitGridColumn(
@@ -207,9 +207,9 @@ class _CustomSummaryReportState
                                         DigitGridCell(
                                             key: _dateKey, value: entry.key),
                                         DigitGridCell(
-                                          key: _schoolVisitedKey,
+                                          key: _classVisitedKey,
                                           value:
-                                              '${metrics[_schoolVisitedKey] ?? 0}',
+                                              '${metrics[_classVisitedKey] ?? 0}',
                                         ),
                                         DigitGridCell(
                                           key: _schoolBednetDeliveredKey,

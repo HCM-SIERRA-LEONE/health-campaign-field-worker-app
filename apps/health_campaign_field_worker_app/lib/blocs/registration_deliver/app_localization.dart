@@ -26,11 +26,18 @@ class RegistrationDeliveryLocalization {
 
   // Method to load localized strings
   Future<bool> load() async {
-    _localizedStrings.clear();
+    // _localizedStrings.clear();
     // Iterate over localized strings and filter based on locale
     for (var element in await localizedStrings) {
       if (element.locale == '${locale.languageCode}_${locale.countryCode}') {
-        _localizedStrings.add(element);
+        final index = _localizedStrings.indexWhere(
+              (existing) => existing.code == element.code,
+        );
+        if (index != -1) {
+          _localizedStrings[index] = element;
+        } else {
+          _localizedStrings.add(element);
+        }
       }
     }
 
