@@ -833,11 +833,13 @@ class _ProductSelectionCardState extends LocalizedState<ProductSelectionCard> {
     final form = ReactiveForm.of(context);
     if (form is FormGroup) {
       _recordTypeSubscription?.cancel();
-      _recordTypeSubscription = form.control('recordType').valueChanges.listen((_) {
-        if (_selectedProducts.isNotEmpty) {
-          _updateQuantityFieldValidations();
-        }
-      });
+      if (form.contains('recordType')) {
+        _recordTypeSubscription = form.control('recordType').valueChanges.listen((_) {
+          if (_selectedProducts.isNotEmpty) {
+            _updateQuantityFieldValidations();
+          }
+        });
+      }
     }
 
     final labelFromSchema = fieldSchema!.label ?? fieldSchema!.innerLabel;
