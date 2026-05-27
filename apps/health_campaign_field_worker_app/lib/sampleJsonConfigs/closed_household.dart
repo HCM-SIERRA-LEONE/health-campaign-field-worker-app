@@ -102,7 +102,7 @@ final dynamic sampleCloseHouseholdFlows = {
                 },
                 {
                   "type": "pattern",
-                  "value": "^[a-zA-Z\\s'-]+",
+                  "value": r"^[a-zA-Z]+(?: [a-zA-Z]+)*\s*$",
                   "message": "CLOSEHOUSEHOLD_NAME_ONLY_LETTERS_ALLOWED"
                 },
               ],

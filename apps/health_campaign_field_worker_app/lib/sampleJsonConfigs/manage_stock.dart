@@ -914,13 +914,13 @@ final dynamic sampleInventoryFlows = {
               "deleteFlag": false,
               "innerLabel": "",
               "systemDate": false,
-              // "validations": [
-              //   {
-              //     "type": "required",
-              //     "value": true,
-              //     "message": "Vehicle number is required"
-              //   }
-              // ],
+              "validations": [
+                {
+                  "type": "pattern",
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
+                }
+              ],
               "errorMessage": "",
               "isMultiSelect": false,
               "enums": null
@@ -978,6 +978,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "required",
                   "value": false,
                   "message": "Waybill number is required"
+                },
+                {
+                  "type": "pattern",
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
                 }
               ],
               "errorMessage": "",
@@ -1005,6 +1010,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "required",
                   "value": false,
                   "message": "Batch number is required"
+                },
+                {
+                  "type": "pattern",
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
                 }
               ],
               "errorMessage": "",
@@ -1306,6 +1316,11 @@ final dynamic sampleInventoryFlows = {
                   "type": "required",
                   "value": false,
                   "message": "Comment is required when quantities differ"
+                },
+                {
+                  "type": "pattern",
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
                 }
               ],
               "errorMessage": "",
@@ -2260,7 +2275,7 @@ final dynamic sampleInventoryFlows = {
                   },
                   {
                     "key": "INVENTORY_WAYBILL_NUMBER_LABEL",
-                    "value": "{{item.wayBillNumber}}"
+                    "value": "{{item.additionalFields.fields.wayBillNumber}}"
                   },
                   {
                     "key": "INVENTORY_BATCH_NUMBER_LABEL",
@@ -2550,7 +2565,6 @@ final dynamic sampleInventoryFlows = {
           "actionType": "FETCH_TRANSFORMER_CONFIG",
           "properties": {
             "configName": "stockReceipt",
-            "forceCreate": true,
             "data": [
               {"key": "stockEntryType", "value": "RECEIPT"},
               {"key": "transactionType", "value": "RECEIVED"},
@@ -2583,7 +2597,7 @@ final dynamic sampleInventoryFlows = {
         {
           "actionType": "UPDATE_EVENT",
           "properties": {
-            "source": "existingModels",
+            "source": "entities",
             "entity": "StockModel",
             "modify": [
               {
@@ -2631,7 +2645,6 @@ final dynamic sampleInventoryFlows = {
           "actionType": "FETCH_TRANSFORMER_CONFIG",
           "properties": {
             "configName": "stockReject",
-            "forceCreate": true,
             "data": [
               // {"key": "stockEntryType", "value": "RETURNED"},
               {"key": "transactionType", "value": "DISPATCHED"},
@@ -2796,7 +2809,13 @@ final dynamic sampleInventoryFlows = {
               "innerLabel": "",
               "systemDate": false,
               "visibilityCondition": {},
-              "validations": [],
+              "validations": [
+                {
+                  "type": "pattern",
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
+                }
+              ],
               "errorMessage": "",
               "isMultiSelect": false,
               "enums": null
@@ -2817,7 +2836,13 @@ final dynamic sampleInventoryFlows = {
               "innerLabel": "",
               "systemDate": false,
               "visibilityCondition": {},
-              "validations": [],
+              "validations": [
+                {
+                  "type": "pattern",
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
+                }
+              ],
               "errorMessage": "",
               "isMultiSelect": false,
               "enums": null

@@ -2631,9 +2631,29 @@ class _HomePageState extends LocalizedState<HomePage> {
           icon: Icons.store_mall_directory,
           label: i18.home.manageStockLabel,
           onPressed: () async {
-            FlowBuilderSingleton().setBoundary(
-                boundary: BoundaryModel(
-                    code: LeastLevelBoundarySingleton().boundary?.first));
+            // Use the same boundary selection logic as authenticated.dart
+            final boundaryState = context.read<BoundaryBloc>().state;
+            final authState = context.read<AuthBloc>().state;
+            final roles = authState.maybeMap(
+              authenticated: (s) => s.userModel.roles,
+              orElse: () => [],
+            );
+
+            bool isDistributor = roles
+                .where((role) => role.code == RolesType.distributor.toValue())
+                .isNotEmpty;
+
+            final selectedBoundaryCode = isDistributor
+                ? (boundaryState.selectedBoundaryMap.values.lastOrNull
+                        ?.code ??
+                    boundaryState.allSelectedLastLevelBoundaries
+                        .firstOrNull?.code)
+                : boundaryState.boundaryList.firstOrNull?.code;
+
+            if (selectedBoundaryCode != null) {
+              FlowBuilderSingleton().setBoundary(
+                  boundary: BoundaryModel(code: selectedBoundaryCode));
+            }
 
             final moduleName =
                 'hcm-inventory-${context.selectedProject.referenceID}';
