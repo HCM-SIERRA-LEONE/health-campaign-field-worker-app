@@ -169,7 +169,7 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                       element.loading == false &&
                       element.householdMemberWrapper.household != null);
                   if (!context.mounted) return;
-                  
+
                   // Set the newly created individual as selected
                   final newIndividual = value.individualModel;
                   if (newIndividual != null) {
@@ -179,7 +179,7 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                       ),
                     );
                   }
-                  
+
                   if (value.householdModel.isSchoolHousehold) {
                     await router.replace(BeneficiaryDetailsRoute(
                       selectedClass:
@@ -507,7 +507,8 @@ class IndividualDetailsPageState extends LocalizedState<IndividualDetailsPage> {
                         children: [
                           Text(
                             localizations.translate(
-                              i18.individualDetails.individualsDetailsLabelText,
+                              i18.individualDetails
+                                  .studentIndividualsDetailsLabelText,
                             ),
                             style: textTheme.headingXl.copyWith(
                                 color: theme.colorTheme.primary.primary2),

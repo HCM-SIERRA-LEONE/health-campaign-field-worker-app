@@ -300,8 +300,11 @@ class CustomMemberCard extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: Tag(
                                 isIcon: true,
-                                label: localizations
-                                    .translate(tbTask.status ?? ''),
+                                label: localizations.translate(
+                                  tbTask.status == 'INELIGIBLE'
+                                      ? i18.deliverIntervention.accessed
+                                      : (tbTask.status ?? ''),
+                                ),
                                 themeData: tbTask.status ==
                                         Status.beneficiaryReferred.toValue()
                                     ? TagThemeData(
