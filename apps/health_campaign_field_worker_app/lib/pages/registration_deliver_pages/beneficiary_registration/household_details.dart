@@ -725,7 +725,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   errorMessage: field.errorText,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                      RegExp(r'[a-zA-Z\s]'),
+                                      RegExp(r'^[a-zA-Z][a-zA-Z ]*$'),
                                     ),
                                   ],
                                 ),
@@ -751,7 +751,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   errorMessage: field.errorText,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                      RegExp(r'[a-zA-Z\s]'),
+                                      RegExp(r'^[a-zA-Z][a-zA-Z ]*$'),
                                     ),
                                   ],
                                 ),

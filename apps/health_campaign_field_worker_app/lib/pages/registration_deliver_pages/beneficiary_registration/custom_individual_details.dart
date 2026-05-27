@@ -561,7 +561,7 @@ class CustomIndividualDetailsPageState
                                           errorMessage: field.errorText,
                                           inputFormatters: [
                                             FilteringTextInputFormatter.allow(
-                                                RegExp(r'[a-zA-Z\s]')),
+                                                RegExp(r'^[a-zA-Z][a-zA-Z ]*$')),
                                           ],
                                         ),
                                       ),
@@ -588,7 +588,7 @@ class CustomIndividualDetailsPageState
                                         errorMessage: field.errorText,
                                         inputFormatters: [
                                           FilteringTextInputFormatter.allow(
-                                              RegExp(r'[a-zA-Z\s]')),
+                                              RegExp(r'^[a-zA-Z][a-zA-Z ]*$')),
                                         ],
                                       ),
                                     ),
@@ -896,12 +896,8 @@ class CustomIndividualDetailsPageState
       },
     );
 
-    final rawGivenName = individual?.name?.givenName?.trim() ?? '';
-    final spaceIndex = rawGivenName.indexOf(' ');
-    final initialFirstName =
-        spaceIndex >= 0 ? rawGivenName.substring(0, spaceIndex) : rawGivenName;
-    final initialLastName =
-        spaceIndex >= 0 ? rawGivenName.substring(spaceIndex + 1) : '';
+    final initialFirstName = individual?.name?.givenName?.trim() ?? '';
+    final initialLastName = individual?.name?.familyName?.trim() ?? '';
 
     return fb.group(<String, Object>{
       _firstNameKey: FormControl<String>(

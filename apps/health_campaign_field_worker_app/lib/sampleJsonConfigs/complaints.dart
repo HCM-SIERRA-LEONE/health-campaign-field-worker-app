@@ -817,7 +817,7 @@ final dynamic sampleComplaintFlows = {
                 },
                 {
                   "type": "pattern",
-                  "value": "^[a-zA-Z\\s'-]+",
+                  "value": r"^[a-zA-Z]+(?: [a-zA-Z]+)*\s*$",
                   "message": "COMPLAINTS_NAME_ONLY_LETTERS_ALLOWED"
                 }
               ],
@@ -908,12 +908,7 @@ final dynamic sampleComplaintFlows = {
                 },
                 {
                   "type": "pattern",
-                  "value": "^[a-zA-Z0-9 ]+\$",
-                  "message": "SUPERVISOR_name_LABEL_PATTERN_VALIDATION"
-                },
-                {
-                  "type": "pattern",
-                  "value": "^[a-zA-Z\\s'-]+",
+                  "value": r"^[a-zA-Z]+(?: [a-zA-Z]+)*\s*$",
                   "message": "COMPLAINTS_NAME_ONLY_LETTERS_ALLOWED"
                 }
               ],

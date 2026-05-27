@@ -944,8 +944,7 @@ class _CustomHouseholdOverviewPageState
                                                       //       )
                                                       //     :
                                                       false,
-                                                  name: e.name?.givenName ??
-                                                      ' - - ',
+                                                  name: _formatName(e.name?.givenName, e.name?.familyName),
                                                   years: yearsAge,
                                                   months: monthsAge,
                                                   gender: e.gender?.name,
@@ -1465,6 +1464,12 @@ class _CustomHouseholdOverviewPageState
     final sh = schoolHead.toLowerCase();
     final g = given.toLowerCase();
     return sh == g || sh.startsWith('$g ');
+  }
+
+  String _formatName(String? givenName, String? familyName) {
+    final first = (givenName ?? '').trim();
+    final last = (familyName ?? '').trim();
+    return [first, last].where((s) => s.isNotEmpty).join(' ');
   }
 
   getFilters() {
