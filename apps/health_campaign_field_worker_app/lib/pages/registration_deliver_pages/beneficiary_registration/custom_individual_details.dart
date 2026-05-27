@@ -527,7 +527,7 @@ class CustomIndividualDetailsPageState
                               Text(
                                 localizations.translate(
                                   i18.individualDetails
-                                      .individualsDetailsLabelText,
+                                      .childIndividualsDetailsLabelText,
                                 ),
                                 style: textTheme.headingXl.copyWith(
                                     color: theme.colorTheme.primary.primary2),
@@ -855,8 +855,10 @@ class CustomIndividualDetailsPageState
 
     individual = individual.copyWith(
       name: name.copyWith(
-        givenName: firstName?.trim().isNotEmpty == true ? firstName?.trim() : null,
-        familyName: lastName?.trim().isNotEmpty == true ? lastName?.trim() : null,
+        givenName:
+            firstName?.trim().isNotEmpty == true ? firstName?.trim() : null,
+        familyName:
+            lastName?.trim().isNotEmpty == true ? lastName?.trim() : null,
       ),
       gender: form.control(_genderKey).value == null
           ? null

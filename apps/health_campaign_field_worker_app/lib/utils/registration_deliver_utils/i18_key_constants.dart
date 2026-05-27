@@ -338,6 +338,11 @@ class IndividualDetails {
 
   String get individualsDetailsLabelText => 'INDIVIDUAL_LABEL_TEXT';
 
+  String get childIndividualsDetailsLabelText => 'CHILD_INDIVIDUAL_LABEL_TEXT';
+
+  String get studentIndividualsDetailsLabelText =>
+      'STUDENT_INDIVIDUAL_LABEL_TEXT';
+
   String get nameLabelText => 'INDIVIDUAL_NAME_LABEL_TEXT';
 
   String get checkboxLabelText => 'HEAD_OF_HOUSEHOLD_LABEL_TEXT';
@@ -675,6 +680,8 @@ class DeliverIntervention {
 
   String get beneficiaryChecklistDialogDescription =>
       'BENEFICIARY_CHECKLIST_DIALOG_DESCRIPTION';
+
+  String get accessed => 'ACCESSED';
 
   String get refusedDeliveryLabel => 'REFUSED_DELIVERY_LABEL';
 

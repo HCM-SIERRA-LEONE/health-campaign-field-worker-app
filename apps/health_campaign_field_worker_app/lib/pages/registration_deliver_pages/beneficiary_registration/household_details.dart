@@ -44,7 +44,7 @@ class HouseHoldDetailsPage extends LocalizedStatefulWidget {
 class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
   static const _dateOfRegistrationKey = 'dateOfRegistration';
 
-  //  two separate keys instead of one nameOfIndividual 
+  //  two separate keys instead of one nameOfIndividual
   static const _firstNameKey = 'firstName';
   static const _lastNameKey = 'lastName';
 
@@ -75,7 +75,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
-  //  helper that combines first + last into a full name 
+  //  helper that combines first + last into a full name
   String _fullName(FormGroup form) {
     final first = (form.control(_firstNameKey).value as String? ?? '').trim();
     final last = (form.control(_lastNameKey).value as String? ?? '').trim();
@@ -88,9 +88,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
     return int.tryParse(
           fields
               .firstWhere(
-                (f) =>
-                    f.key ==
-                    AdditionalFieldsType.childrenUnder14.toValue(),
+                (f) => f.key == AdditionalFieldsType.childrenUnder14.toValue(),
                 orElse: () => AdditionalField(
                   AdditionalFieldsType.childrenUnder14.toValue(),
                   '0',
@@ -200,7 +198,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
             if (nav.canPop()) nav.pop();
 
             if (!context.mounted) return;
-            
+
             // Navigate to ITN/Bednets delivery page after household registration
             final householdForDelivery = value.householdModel;
             final individualModelFromState = value.individualModel;
@@ -344,9 +342,9 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                   .control(_dateOfRegistrationKey)
                                   .value as DateTime;
 
-                              //  combine first + last into one full name 
+                              //  combine first + last into one full name
                               final headName = _fullName(form);
-                              
+
                               final mobile = form
                                   .control(_mobileNumberKey)
                                   .value as String?;
@@ -568,7 +566,7 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                     householdType: HouseholdType.family,
                                   );
 
-                                  // headName is already the combined full name 
+                                  // headName is already the combined full name
                                   final individual = IndividualModel(
                                     clientReferenceId: clientRefId,
                                     tenantId: RegistrationDeliverySingleton()
@@ -588,7 +586,8 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                       lastModifiedTime: createdAt,
                                     ),
                                     name: NameModel(
-                                      givenName: headName.trim(), // combined "First Last"
+                                      givenName: headName
+                                          .trim(), // combined "First Last"
                                       individualClientReferenceId: clientRefId,
                                       tenantId: RegistrationDeliverySingleton()
                                           .tenantId,
@@ -716,14 +715,13 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                     ),
                               },
                               builder: (field) => LabeledField(
-                                label: 'First Name of the Individual',
+                                label: 'First Name of the Head',
                                 isRequired: true,
                                 child: DigitTextFormInput(
                                   initialValue:
                                       form.control(_firstNameKey).value,
-                                  onChange: (value) => form
-                                      .control(_firstNameKey)
-                                      .value = value,
+                                  onChange: (value) =>
+                                      form.control(_firstNameKey).value = value,
                                   errorMessage: field.errorText,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
@@ -743,14 +741,13 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                     ),
                               },
                               builder: (field) => LabeledField(
-                                label: 'Last Name of the Individual',
+                                label: 'Last Name of the Head',
                                 isRequired: true,
                                 child: DigitTextFormInput(
                                   initialValue:
                                       form.control(_lastNameKey).value,
-                                  onChange: (value) => form
-                                      .control(_lastNameKey)
-                                      .value = value,
+                                  onChange: (value) =>
+                                      form.control(_lastNameKey).value = value,
                                   errorMessage: field.errorText,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
@@ -824,8 +821,8 @@ class HouseHoldDetailsPageState extends LocalizedState<HouseHoldDetailsPage> {
                                         .value as int?) ??
                                     0;
                                 final maxChildrenAllowed =
-                                    max(0, currentMemberCount-1);
-                                    // Auto-clamp when member count drops or cap is exceeded
+                                    max(0, currentMemberCount - 1);
+                                // Auto-clamp when member count drops or cap is exceeded
                                 if (currentChildrenCount > maxChildrenAllowed) {
                                   WidgetsBinding.instance
                                       .addPostFrameCallback((_) {

@@ -235,9 +235,11 @@ class _BeneficiaryChecklistPageState
                                                   .beneficiaryChecklistDialogDescription,
                                             )
                                             .replaceFirst(
-                                                '{}',
-                                                localizations
-                                                    .translate(decidedFlow)),
+                                              '{}',
+                                              _localizedDecidedFlowLabel(
+                                                decidedFlow,
+                                              ),
+                                            ),
                                         actions: [
                                           DigitButton(
                                               label: localizations.translate(
@@ -737,14 +739,15 @@ class _BeneficiaryChecklistPageState
 
   static const _yesAnswer = 'YES';
   static const _noAnswer = 'NO';
+  static const _minEligibilityQuestions = 4;
 
-  /// QUES1–QUES6 in API [order], aligned with product rules.
+  /// QUES1–QUES4 in API [order], aligned with product rules.
   List<int> _sortedEligibilityQuestionIndices() {
     final list = initialAttributes ?? [];
     final entries = <({int idx, int order})>[];
     for (var i = 0; i < list.length; i++) {
       final c = list[i].code ?? '';
-      if (RegExp(r'^QUES[1-6]$').hasMatch(c)) {
+      if (RegExp(r'^QUES[1-4]$').hasMatch(c)) {
         entries.add((
           idx: i,
           order: int.tryParse(list[i].order ?? '') ?? 0,
@@ -791,17 +794,24 @@ class _BeneficiaryChecklistPageState
 
   bool _isQ1YesRestNoEligibilityPattern() {
     final idx = _sortedEligibilityQuestionIndices();
-    if (idx.length < 6) return false;
+    if (idx.length < _minEligibilityQuestions) return false;
     if (controller[idx.first].text.trim() != _yesAnswer) return false;
-    for (var j = 1; j < 6; j++) {
+    for (var j = 1; j < idx.length; j++) {
       if (controller[idx[j]].text.trim() != _noAnswer) return false;
     }
     return true;
   }
 
+  String _localizedDecidedFlowLabel(String decidedFlow) {
+    if (decidedFlow == 'INELIGIBLE') {
+      return localizations.translate(i18.deliverIntervention.accessed);
+    }
+    return localizations.translate(decidedFlow);
+  }
+
   /// Q1=Y or ≥2 YES → referral. Otherwise → INELIGIBLE.
   String _assessEligibilityPlanB() {
-    if (_sortedEligibilityQuestionIndices().length < 6) {
+    if (_sortedEligibilityQuestionIndices().length < _minEligibilityQuestions) {
       return "INELIGIBLE";
     }
     final yesCount = _yesCountEligibilityQuestions();
