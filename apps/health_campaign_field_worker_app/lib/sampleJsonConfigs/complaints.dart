@@ -817,8 +817,8 @@ final dynamic sampleComplaintFlows = {
                 },
                 {
                   "type": "pattern",
-                  "value": r"^[a-zA-Z]+(?: [a-zA-Z]+)*\s*$",
-                  "message": "COMPLAINTS_NAME_ONLY_LETTERS_ALLOWED"
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
                 }
               ],
               "errorMessage": "",
@@ -908,8 +908,8 @@ final dynamic sampleComplaintFlows = {
                 },
                 {
                   "type": "pattern",
-                  "value": r"^[a-zA-Z]+(?: [a-zA-Z]+)*\s*$",
-                  "message": "COMPLAINTS_NAME_ONLY_LETTERS_ALLOWED"
+                  "value": r"^(?!\s).*$",
+                  "message": "Leading space not allowed"
                 }
               ],
               "errorMessage": "",
