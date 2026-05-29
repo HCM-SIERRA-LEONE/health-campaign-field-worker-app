@@ -62,7 +62,7 @@ class BeneficiaryAcknowledgementPageState
               child: PanelCard(
                 type: PanelType.success,
                 title: localizations.translate(
-                    i18.acknowledgementSuccess.acknowledgementLabelText),
+                    i18.acknowledgementSuccess.schoolAcknowledgementLabelText),
                 description: localizations.translate(
                   i18.acknowledgementSuccess.acknowledgementDescriptionText,
                 ),

@@ -638,13 +638,7 @@ class _AuthenticatedPageWrapperState extends State<AuthenticatedPageWrapper> {
       if (state is! AuthAuthenticatedState) {
         return Container();
       }
-      return BlocListener<LocalizationBloc, LocalizationState>(
-        listener: (context, state) {
-          if (state.loading == false) {
-            Navigator.of(context, rootNavigator: true).pop();
-          }
-        },
-        child: SafeArea(
+      return SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: kToolbarHeight),
             child: SideBar(
@@ -788,7 +782,6 @@ class _AuthenticatedPageWrapperState extends State<AuthenticatedPageWrapper> {
               ),
             ),
           ),
-        ),
       );
     });
   }

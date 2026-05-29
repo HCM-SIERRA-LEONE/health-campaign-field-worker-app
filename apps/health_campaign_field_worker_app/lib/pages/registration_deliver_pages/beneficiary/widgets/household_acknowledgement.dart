@@ -146,7 +146,7 @@ class HouseholdAcknowledgementPageState
                   i18.acknowledgementSuccess.acknowledgementDescriptionText,
                 ),
                 title: localizations.translate(
-                  i18.acknowledgementSuccess.acknowledgementLabelText,
+                  i18.acknowledgementSuccess.childAcknowledgementLabelText,
                 ),
                 actions: [
                   DigitButton(
