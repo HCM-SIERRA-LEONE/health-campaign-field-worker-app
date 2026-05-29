@@ -442,8 +442,7 @@ class _BeneficiaryChecklistPageState
                                         description)
                                 ] else if (e.dataType == 'MultiValueList' &&
                                     !(e.code ?? '').contains('.')) ...[
-                                  if (_shouldShowMultiValueAttribute(e))
-                                    Align(
+                                  Align(
                                       alignment: Alignment.topLeft,
                                       child: Padding(
                                         padding: const EdgeInsets.all(spacer2),
@@ -466,11 +465,7 @@ class _BeneficiaryChecklistPageState
                                                   .copyWith(
                                                       color: theme.colorTheme
                                                           .text.secondary),
-                                              isRequired: (e.required ??
-                                                      false) &&
-                                                  (e.code !=
-                                                          'ADDITIONAL_SYMPTOMS' ||
-                                                      _shouldShowAdditionalSymptomsSection()),
+                                              isRequired: e.required ?? false,
                                               child: FormField<String>(
                                                 autovalidateMode:
                                                     AutovalidateMode
@@ -758,23 +753,12 @@ class _BeneficiaryChecklistPageState
     return entries.map((e) => e.idx).toList();
   }
 
-  int? _additionalSymptomsAttributeIndex() =>
-      initialAttributes?.indexWhere((a) => a.code == 'ADDITIONAL_SYMPTOMS');
-
   int _yesCountEligibilityQuestions() {
     var n = 0;
     for (final i in _sortedEligibilityQuestionIndices()) {
       if (controller[i].text.trim() == _yesAnswer) n++;
     }
     return n;
-  }
-
-  bool _shouldShowAdditionalSymptomsSection() =>
-      _yesCountEligibilityQuestions() >= 2;
-
-  bool _shouldShowMultiValueAttribute(AttributesModel e) {
-    if (e.code != 'ADDITIONAL_SYMPTOMS') return true;
-    return _shouldShowAdditionalSymptomsSection();
   }
 
   bool _multiValueListHasSelection(int index) {
@@ -785,11 +769,7 @@ class _BeneficiaryChecklistPageState
 
   bool _isAttributeRequiredForSubmit(int i) {
     final attr = initialAttributes?[i];
-    if (attr?.required != true) return false;
-    if (attr?.code == 'ADDITIONAL_SYMPTOMS') {
-      return _shouldShowAdditionalSymptomsSection();
-    }
-    return true;
+    return attr?.required == true;
   }
 
   bool _isQ1YesRestNoEligibilityPattern() {
@@ -912,22 +892,8 @@ class _BeneficiaryChecklistPageState
       final code = initialAttributes?[idx[i]].code ?? 'QUES${i + 1}';
       map[code] = controller[idx[i]].text.trim();
     }
-    final ai = _additionalSymptomsAttributeIndex();
-    if (ai != null &&
-        (_shouldShowAdditionalSymptomsSection() ||
-            controller[ai].text.trim().isNotEmpty)) {
-      map['ADDITIONAL_SYMPTOMS'] = controller[ai].text.trim();
-    }
     map['childClientReferenceId'] = widget.beneficiaryClientRefId;
     return map;
-  }
-
-  void _clearAdditionalSymptomsIfHidden() {
-    final ai = _additionalSymptomsAttributeIndex();
-    if (ai == null) return;
-    if (!_shouldShowAdditionalSymptomsSection()) {
-      controller[ai].clear();
-    }
   }
 
   List<AttributesModel> getNextQuestions(
@@ -1087,8 +1053,6 @@ class _BeneficiaryChecklistPageState
                                             }
                                           }
                                         }
-                                        _clearAdditionalSymptomsIfHidden();
-                                        // Remove corresponding controllers based on the removed attributes
                                       });
                                     },
                                   )));
@@ -1499,16 +1463,12 @@ class _BeneficiaryChecklistPageState
     for (int i = 0; i < controller.length; i++) {
       final attribute = initialAttributes;
       final attr = attribute?[i];
-      final isHiddenAdditional = attr?.code == 'ADDITIONAL_SYMPTOMS' &&
-          !_shouldShowAdditionalSymptomsSection();
       attributes.add(ServiceAttributesModel(
         attributeCode: '${attr?.code}',
         dataType: attr?.dataType,
         clientReferenceId: IdGen.i.identifier,
         referenceId: referenceId,
-        value: isHiddenAdditional
-            ? i18.checklist.notSelectedKey
-            : attr?.dataType != 'SingleValueList'
+        value: attr?.dataType != 'SingleValueList'
                 ? controller[i].text.toString().trim().isNotEmpty
                     ? controller[i].text.toString()
                     : ''

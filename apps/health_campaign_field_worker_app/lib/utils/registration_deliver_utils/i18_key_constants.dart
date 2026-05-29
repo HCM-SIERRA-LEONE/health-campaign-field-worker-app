@@ -437,6 +437,12 @@ class AcknowledgementSuccess {
 
   String get acknowledgementLabelText => 'ACKNOWLEDGEMENT_SUCCESS_LABEL_TEXT';
 
+  String get schoolAcknowledgementLabelText =>
+      'SCHOOL_ACKNOWLEDGEMENT_SUCCESS_LABEL_TEXT';
+
+  String get childAcknowledgementLabelText =>
+      'CHILD_ACKNOWLEDGEMENT_SUCCESS_LABEL_TEXT';
+
   String get goToHome => 'GO_TO_HOME_SCREEN';
 
   String get downloadmoredata => 'DOWNLOAD_MORE_DATA';

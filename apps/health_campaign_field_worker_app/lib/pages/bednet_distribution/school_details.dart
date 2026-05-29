@@ -136,10 +136,10 @@ class SchoolDetailsPage extends StatelessWidget {
                           'Student Total Count',
                           school.memberCount.toString(),
                         ),
-                        MapEntry(
-                          'Community',
-                          school.boundaryCode ?? school.bednetCommunity,
-                        ),
+                        // MapEntry(
+                        //   'Community',
+                        //   school.boundaryCode ?? school.bednetCommunity,
+                        // ),
                       ],
                     ),
                   )
