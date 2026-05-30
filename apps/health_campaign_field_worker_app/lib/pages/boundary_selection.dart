@@ -51,6 +51,7 @@ class _BoundarySelectionPageState
   Map<String, TextEditingController> dropdownControllers = {};
   late StreamSubscription syncSubscription;
   var leastLevelBoundaries;
+  String? _lastLocalizationRefreshKey;
 
   @override
   void initState() {
@@ -154,15 +155,9 @@ class _BoundarySelectionPageState
                           ];
 
                           LocalizationParams().setCode(combinedCodes);
-                          context.read<LocalizationBloc>().add(
-                              LocalizationEvent.onUpdateLocalizationIndex(
-                                  index: appConfiguration.languages!.indexWhere(
-                                      (element) =>
-                                          element.value ==
-                                          AppSharedPreferences()
-                                              .getSelectedLocale),
-                                  code: AppSharedPreferences()
-                                      .getSelectedLocale!));
+                          _refreshLocalizationForCurrentLocale(
+                            appConfiguration,
+                          );
                         }
                       },
                       child: ReactiveFormBuilder(
@@ -173,15 +168,9 @@ class _BoundarySelectionPageState
                               listener: (context, downSyncState) {
                                 LocalizationParams()
                                     .setModule('boundary', true);
-                                context.read<LocalizationBloc>().add(
-                                    LocalizationEvent.onUpdateLocalizationIndex(
-                                        index: appConfiguration.languages!
-                                            .indexWhere((element) =>
-                                                element.value ==
-                                                AppSharedPreferences()
-                                                    .getSelectedLocale),
-                                        code: AppSharedPreferences()
-                                            .getSelectedLocale!));
+                                _refreshLocalizationForCurrentLocale(
+                                  appConfiguration,
+                                );
                                 Future.delayed(const Duration(milliseconds: 10),
                                     () {
                                   downSyncState.maybeWhen(
@@ -681,15 +670,9 @@ class _BoundarySelectionPageState
                                                     LocalizationParams()
                                                         .setModule(
                                                             'boundary', true);
-                                                    context.read<LocalizationBloc>().add(LocalizationEvent.onUpdateLocalizationIndex(
-                                                        index: appConfiguration
-                                                            .languages!
-                                                            .indexWhere((element) =>
-                                                                element.value ==
-                                                                AppSharedPreferences()
-                                                                    .getSelectedLocale),
-                                                        code: AppSharedPreferences()
-                                                            .getSelectedLocale!));
+                                                    _refreshLocalizationForCurrentLocale(
+                                                      appConfiguration,
+                                                    );
                                                     Future.delayed(
                                                         const Duration(
                                                             milliseconds: 10),
@@ -712,15 +695,9 @@ class _BoundarySelectionPageState
                                                     LocalizationParams()
                                                         .setModule(
                                                             'boundary', true);
-                                                    context.read<LocalizationBloc>().add(LocalizationEvent.onUpdateLocalizationIndex(
-                                                        index: appConfiguration
-                                                            .languages!
-                                                            .indexWhere((element) =>
-                                                                element.value ==
-                                                                AppSharedPreferences()
-                                                                    .getSelectedLocale),
-                                                        code: AppSharedPreferences()
-                                                            .getSelectedLocale!));
+                                                    _refreshLocalizationForCurrentLocale(
+                                                      appConfiguration,
+                                                    );
                                                     context.router.replaceAll(
                                                         [HomeRoute()]);
                                                   }
@@ -1082,11 +1059,7 @@ class _BoundarySelectionPageState
       ];
 
       LocalizationParams().setCode(combinedCodes);
-      context.read<LocalizationBloc>().add(
-          LocalizationEvent.onUpdateLocalizationIndex(
-              index: appConfiguration.languages!.indexWhere((element) =>
-                  element.value == AppSharedPreferences().getSelectedLocale),
-              code: AppSharedPreferences().getSelectedLocale!));
+      _refreshLocalizationForCurrentLocale(appConfiguration);
     }
     for (int i = 0; i < labelList.length; i++) {
       final label = labelList[i];
@@ -1126,6 +1099,32 @@ class _BoundarySelectionPageState
     }
 
     return hasError;
+  }
+
+  void _refreshLocalizationForCurrentLocale(AppConfiguration appConfiguration) {
+    final selectedLocale = AppSharedPreferences().getSelectedLocale;
+    if (selectedLocale == null) return;
+
+    final localeIndex = appConfiguration.languages
+            ?.indexWhere((element) => element.value == selectedLocale) ??
+        -1;
+    if (localeIndex < 0) return;
+
+    final codeKey = (LocalizationParams().code ?? const <String>[]).join(',');
+    final module = LocalizationParams().module ?? '';
+    final exclude = LocalizationParams().exclude ?? true;
+    final refreshKey =
+        '$selectedLocale|$localeIndex|$module|$exclude|$codeKey';
+
+    if (_lastLocalizationRefreshKey == refreshKey) return;
+    _lastLocalizationRefreshKey = refreshKey;
+
+    context.read<LocalizationBloc>().add(
+          LocalizationEvent.onUpdateLocalizationIndex(
+            index: localeIndex,
+            code: selectedLocale,
+          ),
+        );
   }
 
   void listenToSyncCount() async {

@@ -2,7 +2,6 @@ import 'package:digit_data_model/data/local_store/sql_store/sql_store.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/local_store/no_sql/schema/app_configuration.dart';
-import '../../data/local_store/no_sql/schema/localization.dart';
 import '../../data/repositories/local/localization.dart';
 import 'app_localizations_delegate.dart';
 
@@ -16,7 +15,8 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static final List<Localization> _localizedStrings = <Localization>[];
+  // Use a hash map for O(1) translation lookups by code.
+  static final Map<String, String> _localizedStrings = <String, String>{};
 
   static LocalizationsDelegate<AppLocalizations> getDelegate(
           AppConfiguration config, LocalSqlDataStore sql) =>
@@ -27,28 +27,19 @@ class AppLocalizations {
         await LocalizationLocalRepository().returnLocalizationFromSQL(sql);
 
     for (var localization in listOfLocalizations) {
-      final index = _localizedStrings.indexWhere(
-        (element) => element.code == localization.code,
-      );
-      if (index != -1) {
-        _localizedStrings[index] = localization;
-      } else {
-        _localizedStrings.add(localization);
+      if (localization.code != null && localization.message != null) {
+        _localizedStrings[localization.code!] = localization.message!;
       }
     }
 
-    return _localizedStrings.isNotEmpty ? true : false;
+    return _localizedStrings.isNotEmpty;
   }
 
   String translate(String localizedValues) {
     if (_localizedStrings.isEmpty) {
       return localizedValues;
     } else {
-      final index = _localizedStrings.indexWhere(
-        (medium) => medium.code == localizedValues,
-      );
-
-      return index != -1 ? _localizedStrings[index].message : localizedValues;
+      return _localizedStrings[localizedValues] ?? localizedValues;
     }
   }
 }

@@ -29,6 +29,6 @@ class RegistrationDeliveryLocalizationDelegate
   @override
   bool shouldReload(
       covariant LocalizationsDelegate<RegistrationDeliveryLocalization> old) {
-    return true;
+    return false;
   }
 }

@@ -438,8 +438,7 @@ class _HomePageState extends LocalizedState<HomePage> {
       if (args.isEmpty || args[0] is! List) return args.isEmpty ? [] : args[0];
       final list = List<dynamic>.from(args[0] as List);
       final field = args.length > 1 ? args[1]?.toString() ?? '' : '';
-      final descending =
-          args.length > 2 ? args[2]?.toString() != 'asc' : true;
+      final descending = args.length > 2 ? args[2]?.toString() != 'asc' : true;
       if (field.isEmpty) return list;
 
       dynamic getField(dynamic item) {
@@ -3367,6 +3366,7 @@ void setPackagesSingleton(BuildContext context) {
               [],
         );
 
+        SurveyFormSingleton().setTenantId(envConfig.variables.tenantId);
         SurveyFormSingleton().setInitialData(
           projectId: context.projectId,
           projectName: context.selectedProject.name,
@@ -3445,12 +3445,29 @@ void setPackagesSingleton(BuildContext context) {
 
 void loadLocalization(
     BuildContext context, AppConfiguration appConfiguration) async {
+  final selectedLocale = AppSharedPreferences().getSelectedLocale;
+  if (selectedLocale == null) return;
+
+  final localeIndex = appConfiguration.languages
+          ?.indexWhere((element) => element.value == selectedLocale) ??
+      -1;
+  if (localeIndex < 0) return;
+
+  final codeKey = (LocalizationParams().code ?? const <String>[]).join(',');
+  final module = LocalizationParams().module ?? '';
+  final exclude = LocalizationParams().exclude ?? true;
+  final refreshKey =
+      '$selectedLocale|$localeIndex|$module|$exclude|$codeKey';
+
+  if (_lastHomeLocalizationRefreshKey == refreshKey) return;
+  _lastHomeLocalizationRefreshKey = refreshKey;
+
   context.read<LocalizationBloc>().add(
       LocalizationEvent.onUpdateLocalizationIndex(
-          index: appConfiguration.languages!.indexWhere((element) =>
-              element.value == AppSharedPreferences().getSelectedLocale),
-          code: AppSharedPreferences().getSelectedLocale!));
+          index: localeIndex, code: selectedLocale));
 }
+
+String? _lastHomeLocalizationRefreshKey;
 
 class _HomeItemDataModel {
   final List<Widget> homeItems;
