@@ -148,6 +148,15 @@ class LocalSqlDataStore extends _$LocalSqlDataStore {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (Migrator m) async {
+          await m.createAll();
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_localization_locale_module ON localization(locale, module);',
+          );
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_localization_locale_code ON localization(locale, code);',
+          );
+        },
         onUpgrade: (migrator, from, to) async {
           if (from < 5) {
             //Add column for projectType in Project Table
@@ -317,6 +326,12 @@ class LocalSqlDataStore extends _$LocalSqlDataStore {
               }
             }
           }
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_localization_locale_module ON localization(locale, module);',
+          );
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_localization_locale_code ON localization(locale, code);',
+          );
         },
       );
 

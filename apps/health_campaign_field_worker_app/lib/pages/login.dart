@@ -35,10 +35,12 @@ class _LoginPageState extends LocalizedState<LoginPage> {
   static const _userId = 'userId';
   static const _password = 'password';
   static const _privacyCheck = 'privacyCheck';
+  late final FormGroup _loginForm;
 
   @override
   void initState() {
     super.initState();
+    _loginForm = _buildForm();
   }
 
   @override
@@ -71,10 +73,9 @@ class _LoginPageState extends LocalizedState<LoginPage> {
         },
         child: ScrollableContent(
           children: [
-            ReactiveFormBuilder(
-              form: buildForm,
-              builder: (context, form, child) {
-                return DigitCard(
+            ReactiveForm(
+              formGroup: _loginForm,
+              child: DigitCard(
                     margin: const EdgeInsets.all(spacer2),
                     children: [
                       Text(
@@ -103,10 +104,13 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                           isRequired: true,
                           child: DigitTextFormInput(
                             keyboardType: TextInputType.text,
-                            initialValue: form.control(_userId).value,
+                            initialValue: _loginForm.control(_userId).value,
                             errorMessage: field.errorText,
                             onChange: (value) {
-                              form.control(_userId).value = value;
+                              final control = _loginForm.control(_userId);
+                              if (control.value != value) {
+                                control.value = value;
+                              }
                             },
                           ),
                         ),
@@ -126,10 +130,13 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                           ),
                           isRequired: true,
                           child: DigitPasswordFormInput(
-                            initialValue: form.control(_password).value,
+                            initialValue: _loginForm.control(_password).value,
                             errorMessage: field.errorText,
                             onChange: (value) {
-                              form.control(_password).value = value;
+                              final control = _loginForm.control(_password);
+                              if (control.value != value) {
+                                control.value = value;
+                              }
                             },
                             keyboardType: TextInputType.text,
                           ),
@@ -167,18 +174,20 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                         label: localizations.translate(i18.login.actionLabel),
                         type: DigitButtonType.primary,
                         onPressed: () {
-                          form.markAllAsTouched();
-                          if (!form.valid) return;
+                          _loginForm.markAllAsTouched();
+                          if (!_loginForm.valid) return;
 
                           FocusManager.instance.primaryFocus?.unfocus();
 
                           context.read<AuthBloc>().add(
                                 AuthLoginEvent(
                                   userId:
-                                      (form.control(_userId).value as String)
+                                      (_loginForm.control(_userId).value
+                                              as String)
                                           .trim(),
                                   password:
-                                      (form.control(_password).value as String)
+                                      (_loginForm.control(_password).value
+                                              as String)
                                           .trim(),
                                   tenantId: envConfig.variables.tenantId,
                                 ),
@@ -223,8 +232,7 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                           ),
                         ),
                       ),
-                    ]);
-              },
+                    ]),
             ),
           ],
         ),
@@ -232,7 +240,7 @@ class _LoginPageState extends LocalizedState<LoginPage> {
     );
   }
 
-  FormGroup buildForm() => fb.group(<String, Object>{
+  FormGroup _buildForm() => fb.group(<String, Object>{
         _userId: FormControl<String>(
           value: '',
           validators: [Validators.required],

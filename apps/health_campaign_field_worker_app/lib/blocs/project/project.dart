@@ -24,6 +24,7 @@ import '../../data/local_store/no_sql/schema/app_configuration.dart';
 import '../../data/local_store/no_sql/schema/row_versions.dart';
 import '../../data/local_store/no_sql/schema/service_registry.dart';
 import '../../data/local_store/secure_store/secure_store.dart';
+import '../../data/repositories/local/localization.dart';
 import '../../data/repositories/remote/bandwidth_check.dart';
 import '../../data/repositories/remote/mdms.dart';
 import '../../models/app_config/app_config_model.dart';
@@ -635,6 +636,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     ProjectEmitter emit,
   ) async {
     emit(state.copyWith(loading: true, syncError: null));
+    LocalizationLocalRepository.clearCache();
 
     List<BoundaryModel> boundaries;
     try {

@@ -18,6 +18,7 @@ typedef LocalizationEmitter = Emitter<LocalizationState>;
 class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
   final LocalizationRepository localizationRepository;
   final LocalSqlDataStore sql;
+  static int _onUpdateLocalizationIndexDispatchCount = 0;
 
   LocalizationBloc(
     super.initialState,
@@ -34,6 +35,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     LocalizationEmitter emit,
   ) async {
     emit(state.copyWith(loading: true));
+    final stopwatch = Stopwatch()..start();
 
     try {
       final boundaryModuleCheck =
@@ -99,6 +101,10 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
       LocalizationParams().setModule(event.module, false);
       final List codes = event.locale.split('_');
       await _loadLocale(codes);
+      stopwatch.stop();
+      debugPrint(
+        'LocalizationPerf onLoadLocalization module=${event.module} locale=${event.locale} elapsedMs=${stopwatch.elapsedMilliseconds}',
+      );
       emit(state.copyWith(loading: false, retryModule: null));
     }
   }
@@ -108,6 +114,8 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     LocalizationEmitter emit,
   ) async {
     emit(state.copyWith(loading: true));
+    LocalizationLocalRepository.clearCache();
+    final stopwatch = Stopwatch()..start();
 
     try {
       final allModules = event.module.split(',');
@@ -133,6 +141,10 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     } catch (error) {
       rethrow;
     } finally {
+      stopwatch.stop();
+      debugPrint(
+        'LocalizationPerf onRemoteLoadLocalization module=${event.module} locale=${event.locale} elapsedMs=${stopwatch.elapsedMilliseconds}',
+      );
       emit(state.copyWith(loading: false));
     }
   }
@@ -141,15 +153,25 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     OnUpdateLocalizationIndexEvent event,
     LocalizationEmitter emit,
   ) async {
+    _onUpdateLocalizationIndexDispatchCount++;
     emit(state.copyWith(index: event.index));
+    LocalizationLocalRepository.clearCache();
     final List codes = event.code.split('_');
     AppSharedPreferences().setSelectedLocale(codes.join("_"));
-    _loadLocale(codes);
+    debugPrint(
+      'LocalizationPerf onUpdateLocalizationIndex count=$_onUpdateLocalizationIndexDispatchCount code=${event.code} index=${event.index}',
+    );
+    await _loadLocale(codes);
   }
 
   FutureOr<void> _loadLocale(List codes) async {
+    final stopwatch = Stopwatch()..start();
     LocalizationParams().setLocale(Locale(codes.first, codes.last));
     await AppLocalizations(Locale(codes.first, codes.last), sql).load();
+    stopwatch.stop();
+    debugPrint(
+      'LocalizationPerf loadLocale locale=${codes.join('_')} elapsedMs=${stopwatch.elapsedMilliseconds}',
+    );
   }
 }
 

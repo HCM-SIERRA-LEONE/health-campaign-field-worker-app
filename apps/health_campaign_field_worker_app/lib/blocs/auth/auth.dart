@@ -9,6 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/local_store/secure_store/secure_store.dart';
+import '../../data/repositories/local/localization.dart';
 import '../../data/repositories/remote/auth.dart';
 import '../../data/repositories/remote/mdms.dart';
 import '../../models/auth/auth_model.dart';
@@ -179,8 +180,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await localSecureStore.setBoundaryRefetch(true);
       // emit(const AuthUnauthenticatedState());
     } finally {
-
-    emit(const AuthUnauthenticatedState());
+      LocalizationLocalRepository.clearCache();
+      emit(const AuthUnauthenticatedState());
     }
   }
 

@@ -44,11 +44,24 @@ class AuthTokenInterceptor extends Interceptor {
 }
 
 class ApiLoggerInterceptor extends Interceptor {
+  bool _isNoisyEndpoint(String path) {
+    return path.contains('check/bandwidth') || path.contains('health-project/check/bandwidth');
+  }
+
   @override
   Future<dynamic> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    if (_isNoisyEndpoint(options.path)) {
+      AppLogger.instance.info(
+        '[payload omitted]',
+        title: '[REQUEST] ${options.uri.toString()}',
+      );
+      super.onRequest(options, handler);
+      return;
+    }
+
     if (options.data is Map || options.data is List) {
       AppLogger.instance.info(
         _getIndentedJson(json.encode(options.data)),
@@ -63,6 +76,14 @@ class ApiLoggerInterceptor extends Interceptor {
     super.onResponse(response, handler);
 
     if (response.requestOptions.path.contains('boundarys')) return;
+    if (_isNoisyEndpoint(response.requestOptions.path)) {
+      AppLogger.instance.info(
+        '[payload omitted]',
+        title:
+            '[RESPONSE - ${response.statusCode}] ${response.requestOptions.uri.toString()}',
+      );
+      return;
+    }
 
     try {
       AppLogger.instance.info(
