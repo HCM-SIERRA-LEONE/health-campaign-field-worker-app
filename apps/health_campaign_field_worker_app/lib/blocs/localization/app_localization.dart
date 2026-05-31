@@ -17,6 +17,7 @@ class AppLocalizations {
   }
 
   static final List<Localization> _localizedStrings = <Localization>[];
+  static Map<String, String> _messagesByCode = const {};
 
   static LocalizationsDelegate<AppLocalizations> getDelegate(
           AppConfiguration config, LocalSqlDataStore sql) =>
@@ -26,29 +27,22 @@ class AppLocalizations {
     final listOfLocalizations =
         await LocalizationLocalRepository().returnLocalizationFromSQL(sql);
 
-    for (var localization in listOfLocalizations) {
-      final index = _localizedStrings.indexWhere(
-        (element) => element.code == localization.code,
-      );
-      if (index != -1) {
-        _localizedStrings[index] = localization;
-      } else {
-        _localizedStrings.add(localization);
-      }
+    if (listOfLocalizations.isNotEmpty) {
+      _localizedStrings
+        ..clear()
+        ..addAll(listOfLocalizations);
+      _messagesByCode = {
+        for (final entry in listOfLocalizations) entry.code: entry.message,
+      };
     }
 
-    return _localizedStrings.isNotEmpty ? true : false;
+    return _localizedStrings.isNotEmpty;
   }
 
   String translate(String localizedValues) {
-    if (_localizedStrings.isEmpty) {
+    if (_messagesByCode.isEmpty) {
       return localizedValues;
-    } else {
-      final index = _localizedStrings.indexWhere(
-        (medium) => medium.code == localizedValues,
-      );
-
-      return index != -1 ? _localizedStrings[index].message : localizedValues;
     }
+    return _messagesByCode[localizedValues] ?? localizedValues;
   }
 }

@@ -33,6 +33,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     OnLoadLocalizationEvent event,
     LocalizationEmitter emit,
   ) async {
+    LocalizationSqlCache.invalidate();
     emit(state.copyWith(loading: true));
 
     try {
@@ -107,6 +108,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     OnRemoteLoadLocalizationEvent event,
     LocalizationEmitter emit,
   ) async {
+    LocalizationSqlCache.invalidate();
     emit(state.copyWith(loading: true));
 
     try {
@@ -141,6 +143,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     OnUpdateLocalizationIndexEvent event,
     LocalizationEmitter emit,
   ) async {
+    LocalizationSqlCache.invalidate();
     emit(state.copyWith(index: event.index));
     final List codes = event.code.split('_');
     AppSharedPreferences().setSelectedLocale(codes.join("_"));

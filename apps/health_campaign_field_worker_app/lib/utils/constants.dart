@@ -107,28 +107,19 @@ class Constants {
   }
 
   static const String localizationApiPath = 'localization/messages/v1/_search';
-  // Modules to load initially (fetch from server and cache locally).
-  // Keep this in sync with homeLocalizationModules below.
+  // Core modules loaded at app start (aligned with Nigeria go-deep).
+  // Screen-specific modules (household, bednet, stock, etc.) are loaded
+  // on navigation via triggerLocalization(module: ...).
   static const List<String> initialLocalizationModules = [
     'digit-privacy-policy',
     'hcm-login',
-    'hcm-forgot-password',
     'hcm-common',
     'hcm-scanner',
+    'hcm-beneficiary',
     'hcm-peer-to-peer',
     'hcm-transit-post',
     'hcm-attendance',
     'hcm-dashboard',
-    // Field-worker core modules
-    'hcm-home',
-    'hcm-household',
-    'hcm-beneficiary',
-    'hcm-member',
-    'hcm-delivery',
-    'hcm-closedhousehold',
-    'hcm-reports',
-    'hcm-checklist',
-    'hcm-bednet',
   ];
 
   // Modules to load when inside packages
@@ -136,38 +127,25 @@ class Constants {
     'hcm-common',
     'hcm-login',
     'hcm-scanner',
+    'hcm-beneficiary',
     'hcm-peer-to-peer',
     'hcm-transit-post',
     'hcm-attendance',
     'hcm-dashboard',
-    'hcm-beneficiary',
-    'hcm-inventory',
-    'hcm-checklist',
-    'hcm-household',
   ];
 
-  // Modules to load on home page and logout.
-  // Must be a superset of initialLocalizationModules (minus login/privacy).
+  // Modules to load on language selection and logout
   static const List<String> homeLocalizationModules = [
-    'digit-privacy-policy',
     'hcm-login',
-    'hcm-forgot-password',
     'hcm-common',
+    'hcm-beneficiary',
+    'digit-privacy-policy',
     'hcm-scanner',
     'hcm-peer-to-peer',
     'hcm-transit-post',
     'hcm-attendance',
     'hcm-dashboard',
-    // Field-worker core modules
     'hcm-home',
-    'hcm-household',
-    'hcm-beneficiary',
-    'hcm-member',
-    'hcm-delivery',
-    'hcm-closedhousehold',
-    'hcm-reports',
-    'hcm-checklist',
-    'hcm-bednet',
   ];
   static const String surveyFormPreviewDateFormat = 'dd MMMM yyyy';
   static const String defaultDateFormat = 'dd/MM/yyyy';
