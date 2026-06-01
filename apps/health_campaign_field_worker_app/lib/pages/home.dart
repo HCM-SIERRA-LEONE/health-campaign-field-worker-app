@@ -438,8 +438,7 @@ class _HomePageState extends LocalizedState<HomePage> {
       if (args.isEmpty || args[0] is! List) return args.isEmpty ? [] : args[0];
       final list = List<dynamic>.from(args[0] as List);
       final field = args.length > 1 ? args[1]?.toString() ?? '' : '';
-      final descending =
-          args.length > 2 ? args[2]?.toString() != 'asc' : true;
+      final descending = args.length > 2 ? args[2]?.toString() != 'asc' : true;
       if (field.isEmpty) return list;
 
       dynamic getField(dynamic item) {
@@ -2644,10 +2643,9 @@ class _HomePageState extends LocalizedState<HomePage> {
                 .isNotEmpty;
 
             final selectedBoundaryCode = isDistributor
-                ? (boundaryState.selectedBoundaryMap.values.lastOrNull
-                        ?.code ??
-                    boundaryState.allSelectedLastLevelBoundaries
-                        .firstOrNull?.code)
+                ? (boundaryState.selectedBoundaryMap.values.lastOrNull?.code ??
+                    boundaryState
+                        .allSelectedLastLevelBoundaries.firstOrNull?.code)
                 : boundaryState.boundaryList.firstOrNull?.code;
 
             if (selectedBoundaryCode != null) {
@@ -3228,42 +3226,43 @@ class _HomePageState extends LocalizedState<HomePage> {
   }
 
   void triggerLocalization({String? module, bool? loadOnline}) {
-    context.read<AppInitializationBloc>().state.maybeWhen(
-          orElse: () {},
-          initialized: (
-            AppConfiguration appConfiguration,
-            _,
-            __,
-          ) {
-            final appConfig = appConfiguration;
-            final localizationModulesList = appConfiguration.backendInterface;
-            final selectedLocale = AppSharedPreferences().getSelectedLocale;
-            LocalizationParams()
-                .setCode(LeastLevelBoundarySingleton().boundary);
-            if (loadOnline == true) {
-              context
-                  .read<LocalizationBloc>()
-                  .add(LocalizationEvent.onRemoteLoadLocalization(
-                    module: module ??
-                        "${localizationModulesList?.interfaces.where((element) => element.type == Modules.localizationModule).map((e) => e.name.toString()).join(',')},hcm-boundary-${envConfig.variables.hierarchyType.toLowerCase()}",
-                    tenantId: envConfig.variables.tenantId,
-                    locale: selectedLocale!,
-                    path: Constants.localizationApiPath,
-                  ));
-            } else {
-              context
-                  .read<LocalizationBloc>()
-                  .add(LocalizationEvent.onLoadLocalization(
-                    module: module != null && module.isNotEmpty
-                        ? "$module,hcm-common,hcm-login,hcm-scanner,hcm-checklist,hcm-beneficiary,hcm-boundary-${envConfig.variables.hierarchyType.toLowerCase()}"
-                        : "${localizationModulesList?.interfaces.where((e) => e.type == Modules.localizationModule).map((e) => e.name.toString()).join(',')},hcm-boundary-${envConfig.variables.hierarchyType.toLowerCase()}",
-                    tenantId: envConfig.variables.tenantId,
-                    locale: selectedLocale!,
-                    path: Constants.localizationApiPath,
-                  ));
-            }
-          },
-        );
+    Future.microtask(() {
+      context.read<AppInitializationBloc>().state.maybeWhen(
+            orElse: () {},
+            initialized: (
+              AppConfiguration appConfiguration,
+              _,
+              __,
+            ) {
+              final localizationModulesList = appConfiguration.backendInterface;
+              final selectedLocale = AppSharedPreferences().getSelectedLocale;
+              LocalizationParams()
+                  .setCode(LeastLevelBoundarySingleton().boundary);
+              if (loadOnline == true) {
+                context
+                    .read<LocalizationBloc>()
+                    .add(LocalizationEvent.onRemoteLoadLocalization(
+                      module: module ??
+                          "${localizationModulesList?.interfaces.where((element) => element.type == Modules.localizationModule).map((e) => e.name.toString()).join(',')},hcm-boundary-${envConfig.variables.hierarchyType.toLowerCase()}",
+                      tenantId: envConfig.variables.tenantId,
+                      locale: selectedLocale!,
+                      path: Constants.localizationApiPath,
+                    ));
+              } else {
+                context
+                    .read<LocalizationBloc>()
+                    .add(LocalizationEvent.onLoadLocalization(
+                      module: module != null && module.isNotEmpty
+                          ? "$module,hcm-common,hcm-login,hcm-scanner,hcm-checklist,hcm-beneficiary,hcm-boundary-${envConfig.variables.hierarchyType.toLowerCase()}"
+                          : "${localizationModulesList?.interfaces.where((e) => e.type == Modules.localizationModule).map((e) => e.name.toString()).join(',')},hcm-boundary-${envConfig.variables.hierarchyType.toLowerCase()}",
+                      tenantId: envConfig.variables.tenantId,
+                      locale: selectedLocale!,
+                      path: Constants.localizationApiPath,
+                    ));
+              }
+            },
+          );
+    });
   }
 }
 
