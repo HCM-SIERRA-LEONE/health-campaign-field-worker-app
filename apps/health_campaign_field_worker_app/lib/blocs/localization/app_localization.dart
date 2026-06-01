@@ -39,6 +39,8 @@ class AppLocalizations {
     return _localizedStrings.isNotEmpty;
   }
 
+  static String? findMessage(String key) => _messagesByCode[key];
+
   String translate(String localizedValues) {
     if (_messagesByCode.isEmpty) {
       return localizedValues;

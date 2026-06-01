@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../data/local_store/no_sql/schema/localization.dart';
+import '../localization/app_localization.dart';
 import 'registration_delivery_localization_delegate.dart';
 
 // Class responsible for handling attendance localization
@@ -46,14 +48,12 @@ class RegistrationDeliveryLocalization {
 
   // Method to translate a given localized value
   String translate(String localizedValues) {
-    if (_localizedStrings.isEmpty) {
-      return localizedValues;
-    } else {
+    if (_localizedStrings.isNotEmpty) {
       final index = _localizedStrings.indexWhere(
-        (medium) => medium.code == localizedValues,
+        (medium) => (medium as Localization).code == localizedValues,
       );
-
-      return index != -1 ? _localizedStrings[index].message : localizedValues;
+      if (index != -1) return (_localizedStrings[index] as Localization).message;
     }
+    return AppLocalizations.findMessage(localizedValues) ?? localizedValues;
   }
 }
