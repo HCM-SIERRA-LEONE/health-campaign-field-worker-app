@@ -7,7 +7,9 @@ import 'package:digit_ui_components/theme/ComponentTheme/digit_tag_theme.dart';
 import 'package:digit_ui_components/theme/digit_extended_theme.dart';
 import 'package:digit_ui_components/widgets/atoms/digit_action_card.dart';
 import 'package:digit_ui_components/widgets/atoms/digit_tag.dart';
+import 'package:digit_ui_components/widgets/atoms/pop_up_card.dart';
 import 'package:digit_ui_components/widgets/molecules/digit_card.dart';
+import 'package:digit_ui_components/widgets/molecules/show_pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_campaign_field_worker_app/blocs/registration_deliver/app_localization.dart';
@@ -27,6 +29,7 @@ import '../../../router/app_router.dart';
 import '../../../blocs/auth/auth.dart';
 import '../../../utils/registration_deliver_utils/extensions/extensions.dart';
 import '../../../utils/bednet_class_selection_singleton.dart';
+import '../../../utils/utils.dart' as stock_utils show RegistrationDeliverySingleton;
 
 class MemberCard extends StatelessWidget {
   final String name;
@@ -296,31 +299,38 @@ class MemberCard extends StatelessWidget {
                                                 .studentRecordDeliveryLabel,
                                           ),
                                     onPressed: () {
-                                      final bloc =
-                                          context.read<HouseholdOverviewBloc>();
-                                      final serviceDefinitionBloc = context
-                                          .read<ServiceDefinitionBloc>()
-                                          .state;
+                                      _checkStockAndProceed(
+                                        context,
+                                        onSuccess: () {
+                                          final bloc = context
+                                              .read<HouseholdOverviewBloc>();
 
-                                      bloc.add(
-                                        HouseholdOverviewEvent
-                                            .selectedIndividual(
-                                          individualModel: individual,
-                                        ),
+                                          bloc.add(
+                                            HouseholdOverviewEvent
+                                                .selectedIndividual(
+                                              individualModel: individual,
+                                            ),
+                                          );
+                                          bloc.add(
+                                            HouseholdOverviewReloadEvent(
+                                              projectId:
+                                                  RegistrationDeliverySingleton()
+                                                      .projectId!,
+                                              projectBeneficiaryType:
+                                                  RegistrationDeliverySingleton()
+                                                          .beneficiaryType ??
+                                                      BeneficiaryType
+                                                          .individual,
+                                            ),
+                                          );
+
+                                          context.router.push(
+                                            BeneficiaryDetailsRoute(
+                                              selectedClass: selectedClass,
+                                            ),
+                                          );
+                                        },
                                       );
-                                      bloc.add(HouseholdOverviewReloadEvent(
-                                        projectId:
-                                            RegistrationDeliverySingleton()
-                                                .projectId!,
-                                        projectBeneficiaryType:
-                                            RegistrationDeliverySingleton()
-                                                    .beneficiaryType ??
-                                                BeneficiaryType.individual,
-                                      ));
-
-                                      context.router.push(
-                                          BeneficiaryDetailsRoute(
-                                              selectedClass: selectedClass));
                                     },
                                   )
                                 : const Offstage(),
@@ -708,10 +718,46 @@ class MemberCard extends StatelessWidget {
         ]);
   }
 
-  // void navigateToChecklist(BuildContext context, clientReferenceId) async {
-  //   await context.router.push(
-  //       BeneficiaryChecklistRoute(beneficiaryClientRefId: clientReferenceId));
-  // }
+  Future<void> _checkStockAndProceed(
+    BuildContext context, {
+    required VoidCallback onSuccess,
+  }) async {
+    final stockCount = stock_utils.RegistrationDeliverySingleton().stockCount;
+
+    if (stockCount != null && stockCount <= 0) {
+      showCustomPopup(
+        context: context,
+        builder: (popupContext) => Popup(
+          title: localizations
+              .translate(i18.beneficiaryDetails.insufficientStockHeading),
+          onOutsideTap: () {
+            Navigator.of(popupContext).pop(false);
+          },
+          description: localizations.translate(
+            i18.beneficiaryDetails.insufficientStockDescription,
+          ),
+          type: PopUpType.simple,
+          actions: [
+            DigitButton(
+              label: localizations.translate(i18.beneficiaryDetails.goToHome),
+              onPressed: () {
+                Navigator.of(
+                  popupContext,
+                  rootNavigator: true,
+                ).pop();
+                context.router.replaceAll([HomeRoute()]);
+              },
+              type: DigitButtonType.primary,
+              size: DigitButtonSize.large,
+            ),
+          ],
+        ),
+      );
+    } else {
+      onSuccess();
+    }
+  }
+
   bool _shouldShowEditButton(BuildContext context) {
     return
         // !isCurrentCycleData(context, tasks ?? []) ||
