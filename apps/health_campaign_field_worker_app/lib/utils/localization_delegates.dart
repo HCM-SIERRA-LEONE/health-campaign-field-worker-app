@@ -29,14 +29,11 @@ getAppLocalizationDelegates({
   required AppConfiguration appConfig,
   required Locale selectedLocale,
 }) {
-  // Each returnLocalizationFromSQL call is deferred via Future.microtask so
-  // that the DB query runs AFTER LocalizationBloc._loadLocale has updated
-  // LocalizationParams (module list + locale). Previously these Futures were
-  // evaluated eagerly at widget-build time, before the bloc had set the
-  // correct module filter — causing all package delegates to receive an empty
-  // or wrong result and display raw translation keys.
-  Future<List> lazyLocalizations() =>
-      Future.microtask(() => LocalizationLocalRepository().returnLocalizationFromSQL(sql));
+  // Single shared Future so all package delegates await one SQL read instead
+  // of each firing an identical Drift query on the UI isolate.
+  final sharedLocalizations = Future<List>.microtask(
+    () => LocalizationSqlCache.instance.load(sql),
+  );
 
   return [
     AppLocalizations.getDelegate(appConfig, sql),
@@ -47,39 +44,39 @@ getAppLocalizationDelegates({
     // INFO : Need to add package delegates here
 
     attendance_localization.AttendanceLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     survey_form_localization.SurveyFormLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     scanner_localization.ScannerLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     digit_dss_localization.DashboardLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     component_localization.ComponentLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     transit_post_localization.TransitPostLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     forms_engine_localization.FormLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     flow_builder_localization.FlowBuilderLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
     RegistrationDeliveryLocalization.getDelegate(
-      lazyLocalizations(),
+      sharedLocalizations,
       appConfig.languages!,
     ),
   ];

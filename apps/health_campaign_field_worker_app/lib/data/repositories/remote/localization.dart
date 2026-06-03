@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:digit_data_model/data_model.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
@@ -28,9 +27,7 @@ class LocalizationRepository {
         data: {},
       );
 
-      return LocalizationModel.fromJson(
-        json.decode(response.toString()),
-      );
+      return LocalizationModel.fromJson(response.data);
     } on DioException catch (_) {
       // Assuming there will be an errorMessage property in the JSON object
       rethrow;

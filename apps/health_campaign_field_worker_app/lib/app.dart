@@ -396,9 +396,10 @@ class MainApplicationState extends State<MainApplication>
                         ],
                         child: BlocBuilder<ErrorBloc, ErrorState>(
                             builder: (context, errorState) {
-                          return BlocBuilder<LocalizationBloc,
-                              LocalizationState>(
-                            builder: (context, langState) {
+                          return BlocSelector<LocalizationBloc,
+                              LocalizationState, int>(
+                            selector: (state) => state.index,
+                            builder: (context, langIndex) {
                               final selectedLocale =
                                   AppSharedPreferences().getSelectedLocale ??
                                       firstLanguage;

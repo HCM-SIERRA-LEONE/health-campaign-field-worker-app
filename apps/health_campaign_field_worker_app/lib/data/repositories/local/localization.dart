@@ -6,9 +6,13 @@ import 'package:drift/drift.dart';
 
 import '../../../utils/utils.dart';
 import '../../local_store/no_sql/schema/localization.dart';
-
 class LocalizationLocalRepository {
-  FutureOr<List<Localization>> returnLocalizationFromSQL(
+  Future<List<Localization>> returnLocalizationFromSQL(
+      LocalSqlDataStore sql) {
+    return LocalizationSqlCache.instance.load(sql);
+  }
+
+  Future<List<Localization>> returnLocalizationFromSQLUncached(
       LocalSqlDataStore sql) async {
     return retryLocalCallOperation(() async {
       final selectQuery = sql.select(sql.localization).join([]);
@@ -124,9 +128,74 @@ class LocalizationLocalRepository {
       List<LocalizationCompanion> result, LocalSqlDataStore sql) async {
     if (result.isEmpty) return;
     return retryLocalCallOperation(() async {
-      return sql.batch((batch) {
+      final batchResult = await sql.batch((batch) {
         batch.insertAllOnConflictUpdate(sql.localization, result);
       });
+      LocalizationSqlCache.invalidate();
+      return batchResult;
     });
+  }
+}
+
+/// Deduplicates identical localization SQL reads across all delegates.
+///
+/// Without this, each [LocalizationsDelegate] triggers a separate Drift query on
+/// the UI isolate, which blocks frames and freezes the app.
+class LocalizationSqlCache {
+  LocalizationSqlCache._();
+
+  static final LocalizationSqlCache instance = LocalizationSqlCache._();
+
+  String? _cacheKey;
+  List<Localization>? _cached;
+  Future<List<Localization>>? _inFlight;
+
+  static void invalidate() => instance._invalidate();
+
+  void _invalidate() {
+    _cacheKey = null;
+    _cached = null;
+    _inFlight = null;
+  }
+
+  String _currentKey() {
+    final params = LocalizationParams();
+    final codes = params.code;
+    return [
+      '${params.locale}',
+      params.module ?? '',
+      '${params.exclude}',
+      codes == null ? '' : codes.join('\u0001'),
+    ].join('|');
+  }
+
+  Future<List<Localization>> load(LocalSqlDataStore sql) {
+    final key = _currentKey();
+
+    if (_cached != null && _cacheKey == key) {
+      return Future<List<Localization>>.value(_cached!);
+    }
+
+    if (_inFlight != null && _cacheKey == key) {
+      return _inFlight!;
+    }
+
+    _cacheKey = key;
+    _inFlight = LocalizationLocalRepository()
+        .returnLocalizationFromSQLUncached(sql)
+        .then((list) {
+      _cached = list;
+      _inFlight = null;
+      return list;
+    }).catchError((Object error, StackTrace stack) {
+      _inFlight = null;
+      if (_cacheKey == key) {
+        _cacheKey = null;
+        _cached = null;
+      }
+      Error.throwWithStackTrace(error, stack);
+    });
+
+    return _inFlight!;
   }
 }

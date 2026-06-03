@@ -39,7 +39,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
       final boundaryModuleCheck =
           event.module.contains(Constants.boundaryLocalizationPath);
       final allModules = event.module.split(',');
-      var boundaryModule;
+      String? boundaryModule;
 
       if (boundaryModuleCheck) {
         final boundaryModuleIndex =
@@ -49,45 +49,60 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
       }
 
       try {
-        var localizationList;
-
         var localResults = await LocalizationLocalRepository()
             .fetchLocalization(
                 sql: sql, locale: event.locale, module: allModules.join(','));
-        if (localResults.isEmpty) {
+
+        // Determine if some requested modules are missing locally and fetch only
+        // the missing ones from remote. Previously we only checked if the
+        // entire result was empty which skipped fetching when some modules
+        // were already present.
+        final requestedModules = allModules.map((e) => e.trim()).toList();
+        final presentModules = localResults.map((e) => e.module).toSet();
+        final missingModules = requestedModules
+            .where((m) => !presentModules.contains(m) && m.isNotEmpty)
+            .toList();
+
+        if (localResults.isEmpty &&
+            missingModules.isEmpty &&
+            requestedModules.isNotEmpty) {
+          // Defensive: if fetch returned empty but we had requested modules,
+          // treat all as missing
+          missingModules.addAll(requestedModules);
+        }
+
+        if (missingModules.isNotEmpty) {
           var results = await localizationRepository.loadLocalization(
             path: event.path,
             locale: event.locale,
-            module: allModules.join(','),
+            module: missingModules.join(','),
             tenantId: event.tenantId,
           );
-          localizationList = LocalizationLocalRepository().create(results, sql);
-          if (boundaryModule != null) {
-            try {
-              var localizationList;
-              var localResults = await LocalizationLocalRepository()
-                  .fetchLocalization(
-                      sql: sql, locale: event.locale, module: boundaryModule);
-              if (localResults.isEmpty) {
-                var results = await localizationRepository.loadLocalization(
-                  path: event.path,
-                  locale: event.locale,
-                  module: boundaryModule,
-                  tenantId: event.tenantId,
-                );
 
-                localizationList =
-                    LocalizationLocalRepository().create(results, sql);
-              } else {
-                localizationList = localResults;
-              }
-            } catch (error) {
-              debugPrint('error in boundary module localization $error');
-              emit(state.copyWith(loading: false, retryModule: boundaryModule));
+          await LocalizationLocalRepository().create(results, sql);
+          LocalizationSqlCache.invalidate();
+        }
+
+        if (boundaryModule != null) {
+          try {
+            var boundaryLocalResults = await LocalizationLocalRepository()
+                .fetchLocalization(
+                    sql: sql, locale: event.locale, module: boundaryModule);
+            if (boundaryLocalResults.isEmpty) {
+              var results = await localizationRepository.loadLocalization(
+                path: event.path,
+                locale: event.locale,
+                module: boundaryModule,
+                tenantId: event.tenantId,
+              );
+
+              await LocalizationLocalRepository().create(results, sql);
+              LocalizationSqlCache.invalidate();
             }
+          } catch (error) {
+            debugPrint('error in boundary module localization $error');
+            emit(state.copyWith(loading: false, retryModule: boundaryModule));
           }
-        } else {
-          localizationList = localResults;
         }
       } catch (error) {
         debugPrint('error in other modules localization $error');
@@ -107,22 +122,20 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     OnRemoteLoadLocalizationEvent event,
     LocalizationEmitter emit,
   ) async {
+    LocalizationSqlCache.invalidate();
     emit(state.copyWith(loading: true));
 
     try {
       final allModules = event.module.split(',');
 
       try {
-        var localizationList;
-
         var results = await localizationRepository.loadLocalization(
           path: event.path,
           locale: event.locale,
           module: allModules.join(','),
           tenantId: event.tenantId,
         );
-        localizationList =
-            await LocalizationLocalRepository().create(results, sql);
+        await LocalizationLocalRepository().create(results, sql);
       } catch (error) {
         debugPrint('error in fetching modules localization $error');
         emit(state.copyWith(loading: false, retryModule: allModules.join(',')));
@@ -141,6 +154,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     OnUpdateLocalizationIndexEvent event,
     LocalizationEmitter emit,
   ) async {
+    LocalizationSqlCache.invalidate();
     emit(state.copyWith(index: event.index));
     final List codes = event.code.split('_');
     AppSharedPreferences().setSelectedLocale(codes.join("_"));
