@@ -36,6 +36,7 @@ import '../../../blocs/registration_deliver/search_households/search_households.
 import '../../../models/registration_deliver_model/entities/registration_delivery_enums.dart';
 import '../../../utils/registration_deliver_utils/i18_key_constants.dart'
     as i18;
+import '../../../utils/utils.dart' as stock_utils show RegistrationDeliverySingleton;
 import '../../../widgets/registartion_deliver/member_card/member_card.dart';
 
 @RoutePage()
@@ -60,6 +61,46 @@ class _HouseholdOverviewPageState
   String? householdClientReferenceId;
 
   List<String> selectedFilters = [];
+
+  Future<void> _checkStockAndProceed(
+    BuildContext context, {
+    required VoidCallback onSuccess,
+  }) async {
+    final stockCount = stock_utils.RegistrationDeliverySingleton().stockCount;
+
+    if (stockCount != null && stockCount <= 0) {
+      showCustomPopup(
+        context: context,
+        builder: (popupContext) => Popup(
+          title: localizations
+              .translate(i18.beneficiaryDetails.insufficientStockHeading),
+          onOutsideTap: () {
+            Navigator.of(popupContext).pop(false);
+          },
+          description: localizations.translate(
+            i18.beneficiaryDetails.insufficientStockDescription,
+          ),
+          type: PopUpType.simple,
+          actions: [
+            DigitButton(
+              label: localizations.translate(i18.beneficiaryDetails.goToHome),
+              onPressed: () {
+                Navigator.of(
+                  popupContext,
+                  rootNavigator: true,
+                ).pop();
+                context.router.replaceAll([HomeRoute()]);
+              },
+              type: DigitButtonType.primary,
+              size: DigitButtonSize.large,
+            ),
+          ],
+        ),
+      );
+    } else {
+      onSuccess();
+    }
+  }
 
   @override
   void initState() {
@@ -140,13 +181,22 @@ class _HouseholdOverviewPageState
                         children: [
                           DigitButton(
                             mainAxisSize: MainAxisSize.max,
-                            onPressed: () => addIndividual(
-                              context,
-                              state.householdMemberWrapper.household!,
-                              isHeadOfHousehold:
-                                  (state.householdMemberWrapper.members ?? [])
+                            onPressed: () {
+                              final household =
+                                  state.householdMemberWrapper.household;
+                              if (household == null) return;
+                              _checkStockAndProceed(
+                                context,
+                                onSuccess: () => addIndividual(
+                                  context,
+                                  household,
+                                  isHeadOfHousehold: (state
+                                              .householdMemberWrapper.members ??
+                                          [])
                                       .isEmpty,
-                            ),
+                                ),
+                              );
+                            },
                             label: localizations.translate(
                               i18.householdOverView
                                   .householdOverViewAddStudentText,

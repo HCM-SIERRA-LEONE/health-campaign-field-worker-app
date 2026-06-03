@@ -12,6 +12,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import '../blocs/app_initialization/app_initialization.dart';
 import '../blocs/auth/auth.dart';
+import '../blocs/localization/app_localization.dart';
 import '../data/local_store/no_sql/schema/app_configuration.dart';
 import '../router/app_router.dart';
 import '../utils/environment_config.dart';
@@ -78,8 +79,9 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                     margin: const EdgeInsets.all(spacer2),
                     children: [
                       Text(
-                        localizations.translate(
+                        localizations.translateWithDefault(
                           i18.login.labelText,
+                          fallback: 'Login',
                         ),
                         style: textTheme.headingXl.copyWith(
                           color: theme
@@ -96,8 +98,9 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                           },
                         },
                         builder: (field) => LabeledField(
-                          label: localizations.translate(
+                          label: localizations.translateWithDefault(
                             i18.login.userIdPlaceholder,
+                            fallback: 'User ID',
                           ),
                           capitalizedFirstLetter: false,
                           isRequired: true,
@@ -121,8 +124,9 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                           },
                         },
                         builder: (field) => LabeledField(
-                          label: localizations.translate(
+                          label: localizations.translateWithDefault(
                             i18.login.passwordPlaceholder,
+                            fallback: 'Password',
                           ),
                           isRequired: true,
                           child: DigitPasswordFormInput(
@@ -164,7 +168,10 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                       //   );
                       // }),
                       DigitButton(
-                        label: localizations.translate(i18.login.actionLabel),
+                        label: localizations.translateWithDefault(
+                          i18.login.actionLabel,
+                          fallback: 'Login',
+                        ),
                         type: DigitButtonType.primary,
                         onPressed: () {
                           form.markAllAsTouched();
@@ -188,8 +195,9 @@ class _LoginPageState extends LocalizedState<LoginPage> {
                         mainAxisSize: MainAxisSize.max,
                       ),
                       DigitButton(
-                        label: localizations.translate(
+                        label: localizations.translateWithDefault(
                           i18.forgotPassword.actionLabel,
+                          fallback: 'Forgot Password',
                         ),
                         capitalizeLetters: false,
                         mainAxisSize: MainAxisSize.max,
