@@ -3177,7 +3177,12 @@ class _HomePageState extends LocalizedState<HomePage> {
         .map((label) => homeItemsShowcaseMap[label]!)
         .toList();
 
-    filteredLabels.add(i18.home.summaryLabel);
+    final isCddOrDistributor = context.loggedInUserRoles.any((role) =>
+        role.code == RolesType.distributor.toValue() ||
+        role.code == RolesType.communityDistributor.toValue());
+    if (isCddOrDistributor) {
+      filteredLabels.add(i18.home.summaryLabel);
+    }
 
     if (envConfig.variables.envType == EnvType.demo && kReleaseMode) {
       filteredLabels.remove(i18.home.db);

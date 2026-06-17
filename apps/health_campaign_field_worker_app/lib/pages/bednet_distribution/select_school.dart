@@ -91,18 +91,37 @@ class SelectSchoolPage extends StatelessWidget {
                       child: DigitCard(
                         margin: const EdgeInsets.all(spacer2),
                         children: [
-                          Text(
-                            'Select the school',
-                            style: textTheme.headingXl.copyWith(
-                              color: theme.colorTheme.primary.primary2,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Select the school',
+                                  style: textTheme.headingXl.copyWith(
+                                    color: theme.colorTheme.primary.primary2,
+                                  ),
+                                ),
+                              ),
+                              // DigitButton(
+                              //   label: 'Refresh',
+                              //   type: DigitButtonType.tertiary,
+                              //   size: DigitButtonSize.medium,
+                              //   onPressed: () {
+                              //     if (state.loading) return;
+                              //     context.read<BednetDistributionBloc>().add(
+                              //           const BednetDistributionEvent.reload(),
+                              //         );
+                              //   },
+                              // ),
+                            ],
                           ),
                           const SizedBox(height: spacer2),
                           ReactiveWrapperField(
                             formControlName: _schoolControl,
                             validationMessages: {
                               'required': (_) =>
-                                  'Select the school is required',
+                                  'Please select a school to proceed',
                             },
                             builder: (field) => LabeledField(
                               label: 'Select the school',
